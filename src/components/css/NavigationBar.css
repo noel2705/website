@@ -1,0 +1,50 @@
+.navbar {
+    background-color: #111;
+    padding: 16px;
+}
+
+.list {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.link {
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+    position: relative;
+
+    transition: color 0.3s ease;
+}
+
+.link::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -6px;
+
+    width: 0%;
+    height: 2px;
+    background-color: #00ffff;
+
+    transition: width 0.3s ease;
+}
+
+
+.link:hover::after {
+    width: 100%;
+}
+.active::after {
+    width: 100%;
+}
+
+
+.link:hover {
+    animation: glowPulse 1.5s infinite;
+}
+
+
