@@ -1,8 +1,8 @@
 import React from 'react'
-import AuctionClient from './AutionClient.tsx'
+import AuctionClient from './AutionClient'
 import './auction.css'
 
-interface Page {
+export interface Page {
     seller: string
     item: Item
     category: string
@@ -12,7 +12,7 @@ interface Page {
     endTime: Date
 }
 
-interface Item {
+export interface Item {
     material: string
     icon: string
     amount: number

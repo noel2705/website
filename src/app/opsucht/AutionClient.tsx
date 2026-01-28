@@ -1,12 +1,13 @@
 'use client'
 
 import React, {useEffect, useState} from 'react'
+import {Page} from "@/app/opsucht/page";
 
 
 
 const AuctionClient = ({ auction }: { auction: Page[] }) => {
     const [category, setCategory] = useState('*')
-    const [sumMoney, setSumMoney] = useState(0)
+    const [sumMoney, setSumMoney] = useState('')
     const [now, setNow] = useState(Date.now())
 
     useEffect(() => {
@@ -22,7 +23,7 @@ const AuctionClient = ({ auction }: { auction: Page[] }) => {
 
 
     useEffect(() => {
-        const sumWithInitial = auction.filter(a => a.category === category || category === "*").map(a => a.currentBid).reduce(
+        const sumWithInitial :number = auction.filter(a => a.category === category || category === "*").map(a => a.currentBid).reduce(
             (before, currentValue) => before + currentValue,
             0,
         );
@@ -36,8 +37,8 @@ const AuctionClient = ({ auction }: { auction: Page[] }) => {
     })
 
 
-    const getFormatedSummary = (value) => {
-        if(value < 1000) return value;
+    const getFormatedSummary = (value: number) => {
+        if(value < 1000) return value + '';
 
         if(value < 1000000){
             return `${(value / 1000).toLocaleString("de-de", {maximumFractionDigits: 3})}K`
@@ -64,6 +65,7 @@ const AuctionClient = ({ auction }: { auction: Page[] }) => {
                 <option value="op_items">OP-Items</option>
                 <option value="tools">Werkzeuge</option>
                 <option value="armor">Rüstung</option>
+                <option value="spawn_eggs">Spawneier</option>
                 <option value="other">Sonstiges</option>
             </select>
 
@@ -75,9 +77,12 @@ const AuctionClient = ({ auction }: { auction: Page[] }) => {
             <div className="auction-grid">
                 {filtered.map((a, id) => (
                     <div key={id} className="auction-card">
-                        <img src={a.item.icon} alt={a.item.displayName} />
 
+                        <div>
+                        <img src={a.item.icon} alt={a.item.displayName} />
                         <p className="title">{a.item.displayName}</p>
+                        </div>
+
 
                         {a.item.amount > 1 && (
                             <p className="muted">Menge: {a.item.amount}</p>
@@ -101,7 +106,7 @@ const AuctionClient = ({ auction }: { auction: Page[] }) => {
     )
 }
 
-const getRemainingTime = (a: { endTime: string }) => {
+const getRemainingTime = (a: Page) => {
     const end = new Date(a.endTime).getTime()
     const now = Date.now()
 
