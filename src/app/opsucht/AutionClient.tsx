@@ -1,14 +1,13 @@
 'use client'
 
-import React, {useEffect, useState} from 'react'
+import React, {useEffect, useState, useMemo} from 'react'
 import {Item, Page} from "@/app/opsucht/page";
 
 
 
 const AuctionClient = ({ auction }: { auction: Page[] }) => {
     const [category, setCategory] = useState('*')
-    const [sumMoney, setSumMoney] = useState('')
-    const [now, setNow] = useState(Date.now())
+        const [now, setNow] = useState(Date.now())
     const [sortBy, setSortBy] = useState<"endTimeAsc" | "endTimeDesc" | "currentBidAsc" | "currentBidDesc">("endTimeAsc");
     const [search, setSearch] = useState("");
 
@@ -23,24 +22,9 @@ const AuctionClient = ({ auction }: { auction: Page[] }) => {
     }, [])
 
 
-    useEffect(() => {
-        const sumWithInitial :number = auction.filter(a => a.category === category || category === "*").map(a => a.currentBid).reduce(
-            (before, currentValue) => before + currentValue,
-            0,
-        );
-
-        setSumMoney(getFormatedSummary(sumWithInitial))
-    }, [category])
 
 
-    const checkIconExists = async (url: string): Promise<boolean> => {
-        try {
-            const res = await fetch(url, { method: 'HEAD' });
-            return res.ok;
-        } catch {
-            return false;
-        }
-    };
+
 
 
     const filtered = auction.filter(a => {
@@ -48,7 +32,7 @@ const AuctionClient = ({ auction }: { auction: Page[] }) => {
         return a.category === category
     })
 
-    const sortedFiltered = filtered.sort((a, b) => {
+    const sortedFiltered = [...filtered].sort((a, b) => {
         switch(sortBy) {
             case "endTimeAsc":
                 return new Date(a.endTime).getTime() - new Date(b.endTime).getTime();
@@ -71,7 +55,6 @@ const AuctionClient = ({ auction }: { auction: Page[] }) => {
     });
 
 
-
     const getFormatedSummary = (value: number) => {
         if(value < 1000) return value + '';
 
@@ -87,6 +70,16 @@ const AuctionClient = ({ auction }: { auction: Page[] }) => {
 
     }
 
+    const sumMoney = useMemo(() => {
+        const sum = searched.reduce(
+            (total, a) => total + a.currentBid,
+            0
+        );
+
+        return getFormatedSummary(sum);
+    }, [searched]);
+
+
 
 
     const getItemIcon = (item: Item): string => {
@@ -96,6 +89,7 @@ const AuctionClient = ({ auction }: { auction: Page[] }) => {
 
         const normalized = item.displayName
             .toLowerCase()
+            .replace(/[´’']/g, "")
             .replace(/\s+/g, "_")
             .replace(/[^a-z0-9_]/g, "");
 
