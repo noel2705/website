@@ -1,9 +1,6 @@
+import React from 'react';
 
-import Link from "next/link";
-import ProductCard from "@/components/ProductCard";
-import NavigationBar from "@/components/NavigationBar";
-
-
+import './globals.css'
 
 export default function Home() {
 

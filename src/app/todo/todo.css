@@ -1,0 +1,19 @@
+.new-todo{
+    display: flex;
+    width: 250px;
+    justify-content: center;
+    border-radius: 10px;
+    margin: 0 auto;
+    border-color: gray;
+    border-width: 4px;
+    background: lightgray;
+    transition: width 0.3s ease, border-color 1s ease;
+}
+
+.new-todo:hover{
+    width: 270px;
+    border-color: blue;
+    border-width: 4px;
+    transition: width 0.3s ease;
+}
+
