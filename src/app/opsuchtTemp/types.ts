@@ -13,5 +13,5 @@ export interface Page {
     startBid: number
     bids: Record<string, number>
     endTime: string
-    uid: string
+    ownerUUID?: string
 }
