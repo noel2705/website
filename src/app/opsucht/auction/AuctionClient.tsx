@@ -1,10 +1,8 @@
 'use client';
-import React, { useState, useEffect } from 'react';
-import { Page } from './types';
+import React, {useState, useEffect} from 'react';
+import {Page,Item} from './types';
 import "./auction.css";
-import {Item} from "@/app/opsuchtTemp/types";
 import {useRouter} from 'next/navigation';
-import {Router} from "next/router";
 import {AppRouterInstance} from "next/dist/shared/lib/app-router-context.shared-runtime";
 
 interface Props {
@@ -12,13 +10,13 @@ interface Props {
 }
 
 
-export default function AuctionClient({ initialAuction }: Props) {
+export default function AuctionClient({initialAuction}: Props) {
     const [auction, setAuction] = useState<Page[]>(initialAuction);
     const [showAuction, setShowAuction] = useState<Page[]>();
-    const [category, setCategory] = useState("*");
-    const [searchBar, setSearchbar] = useState("");
+    const [category, setCategory] = useState(sessionStorage.getItem("category") || "*");
+    const [searchBar, setSearchbar] = useState(sessionStorage.getItem("searchBar") || "");
     const [refresh, setRefresh] = useState(Date.now)
-    const [orderBy, setOrderby] = useState("moneyDesc")
+    const [orderBy, setOrderby] = useState(sessionStorage.getItem("orderBy") || "moneyDesc");
     const router = useRouter()
     const fetchAuctions = async (cat: string) => {
         const url =
@@ -32,12 +30,10 @@ export default function AuctionClient({ initialAuction }: Props) {
     };
 
 
-
-
-    const sortByAttributes = (data:Page[]) => {
+    const sortByAttributes = (data: Page[]) => {
         setShowAuction(data.toSorted((a, b) => {
-            switch (orderBy){
-                case "timeDesc":{
+            switch (orderBy) {
+                case "timeDesc": {
                     return new Date(a.endTime).getTime() - new Date(b.endTime).getTime();
                 }
                 case "timeAsc": {
@@ -51,6 +47,14 @@ export default function AuctionClient({ initialAuction }: Props) {
                 case "moneyDesc": {
                     return b.currentBid - a.currentBid;
                 }
+
+                case "bitAmountDesc": {
+                    return getAmountBids(b.bids) - getAmountBids(a.bids);
+                }
+
+                case "bitAmontAsc" :{
+                    return getAmountBids(a.bids) - getAmountBids(b.bids);
+                }
             }
 
             return 0;
@@ -58,10 +62,12 @@ export default function AuctionClient({ initialAuction }: Props) {
     }
 
     useEffect(() => {
-       sortByAttributes(auction);
+        sortByAttributes(auction);
+        sessionStorage.setItem("orderBy", orderBy);
     }, [orderBy]);
 
     useEffect(() => {
+        sessionStorage.setItem("category", category);
         void fetchAuctions(category);
     }, [category]);
 
@@ -74,12 +80,13 @@ export default function AuctionClient({ initialAuction }: Props) {
 
     useEffect(() => {
         const interval = setInterval(() => {
-           void fetchAuctions(category);
+            void fetchAuctions(category);
         }, 10000)
         return () => clearInterval(interval)
     })
 
     useEffect(() => {
+        sessionStorage.setItem("searchBar", searchBar);
         setShowAuction(auction.filter(a => {
             return (a.item.displayName ?? a.item.material).toLowerCase().includes(searchBar.toLowerCase())
         }))
@@ -96,7 +103,6 @@ export default function AuctionClient({ initialAuction }: Props) {
             </div>
 
 
-
             <div className="auction-toolbar">
 
 
@@ -105,7 +111,7 @@ export default function AuctionClient({ initialAuction }: Props) {
                         onClick={() => setCategory("*")}
                         className={category === "*" ? "active" : ""}
                     >
-                        <img src="https://img.mc-api.io/nether_star.png" />
+                        <img src="https://img.mc-api.io/nether_star.png"/>
                         Alles
                     </button>
 
@@ -113,7 +119,7 @@ export default function AuctionClient({ initialAuction }: Props) {
                         onClick={() => setCategory("custom_items")}
                         className={category === "custom_items" ? "active" : ""}
                     >
-                        <img src="https://img.mc-api.io/netherite_ingot.png" />
+                        <img src="https://img.mc-api.io/netherite_ingot.png"/>
                         Custom Items
                     </button>
 
@@ -121,7 +127,7 @@ export default function AuctionClient({ initialAuction }: Props) {
                         onClick={() => setCategory("tools")}
                         className={category === "tools" ? "active" : ""}
                     >
-                        <img src="https://img.mc-api.io/iron_sword.png" />
+                        <img src="https://img.mc-api.io/iron_sword.png"/>
                         Werkzeuge
                     </button>
 
@@ -129,7 +135,7 @@ export default function AuctionClient({ initialAuction }: Props) {
                         onClick={() => setCategory("armor")}
                         className={category === "armor" ? "active" : ""}
                     >
-                        <img src="https://img.mc-api.io/iron_chestplate.png" />
+                        <img src="https://img.mc-api.io/iron_chestplate.png"/>
                         Rüstung
                     </button>
 
@@ -137,7 +143,7 @@ export default function AuctionClient({ initialAuction }: Props) {
                         onClick={() => setCategory("op_items")}
                         className={category === "op_items" ? "active" : ""}
                     >
-                        <img src="https://img.mc-api.io/beacon.png" />
+                        <img src="https://img.mc-api.io/beacon.png"/>
                         OP Items
                     </button>
 
@@ -145,7 +151,7 @@ export default function AuctionClient({ initialAuction }: Props) {
                         onClick={() => setCategory("spawn_eggs")}
                         className={category === "spawn_eggs" ? "active" : ""}
                     >
-                        <img src="https://img.mc-api.io/blaze_spawn_egg.png" />
+                        <img src="https://img.mc-api.io/blaze_spawn_egg.png"/>
                         Spawn Eggs
                     </button>
 
@@ -153,7 +159,7 @@ export default function AuctionClient({ initialAuction }: Props) {
                         onClick={() => setCategory("other")}
                         className={category === "other" ? "active" : ""}
                     >
-                        <img src="https://img.mc-api.io/ender_chest.png" />
+                        <img src="https://img.mc-api.io/ender_chest.png"/>
                         Sonstiges
                     </button>
 
@@ -164,8 +170,10 @@ export default function AuctionClient({ initialAuction }: Props) {
                     <select value={orderBy} onChange={e => setOrderby(e.target.value)}>
                         <option value="moneyDesc">Preis: Groß → Klein</option>
                         <option value="moneyAsc">Preis: Klein → Groß</option>
-                        <option value="timeDesc">Zeit: Endet bald</option>
-                        <option value="timeAsc">Zeit: Endet zuletzt</option>
+                        <option value="timeDesc">Endet bald</option>
+                        <option value="timeAsc">Endet zuletzt</option>
+                        <option value="bitAmountDesc">Meiste Gebote</option>
+                        <option value="bitAmontAsc">Wenigste Gebote</option>
                     </select>
                 </div>
             </div>
@@ -173,17 +181,19 @@ export default function AuctionClient({ initialAuction }: Props) {
 
             <div className="auction-grid">
                 {showAuction?.map(a => (
-                    <AuctionCard key={a.uid} auction={a} router={router} />
+                    <AuctionCard key={a.uid} auction={a} router={router}/>
                 ))}
             </div>
         </>
     );
 }
 
-const formatEndDate = (a:string) => {
+const formatEndDate = (a: string) => {
     const milliToEnd = new Date(a).getTime() - Date.now()
 
-    if(milliToEnd < 0){return "Beendet"}
+    if (milliToEnd < 0) {
+        return "Beendet"
+    }
     const secToEnd = Math.floor(milliToEnd / 1000);
     const seconds = secToEnd % 60;
 
@@ -193,17 +203,25 @@ const formatEndDate = (a:string) => {
     const hourToEnd = Math.floor(minToEnd / 60);
 
 
-
     return `${hourToEnd}h ${minutes}m ${seconds}s`
 
 }
 
 
-const formatMoney = (money:number) => {
-    if(money < 1000) return money.toLocaleString('en-us', {minimumFractionDigits: 2 , maximumFractionDigits: 2})
-    if(money < 1000000) return (money / 1000).toLocaleString('en-us', {minimumFractionDigits: 2 , maximumFractionDigits: 2}) + "K"
-    if(money < 1000000000) return (money / 1000000).toLocaleString('en-us', {minimumFractionDigits: 2 , maximumFractionDigits: 2}) + "M"
-    if(money < 1000000000000) return (money / 1000000000).toLocaleString('en-us', {minimumFractionDigits: 2 , maximumFractionDigits: 2}) + "Mrd"
+const formatMoney = (money: number) => {
+    if (money < 1000) return money.toLocaleString('en-us', {minimumFractionDigits: 2, maximumFractionDigits: 2})
+    if (money < 1000000) return (money / 1000).toLocaleString('en-us', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    }) + "K"
+    if (money < 1000000000) return (money / 1000000).toLocaleString('en-us', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    }) + "M"
+    if (money < 1000000000000) return (money / 1000000000).toLocaleString('en-us', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    }) + "Mrd"
 }
 
 function getAmountBids(bids: Record<string, number>) {
@@ -211,8 +229,7 @@ function getAmountBids(bids: Record<string, number>) {
 }
 
 
-
-function AuctionCard({ auction, router }: { auction: Page, router : AppRouterInstance }) {
+function AuctionCard({auction, router}: { auction: Page, router: AppRouterInstance }) {
     const itemName = auction.item.displayName ?? auction.item.material;
     const currentPrice = auction.currentBid;
     const startPrice = auction.startBid;
@@ -222,7 +239,7 @@ function AuctionCard({ auction, router }: { auction: Page, router : AppRouterIns
     return (
         <div className="auction-card">
             <img onError={(e => {
-                e.currentTarget.src =`https://img.mc-api.io/${auction.item.material.toLowerCase()}.png`
+                e.currentTarget.src = `https://img.mc-api.io/${auction.item.material.toLowerCase()}.png`
             })} loading={"lazy"} src={img}/>
             <h2 className="auction-title">{itemName}</h2>
             <div className="auction-details">
@@ -237,8 +254,10 @@ function AuctionCard({ auction, router }: { auction: Page, router : AppRouterIns
                 </p>
             </div>
 
-            <button className="auction-button" onClick={() =>  router.push(`/opsucht/item?data=${window.btoa(JSON.stringify(auction))}`)
-            }>Informationen</button>
+            <button className="auction-button"
+                    onClick={() => router.push(`/opsucht/item?data=${window.btoa(JSON.stringify(auction))}`)
+                    }>Informationen
+            </button>
         </div>
     );
 }
@@ -250,9 +269,6 @@ const getItemImage = (auction: Page) => {
 
 const getItemIcon = (item: Item) => {
     if (item.icon && item.icon.trim() !== "") return item.icon;
-    const normalized = item.displayName?.toLowerCase().
-    replace(/[´’']/g, "").
-    replace(/\s+/g, "_").
-    replace(/[^a-z0-9_]/g, "") || "";
+    const normalized = item.displayName?.toLowerCase().replace(/[´’']/g, "").replace(/\s+/g, "_").replace(/[^a-z0-9_]/g, "") || "";
     return `/custom-items/${normalized}.png`;
 };

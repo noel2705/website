@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { Page } from '../types';
+import { Page } from '../auction/types';
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -14,9 +14,7 @@ import {
     Legend,
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
-import {Item} from "@/app/opsuchtTemp/types";
-import Auction from "@/app/opsuchtTemp/page";
-import {filter} from "eslint-config-next";
+import {Item} from "../auction/types";
 
 ChartJS.register(
     CategoryScale,
@@ -84,29 +82,25 @@ export default function ItemInfo() {
 
     useEffect(() => {
         const interval = setInterval(async () => {
-
             const res = await fetch("https://api.opsucht.net/auctions/active");
             const data2: Page[] = await res.json();
 
-           const newData = data2.find(a => {
-                return a.uid === data?.uid
-            })
+            const newData = data2.find(a => a.uid === data?.uid);
 
-            setData(newData ?? data)
+            if (newData) {
+                setData(prev => ({ ...prev, ...newData }));
+            }
 
-            const search = searchParams.get('data');
-            if (!search) return;
+            if (newData?.bids) {
+                const uuids = Object.keys(newData.bids);
+                resolver.getNames(uuids).then(setNames);
+            }
 
-            const decoded = atob(search);
-            const parsed: Page = JSON.parse(decoded);
-            setData(parsed);
+        }, 10000);
+        return () => clearInterval(interval);
+    });
 
-            const uuids = parsed.bids ? Object.keys(parsed.bids) : [];
-            resolver.getNames(uuids).then(setNames);
 
-        }, 10000)
-        return () => clearInterval(interval)
-    })
 
     useEffect(() => {
         const search = searchParams.get('data');
@@ -119,15 +113,12 @@ export default function ItemInfo() {
         const uuids = parsed.bids ? Object.keys(parsed.bids) : [];
         resolver.getNames(uuids).then(setNames);
 
-        // Seller-Name auflösen
         resolver.getName(parsed.seller).then(setSellerName);
     }, [searchParams]);
 
     if (!data) return <p className="p-4 text-gray-500">Lade…</p>;
-
-    // Bieter-Liste: absteigend nach Betrag
     const sortedBidsForList = Object.entries(data.bids).sort((a, b) => b[1] - a[1]);
-    // Preisverlauf-Kurve: aufsteigend nach Betrag (links = klein, rechts = groß)
+
     const sortedBidsForChart = Object.entries(data.bids).sort((a, b) => a[1] - b[1]);
 
     const chartData = {
@@ -166,9 +157,7 @@ export default function ItemInfo() {
 
     return (
         <div className="p-6 space-y-6 max-w-5xl mx-auto">
-            {/* Header mit Überschrift + Bild darunter */}
             <div className="rounded-lg overflow-hidden flex flex-col items-center">
-                {/* Überschrift oben */}
                 <h1 className="text-5xl font-bold text-white bg-black bg-opacity-50 px-4 py-2 rounded mb-4">
                     {data.item.displayName ?? data.item.material}
                 </h1>
@@ -192,7 +181,7 @@ export default function ItemInfo() {
 
             <div className="flex items-center gap-4 mb-4">
                 <button
-                    onClick={() => router.push('/opsucht')}
+                    onClick={() => router.push('/opsucht/auction')}
                     className="px-4 py-2 bg-gray-900 hover:bg-gray-700 text-white rounded"
                 >
                     Zurück
@@ -223,7 +212,6 @@ export default function ItemInfo() {
                 </ul>
             </div>
 
-            {/* Preisverlauf-Kurve */}
             <div className="bg-gray-900 p-4 rounded shadow">
                 <Line data={chartData} options={chartOptions} />
             </div>

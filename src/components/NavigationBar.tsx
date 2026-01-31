@@ -12,12 +12,11 @@ export default function NavigationBar() {
             {/* LINKS */}
             <ul className="list">
                 <li><NavLink href="/" pathname={pathname}>Home</NavLink></li>
-                <li><NavLink href="/users" pathname={pathname}>Users</NavLink></li>
                 <li><NavLink href="/todo" pathname={pathname}>Todo</NavLink></li>
-                <li><NavLink href="/opsucht" pathname={pathname}>Auktionen</NavLink></li>
+                <li><NavLink href="/opsucht/auction" pathname={pathname}>Auktionen</NavLink></li>
+                <li><NavLink href="/opsucht/job-stats" pathname={pathname}>Job Statistiken</NavLink></li>
             </ul>
 
-            {/* RECHTS */}
             <div className="right">
                 <Link href="/login" className="loginIcon">
                     👤
