@@ -122,21 +122,26 @@ export class PriceChart extends React.Component<PriceChartProps, PriceChartState
                                 <YAxis stroke="#fff" tickFormatter={(v) => v.toFixed(2)} />
                                 {/* Tooltip */}
                                 <Tooltip
+                                    // Typ genau übernehmen, um TypeScript glücklich zu machen
                                     formatter={(
-                                        value: string | number,
-                                        name: string,
-                                        item: any,
-                                        index: number,
-                                        payload: readonly { value: string | number; name: string }[]
+                                        value?: string | number,
+                                        name?: string,
+                                        item?: any,
+                                        index?: number,
+                                        payload?: readonly { value?: string | number; name?: string }[]
                                     ) => {
                                         // Value formatieren
                                         const formattedValue =
-                                            typeof value === 'number' ? value.toFixed(2) : value ?? '-';
+                                            value == null
+                                                ? '-'
+                                                : typeof value === 'number'
+                                                    ? value.toFixed(2)
+                                                    : value;
 
-                                        // Name ggf. anpassen
-                                        const formattedName = name ? name.toUpperCase() : '';
+                                        // Name formatieren
+                                        const formattedName = name ?? '';
 
-                                        // Als Array zurückgeben: [value, name]
+                                        // Array zurückgeben für Tooltip
                                         return [formattedValue, formattedName];
                                     }}
                                     labelFormatter={(label: React.ReactNode) => {
@@ -152,6 +157,7 @@ export class PriceChart extends React.Component<PriceChartProps, PriceChartState
                                         padding: '0.5rem 1rem',
                                     }}
                                 />
+
 
 
 
