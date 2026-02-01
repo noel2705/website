@@ -105,14 +105,21 @@
     object-fit: contain;
 }
 
+/* ---------------- Item Name ---------------- */
 .item-name {
     margin-bottom: 0.3rem;
     font-weight: bold;
     color: white;
-    white-space: nowrap;
+    white-space: normal;      /* Zeilenumbruch erlauben */
     overflow: hidden;
-    text-overflow: ellipsis;
+    text-overflow: ellipsis;  /* abgeschnittene letzte Zeile mit "..." */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;    /* max. 2 Zeilen */
+    -webkit-box-orient: vertical;
+    word-wrap: break-word;    /* lange Wörter umbrechen */
+    font-size: 0.9rem;
 }
+
 
 .buy-price {
     color: #dc2626; /* Best Buy = Rot */
