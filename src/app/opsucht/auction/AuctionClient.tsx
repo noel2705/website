@@ -267,7 +267,7 @@ function AuctionCard({auction, router}: { auction: Page, router: AppRouterInstan
             </div>
 
             <button className="auction-button"
-                    onClick={() => router.push(`/opsucht/item?data=${window.btoa(JSON.stringify(auction))}`)
+                    onClick={() => router.push(`/opsucht/auction/item?data=${window.btoa(JSON.stringify(auction))}`)
                     }>Informationen
             </button>
         </div>

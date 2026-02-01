@@ -103,8 +103,8 @@ const Page: React.FC = () => {
                         style={styles.input}
                     />
                     <p style={{ color: '#8ab4ff' }}>Shards aus Diamond: {diamond.shards.toFixed(2)}</p>
-                    <p style={{ color: 'red' }}>Kaufpreis: {formatMoney(diamond.priceBuy)} Dias</p>
-                    <p style={{ color: 'lightgreen' }}>Verkaufspreis: {formatMoney(diamond.priceSell)} Dias</p>
+                    <p style={{ color: 'red' }}>Kaufpreis: {formatMoney(diamond.priceBuy)} $</p>
+                    <p style={{ color: 'lightgreen' }}>Verkaufspreis: {formatMoney(diamond.priceSell)} $</p>
                 </div>
 
                 {/* Netherite Ingot */}
@@ -119,8 +119,8 @@ const Page: React.FC = () => {
                         style={styles.input}
                     />
                     <p style={{ color: '#8ab4ff' }}>Shards aus Netherite: {netherite.shards.toFixed(2)}</p>
-                    <p style={{ color: 'red' }}>Kaufpreis: {formatMoney(netherite.priceBuy)} Dias</p>
-                    <p style={{ color: 'lightgreen' }}>Verkaufspreis: {formatMoney(netherite.priceSell)} Dias</p>
+                    <p style={{ color: 'red' }}>Kaufpreis: {formatMoney(netherite.priceBuy)} $</p>
+                    <p style={{ color: 'lightgreen' }}>Verkaufspreis: {formatMoney(netherite.priceSell)} $</p>
                 </div>
 
                 {/* Bank */}
