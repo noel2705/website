@@ -115,17 +115,17 @@
 }
 
 .buy-price {
-    color: #16a34a;
-    margin: 0.2rem 0;
-    font-weight: bold;
-    text-shadow: 0 0 4px #16a34a33;
-}
-
-.sell-price {
-    color: #dc2626;
+    color: #dc2626; /* Best Buy = Rot */
     margin: 0.2rem 0;
     font-weight: bold;
     text-shadow: 0 0 4px #dc262633;
+}
+
+.sell-price {
+    color: #16a34a; /* Best Sell = Grün */
+    margin: 0.2rem 0;
+    font-weight: bold;
+    text-shadow: 0 0 4px #16a34a33;
 }
 
 .loading-text {
@@ -159,22 +159,35 @@
     color: white;
     position: relative;
     box-shadow: 0 0 20px rgba(79,70,229,0.4);
+    overflow: hidden;
 }
 
-.modal-close {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    background: #dc2626;
-    border: none;
-    color: white;
-    font-weight: bold;
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
-    cursor: pointer;
+/* ---------------- Recharts Linienpunkte ---------------- */
+.chart-line-dot {
+    stroke: none !important; /* entfernt weißen Rand */
 }
 
-/* ---------------- Recharts Tooltip Anpassung ---------------- */
+/* ---------------- Recharts Linien ---------------- */
+.chart-line-buy {
+    stroke: #dc2626; /* Best Buy = Rot */
+    filter: drop-shadow(0 0 6px #dc2626);
+}
+
+.chart-line-sell {
+    stroke: #16a34a; /* Best Sell = Grün */
+    filter: drop-shadow(0 0 6px #16a34a);
+}
+
+/* ---------------- Line-Hintergrund Areas ---------------- */
+.chart-area-buy {
+    fill: rgba(220,38,38,0.3); /* rot transparent */
+}
+
+.chart-area-sell {
+    fill: rgba(22,163,74,0.3); /* grün transparent */
+}
+
+/* ---------------- Tooltip ---------------- */
 .recharts-tooltip-wrapper {
     background-color: #1f1f1f !important;
     border: 1px solid #4f46e5;
@@ -182,6 +195,16 @@
     box-shadow: 0 2px 8px rgba(0,0,0,0.6);
     color: white !important;
     font-size: 0.9rem;
+}
+
+/* ---------------- Punktnamen / Text innerhalb Box ---------------- */
+.chart-label {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 80px; /* innerhalb Box */
+    font-size: 0.85rem;
+    fill: #fff;
 }
 
 /* ---------------- Responsive ---------------- */

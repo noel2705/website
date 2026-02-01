@@ -13,12 +13,16 @@ import {
 import './MarketClient.css';
 
 // ---------------- TYPES ----------------
+// Repräsentiert eine einzelne Order im Markt
 type Order = { orderSide: 'BUY' | 'SELL'; activeOrders: number; price: number };
+// Repräsentiert einen Artikel im Markt mit allen Orders
 type MarketItem = { opsuchtName: string; orders: Order[] };
+// Struktur für alle Markt-Daten nach Kategorie und Item
 type MarketData = Record<string, Record<string, MarketItem>>;
+// Ein Datenpunkt für den Preis-Chart (beste Buy/Sell Preise pro Tag)
 type DailyPricePoint = { timestamp: string; bestBuy: number; bestSell: number };
 
-// ---------------- PRICE CHART ----------------
+// ---------------- PRICE CHART COMPONENT ----------------
 type PriceChartProps = { material: string; onClose: () => void };
 type PriceChartState = { data: DailyPricePoint[] | null; loading: boolean; error: string | null };
 
@@ -28,24 +32,27 @@ export class PriceChart extends React.Component<PriceChartProps, PriceChartState
         this.state = { data: null, loading: true, error: null };
     }
 
+    // Daten beim Mounten laden
     componentDidMount() {
         this.fetchDailyData();
     }
 
+    // API-Aufruf, um die letzten 6 Tage der Preis-History zu laden
     async fetchDailyData() {
         try {
             const res = await fetch(`https://api.opsucht.net/market/history/${this.props.material}`);
             if (!res.ok) throw new Error('Fehler beim Laden der Preis-History');
-            const raw = await res.json();
 
+            const raw = await res.json();
             if (!raw.DAILY || !Array.isArray(raw.DAILY)) throw new Error('Keine Daten verfügbar');
 
             const last6 = raw.DAILY.slice(-6);
 
+            // Daten in Format für Recharts umwandeln
             const data: DailyPricePoint[] = last6.map((day: any) => ({
                 timestamp: day.timestamp,
-                bestBuy: Number(day.avgPrice),    // Grün
-                bestSell: Number(day.maxPrice),   // Rot
+                bestBuy: Number(day.maxPrice),    // Best Buy (ROT im Chart)
+                bestSell: Number(day.avgPrice),   // Best Sell (GRÜN im Chart)
             }));
 
             this.setState({ data });
@@ -59,8 +66,11 @@ export class PriceChart extends React.Component<PriceChartProps, PriceChartState
     render() {
         const { onClose, material } = this.props;
         const { data, loading, error } = this.state;
+
+        // Bild-URL für das Item
         const imageUrl = `https://img.mc-api.io/${material.toLowerCase()}.png`;
 
+        // Datum für X-Achse formatieren
         const formatDate = (t: string) => {
             const d = new Date(t);
             return `${d.getDate()}.${d.getMonth() + 1}.${d.getFullYear()}`;
@@ -68,19 +78,9 @@ export class PriceChart extends React.Component<PriceChartProps, PriceChartState
 
         return (
             <div className="modal-overlay">
-                <div
-                    className="modal-content"
-                    style={{
-                        width: '100vw',
-                        height: '100vh',
-                        borderRadius: 0,
-                        padding: '2rem',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        background: '#121212',
-                    }}
-                >
-                    {/* Header */}
+                <div className="modal-content">
+
+                    {/* ---------------- HEADER ---------------- */}
                     <div style={{ display: 'flex', alignItems: 'center', marginBottom: '2rem' }}>
                         <img
                             src={imageUrl}
@@ -106,66 +106,94 @@ export class PriceChart extends React.Component<PriceChartProps, PriceChartState
                         </button>
                     </div>
 
-                    {/* Chart */}
+                    {/* ---------------- CHART ---------------- */}
                     {loading && <p style={{ color: '#fff', textAlign: 'center' }}>Lade...</p>}
                     {error && <p style={{ color: '#fff', textAlign: 'center' }}>Fehler: {error}</p>}
 
                     {data && data.length > 0 && (
-                        <ResponsiveContainer width="100%" height="100%">
+                        <ResponsiveContainer width="100%" height={320}>
                             <LineChart data={data} margin={{ top: 20, right: 40, left: 20, bottom: 30 }}>
+                                {/* Gitternetz */}
                                 <CartesianGrid stroke="#444" strokeDasharray="5 5" />
+                                {/* X-Achse */}
                                 <XAxis dataKey="timestamp" stroke="#fff" tickFormatter={formatDate} />
+                                {/* Y-Achse */}
                                 <YAxis stroke="#fff" tickFormatter={(v) => v.toFixed(2)} />
+                                {/* Tooltip */}
                                 <Tooltip
+                                    // Wie die Werte im Tooltip formatiert werden (z.B. 123.456 → 123.46)
                                     formatter={(value: number) => value.toFixed(2)}
+
+                                    // Wie das Label (hier das Datum der X-Achse) angezeigt wird
                                     labelFormatter={formatDate}
+
+                                    // Stil des Tooltips selbst
                                     contentStyle={{
-                                        backgroundColor: '#1f1f1f',
-                                        border: '1px solid #4f46e5',
-                                        color: '#fff',
-                                        fontSize: '0.9rem',
-                                        borderRadius: '8px',
-                                        padding: '0.5rem 1rem',
+                                        backgroundColor: '#1f1f1f', // Hintergrund dunkelgrau
+                                        border: '1px solid #4f46e5', // lila Rahmen um Tooltip
+                                        fontSize: '0.9rem',           // Schriftgröße des Inhalts
+                                        borderRadius: '8px',          // abgerundete Ecken
+                                        padding: '0.5rem 1rem',       // Innenabstand oben/unten 0.5rem, links/rechts 1rem
                                     }}
                                 />
 
-                                {/* Gradient Areas */}
+                                {/* ---------------- Gradient Areas ---------------- */}
                                 <defs>
                                     <linearGradient id="gradBuy" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="0%" stopColor="#16a34a" stopOpacity={0.4} />
-                                        <stop offset="100%" stopColor="#16a34a" stopOpacity={0.05} />
+                                        <stop offset="0%" stopColor="#dc2626" stopOpacity={0.4} />   {/* ROT */}
+                                        <stop offset="100%" stopColor="#dc2626" stopOpacity={0.05} />
                                     </linearGradient>
                                     <linearGradient id="gradSell" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="0%" stopColor="#dc2626" stopOpacity={0.4} />
-                                        <stop offset="100%" stopColor="#dc2626" stopOpacity={0.05} />
+                                        <stop offset="0%" stopColor="#16a34a" stopOpacity={0.4} />   {/* GRÜN */}
+                                        <stop offset="100%" stopColor="#16a34a" stopOpacity={0.05} />
                                     </linearGradient>
                                 </defs>
 
-                                <Area type="monotone" dataKey="bestBuy" stroke={null} fill="url(#gradBuy)" />
-                                <Area type="monotone" dataKey="bestSell" stroke={null} fill="url(#gradSell)" />
+                                {/* Hintergrund-Flächen */}
+                                <Area
+                                    dataKey="bestBuy"
+                                    fill="url(#gradBuy)"
+                                    stroke="none"
+                                    tooltipType="none"
+                                />
 
+                                <Area
+                                    dataKey="bestSell"
+                                    fill="url(#gradSell)"
+                                    stroke="none"
+                                    tooltipType="none"
+                                />
+
+
+                                {/* ---------------- LINIEN ---------------- */}
                                 <Line
                                     type="monotone"
                                     dataKey="bestBuy"
-                                    stroke="#16a34a"
+                                    stroke="#dc2626"           // Linie ROT
                                     strokeWidth={3}
-                                    dot={{ r: 6, stroke: '#fff', strokeWidth: 1 }}
-                                    activeDot={{ r: 10 }}
+                                    dot={{ r: 6, fill: '#ffffff', stroke: 'none' }}
+                                    activeDot={{ r: 8, fill: '#dc2626', stroke: 'none' }} // Punkt ROT
                                     name="Best Buy"
-                                    style={{ filter: 'drop-shadow(0 0 6px #16a34a)' }}
+                                    style={{ filter: 'drop-shadow(0 0 6px #dc2626)' }}   // Shadow ROT
                                 />
+
                                 <Line
                                     type="monotone"
                                     dataKey="bestSell"
-                                    stroke="#dc2626"
+                                    stroke="#16a34a"           // Linie GRÜN
                                     strokeWidth={3}
-                                    dot={{ r: 6, stroke: '#fff', strokeWidth: 1 }}
-                                    activeDot={{ r: 10 }}
+                                    dot={{ r: 6, fill: '#ffffff', stroke: 'none' }}
+                                    activeDot={{ r: 8, fill: '#16a34a', stroke: 'none' }} // Punkt GRÜN
                                     name="Best Sell"
-                                    style={{ filter: 'drop-shadow(0 0 6px #dc2626)' }}
+                                    style={{ filter: 'drop-shadow(0 0 6px #16a34a)' }}   // Shadow GRÜN
                                 />
                             </LineChart>
                         </ResponsiveContainer>
+                    )}
+
+                    {/* Keine Daten verfügbar */}
+                    {!loading && (!data || data.length === 0) && (
+                        <p style={{ color: '#fff', textAlign: 'center' }}>Keine Daten verfügbar</p>
                     )}
                 </div>
             </div>
@@ -173,7 +201,7 @@ export class PriceChart extends React.Component<PriceChartProps, PriceChartState
     }
 }
 
-// ---------------- MARKET CLIENT ----------------
+// ---------------- MARKET CLIENT COMPONENT ----------------
 type MarketState = {
     marketData: MarketData | null;
     loading: boolean;
@@ -197,13 +225,16 @@ export default class MarketClient extends React.Component<{}, MarketState> {
         window.removeEventListener('scroll', this.handleScroll);
     }
 
+    // ---------------- API CALL ----------------
     async fetchMarketData() {
         try {
             const res = await fetch('https://api.opsucht.net/market/prices');
             if (!res.ok) throw new Error('Fehler beim Laden der Marktdaten');
-            const raw = await res.json();
 
+            const raw = await res.json();
             const formatted: MarketData = {};
+
+            // Rohdaten in internes Format umwandeln
             Object.keys(raw).forEach(cat => {
                 formatted[cat] = {};
                 Object.keys(raw[cat]).forEach(item => {
@@ -219,6 +250,7 @@ export default class MarketClient extends React.Component<{}, MarketState> {
         }
     }
 
+    // Liefert den besten Buy/Sell Preis für ein Item
     getBestPrice(orders: Order[], side: 'BUY' | 'SELL'): number | null {
         const filtered = orders.filter(o => o.orderSide === side);
         if (!filtered.length) return null;
@@ -227,11 +259,13 @@ export default class MarketClient extends React.Component<{}, MarketState> {
             : Math.min(...filtered.map(o => o.price));
     }
 
+    // Scroll zu Kategorie
     scrollToCategory = (cat: string) => {
         const el = document.getElementById(cat);
         if (el) el.scrollIntoView({ behavior: 'smooth' });
     };
 
+    // Scroll-Event, um aktive Kategorie zu setzen
     handleScroll = () => {
         if (!this.state.marketData) return;
         const cats = Object.keys(this.state.marketData);
@@ -257,9 +291,9 @@ export default class MarketClient extends React.Component<{}, MarketState> {
 
         return (
             <div className="market-container">
-                <h2 className="market-title">OPSCHUT Market</h2>
+                <h2 className="market-title">OPSUCHT Market</h2>
 
-                {/* Tabs */}
+                {/* ---------------- TABS ---------------- */}
                 <div className="market-tabs">
                     {categories.map(cat => (
                         <button
@@ -272,7 +306,7 @@ export default class MarketClient extends React.Component<{}, MarketState> {
                     ))}
                 </div>
 
-                {/* Kategorien */}
+                {/* ---------------- MARKET GRID ---------------- */}
                 {categories.map(cat => (
                     <div key={cat} id={cat} className="market-category">
                         <h3 className="category-title">{cat}</h3>
@@ -298,12 +332,8 @@ export default class MarketClient extends React.Component<{}, MarketState> {
                                         <h4 className="item-name" title={item.opsuchtName}>
                                             {item.opsuchtName}
                                         </h4>
-                                        <p className="buy-price" style={{ color: '#16a34a' }}>
-                                            Best Buy: {formatMoney(bestBuy) ?? '–'}
-                                        </p>
-                                        <p className="sell-price" style={{ color: '#dc2626' }}>
-                                            Best Sell: {formatMoney(bestSell) ?? '–'}
-                                        </p>
+                                        <p className="buy-price">Best Buy: {formatMoney(bestBuy) ?? '–'}</p>
+                                        <p className="sell-price">Best Sell: {formatMoney(bestSell) ?? '–'}</p>
                                     </div>
                                 );
                             })}
@@ -311,25 +341,19 @@ export default class MarketClient extends React.Component<{}, MarketState> {
                     </div>
                 ))}
 
-                {/* PriceChart Modal Vollbild */}
+                {/* ---------------- PRICE CHART MODAL ---------------- */}
                 {selectedItem && <PriceChart material={selectedItem} onClose={() => this.setState({ selectedItem: null })} />}
             </div>
         );
     }
 }
 
-const formatMoney = (money: number) => {
-    if (money < 1000) return money.toLocaleString('en-us', {minimumFractionDigits: 2, maximumFractionDigits: 2})
-    if (money < 1000000) return (money / 1000).toLocaleString('en-us', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-    }) + "K"
-    if (money < 1000000000) return (money / 1000000).toLocaleString('en-us', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-    }) + "M"
-    if (money < 1000000000000) return (money / 1000000000).toLocaleString('en-us', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-    }) + "Mrd"
-}
+// ---------------- HELPER ----------------
+// Formatierung von Geldbeträgen
+const formatMoney = (money: number | null) => {
+    if (money === null) return null;
+    if (money < 1000) return money.toLocaleString('en-us', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    if (money < 1000000) return (money / 1000).toLocaleString('en-us', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "K";
+    if (money < 1000000000) return (money / 1000000).toLocaleString('en-us', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "M";
+    return (money / 1000000000).toLocaleString('en-us', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "Mrd";
+};
