@@ -114,7 +114,18 @@ export class PriceChart extends React.Component<PriceChartProps, PriceChartState
                                 <XAxis dataKey="timestamp" stroke="#fff" tickFormatter={formatDate} />
                                 <YAxis stroke="#fff" tickFormatter={(v) => v.toFixed(2)} />
 
-
+                                <Tooltip
+                                    formatter={(value: number) => value.toFixed(2)}
+                                    labelFormatter={formatDate}
+                                    contentStyle={{
+                                        backgroundColor: '#1f1f1f',
+                                        border: '1px solid #4f46e5',
+                                        color: '#fff',
+                                        fontSize: '0.9rem',
+                                        borderRadius: '8px',
+                                        padding: '0.5rem 1rem',
+                                    }}
+                                />
 
                                 <defs>
                                     <linearGradient id="gradBuy" x1="0" y1="0" x2="0" y2="1">
