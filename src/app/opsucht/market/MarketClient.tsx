@@ -124,7 +124,7 @@ export class PriceChart extends React.Component<PriceChartProps, PriceChartState
                                     // Wie die Werte im Tooltip formatiert werden (z.B. 123.456 → 123.46)
                                     formatter={(value: number) => value.toFixed(2)}
 
-                                    // Wie das Label (hier das Datum der X-Achse) angezeigt wird
+                                    // Wie fdas Label (hier das Datum der X-Achse) angezeigt wird
                                     labelFormatter={formatDate}
 
                                     // Stil des Tooltips selbst
