@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Ghostify App",
-  description: "Created by nospighost",
+  title: "OPSUCHT Dashboard",
+  description: "Created by nospighost, Fabian260108",
     icons: {
         icon: "/ghost.png",
     },

@@ -1,24 +1,25 @@
+
 .auction-grid {
     display: flex;
     flex-wrap: wrap;
-    gap: 20px;          /* Abstand zwischen den Karten */
-    padding: 25px;
-    background: dimgrey;
-    justify-content: flex-start;
+    gap: 20px;
+    padding: 50px;
+    background: #1a1a1a;
+    justify-content: center;
 }
 
 .auction-card {
-    background: #444;
+    background: #1f1f1f;
     padding: 15px;
     border-radius: 8px;
-    width: 250px;       /* etwas breiter */
-    height: 350px;      /* gleiche Höhe für alle Karten */
+    width: 250px;
+    height: 350px;
     color: white;
     display: flex;
     flex-direction: column;
     gap: 10px;
     flex-shrink: 0;
-    box-sizing: border-box; /* Padding berücksichtigen */
+    box-sizing: border-box;
 }
 
 .auction-card img:first-child {
@@ -26,7 +27,7 @@
     height: 80px;
     align-items: center;
     justify-content: center;
-    object-fit: contain;  /* Bild bleibt proportional */
+    object-fit: contain;
     border-radius: 4px;
 }
 
@@ -43,7 +44,7 @@
 }
 
 .auction-button {
-    margin-top: auto;   /* Button immer unten */
+    margin-top: auto;
     background: #666;
     border: none;
     padding: 8px;
@@ -61,14 +62,13 @@
     padding: 10px;
 }
 
-/* Alle Buttons gleich groß, Bild oben zentriert */
 .categorySwitcher button {
     display: flex;
-    flex-direction: column; /* Bild oben, Text darunter */
-    align-items: center;    /* zentriert horizontal */
+    flex-direction: column;
+    align-items: center;
     justify-content: center;
-    width: 120px;           /* feste Breite für alle */
-    height: 100px;          /* feste Höhe für alle */
+    width: 120px;
+    height: 100px;
     padding: 8px;
     border: none;
     background-color: #666;
@@ -79,9 +79,9 @@
 }
 
 .categorySwitcher button img {
-    width: 40px;            /* Icon-Größe */
+    width: 40px;
     height: 40px;
-    margin-bottom: 5px;     /* Abstand Text unter Icon */
+    margin-bottom: 5px;
 }
 
 .categorySwitcher button:hover {
@@ -114,7 +114,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: dimgrey;
+    background: #1a1a1a;
     padding: 10px;
     gap: 15px;
 }
@@ -123,22 +123,22 @@
 .categorySwitcher {
     display: flex;
     flex-wrap: wrap;
+    background-color: #1a1a1a;
     gap: 10px;
 }
 
-/* Sortierung bleibt kompakt rechts */
 .sort select {
     height: 42px;
     padding: 6px 10px;
     border-radius: 4px;
     border: 2px solid #dadada;
-    background-color: #919191;
+    background-color: #1a1a1a;
     color: white;
     cursor: pointer;
 }
 
 .search-row {
-    background: dimgrey;
+    background: #1a1a1a;
     padding: 12px 25px;
     border-top: 2px solid #555;
     border-bottom: 2px solid #555;

@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { Page } from '../auction/types';
+import { Page } from '../types';
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -14,7 +14,7 @@ import {
     Legend,
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
-import {Item} from "../auction/types";
+import {Item} from "../types";
 
 ChartJS.register(
     CategoryScale,

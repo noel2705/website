@@ -20,7 +20,7 @@
 
 /* ===== BASIS-FARBEN ===== */
 :root {
-  --background: #696969;      /* dimgray */
+  --background: #1a1a1a;
   --foreground: #ffffff;
 
   --card: #4f4f4f;
@@ -32,10 +32,10 @@
 
 /* Optional: Dark = gleich wie normal */
 .dark {
-  --background: #696969;
+  --background: #404040;
   --foreground: #ffffff;
 
-  --card: #4f4f4f;
+  --card: #404040;
   --card-foreground: #ffffff;
 
   --border: #7a7a7a;
