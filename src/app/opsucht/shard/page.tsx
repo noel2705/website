@@ -1,33 +1,49 @@
 'use client'
 
+import { CSSProperties } from 'react';
 import React, { useState, useEffect } from 'react';
 
-const Page = () => {
-    const [rates, setRates] = useState({});
-    const [marketPrices, setMarketPrices] = useState({});
-    const [amountDiamond, setAmountDiamond] = useState(0);
-    const [amountNetherite, setAmountNetherite] = useState(0);
-    const [bankShards, setBankShards] = useState(0);
+// ---------------- TYPES ----------------
+type Rate = {
+    [key: string]: number;
+};
 
-    // Shard-Kurse
+type MarketPrice = {
+    [key: string]: {
+        buy: number;
+        sell: number;
+    };
+};
+
+// ---------------- COMPONENT ----------------
+const Page: React.FC = () => {
+    const [rates, setRates] = useState<Rate>({});
+    const [marketPrices, setMarketPrices] = useState<MarketPrice>({});
+    const [amountDiamond, setAmountDiamond] = useState<number>(0);
+    const [amountNetherite, setAmountNetherite] = useState<number>(0);
+    const [bankShards, setBankShards] = useState<number>(0);
+
+    // ---------------- Shard-Kurse laden ----------------
     useEffect(() => {
         fetch('https://api.opsucht.net/merchant/rates')
             .then(res => res.json())
-            .then(data => {
-                const rateObj = {};
-                data.forEach(item => rateObj[item.source] = item.exchangeRate);
+            .then((data: { source: string; exchangeRate: number }[]) => {
+                const rateObj: Rate = {};
+                data.forEach(item => {
+                    rateObj[item.source] = item.exchangeRate;
+                });
                 setRates(rateObj);
             })
             .catch(console.error);
     }, []);
 
-    // Marktpreise (Buy & Sell)
+    // ---------------- Marktpreise laden ----------------
     useEffect(() => {
-        const fetchPrice = async (item) => {
+        const fetchPrice = async (item: string) => {
             try {
                 const res = await fetch(`https://api.opsucht.net/market/price/${item}`);
                 const data = await res.json();
-                const orders = Object.values(data)[0];
+                const orders = Object.values(data)[0] as { orderSide: 'BUY' | 'SELL'; price: number }[];
                 const buy = orders.find(o => o.orderSide === 'BUY')?.price || 0;
                 const sell = orders.find(o => o.orderSide === 'SELL')?.price || 0;
                 return { buy, sell };
@@ -45,18 +61,19 @@ const Page = () => {
         loadPrices();
     }, []);
 
-    // BankShards aus SessionStorage laden
+    // ---------------- BankShards aus SessionStorage laden ----------------
     useEffect(() => {
         const storedShards = sessionStorage.getItem('bankShards');
         if (storedShards) setBankShards(Number(storedShards));
     }, []);
 
-    // BankShards speichern
+    // ---------------- BankShards speichern ----------------
     useEffect(() => {
-        sessionStorage.setItem('bankShards', bankShards);
+        sessionStorage.setItem('bankShards', String(bankShards));
     }, [bankShards]);
 
-    const calculate = (amount, item) => {
+    // ---------------- Berechnung ----------------
+    const calculate = (amount: number, item: string) => {
         const rate = rates[item] || 0;
         const shards = amount * rate;
         const priceBuy = rate > 0 ? (shards / rate) * (marketPrices[item]?.buy || 0) : 0;
@@ -66,9 +83,9 @@ const Page = () => {
 
     const diamond = calculate(amountDiamond, 'diamond_block');
     const netherite = calculate(amountNetherite, 'netherite_ingot');
-
     const totalShardsAfterBuy = bankShards + diamond.shards + netherite.shards;
 
+    // ---------------- RENDER ----------------
     return (
         <div style={styles.container}>
             <h1 style={styles.title}>Shard Rechner + Bank</h1>
@@ -125,7 +142,8 @@ const Page = () => {
     );
 };
 
-const styles = {
+// ---------------- STYLES ----------------
+const styles: { [key: string]: CSSProperties } = {
     container: {
         padding: '30px',
         backgroundColor: '#1a1a1a',
@@ -133,7 +151,10 @@ const styles = {
         minHeight: '100vh',
         fontFamily: 'sans-serif',
     },
-    title: { marginBottom: '20px', textAlign: 'center' },
+    title: {
+        marginBottom: '20px',
+        textAlign: 'center',
+    },
     row: {
         display: 'flex',
         gap: '20px',
@@ -160,7 +181,8 @@ const styles = {
     },
 };
 
-const formatMoney = (money) => {
+// ---------------- FORMAT MONEY ----------------
+const formatMoney = (money: string | number) => {
     money = Number(money);
     if (money < 1000) return money.toLocaleString('en-us', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     if (money < 1000000) return (money / 1000).toLocaleString('en-us', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "K";

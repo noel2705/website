@@ -76,6 +76,7 @@ export class PriceChart extends React.Component<PriceChartProps, PriceChartState
             return `${d.getDate()}.${d.getMonth() + 1}.${d.getFullYear()}`;
         };
 
+        // @ts-ignore
         return (
             <div className="modal-overlay">
                 <div className="modal-content">
@@ -121,21 +122,41 @@ export class PriceChart extends React.Component<PriceChartProps, PriceChartState
                                 <YAxis stroke="#fff" tickFormatter={(v) => v.toFixed(2)} />
                                 {/* Tooltip */}
                                 <Tooltip
-                                    // Wie die Werte im Tooltip formatiert werden (z.B. 123.456 → 123.46)
-                                    formatter={(value: number) => value.toFixed(2)}
+                                    formatter={(
+                                        value: string | number,
+                                        name: string,
+                                        item: any,
+                                        index: number,
+                                        payload: readonly { value: string | number; name: string }[]
+                                    ) => {
+                                        // Value formatieren
+                                        const formattedValue =
+                                            typeof value === 'number' ? value.toFixed(2) : value ?? '-';
 
-                                    // Wie fdas Label (hier das Datum der X-Achse) angezeigt wird
-                                    labelFormatter={formatDate}
+                                        // Name ggf. anpassen
+                                        const formattedName = name ? name.toUpperCase() : '';
 
-                                    // Stil des Tooltips selbst
+                                        // Als Array zurückgeben: [value, name]
+                                        return [formattedValue, formattedName];
+                                    }}
+                                    labelFormatter={(label: React.ReactNode) => {
+                                        if (typeof label !== 'string') return label;
+                                        const d = new Date(label);
+                                        return `${d.getDate()}.${d.getMonth() + 1}.${d.getFullYear()}`;
+                                    }}
                                     contentStyle={{
-                                        backgroundColor: '#1f1f1f', // Hintergrund dunkelgrau
-                                        border: '1px solid #4f46e5', // lila Rahmen um Tooltip
-                                        fontSize: '0.9rem',           // Schriftgröße des Inhalts
-                                        borderRadius: '8px',          // abgerundete Ecken
-                                        padding: '0.5rem 1rem',       // Innenabstand oben/unten 0.5rem, links/rechts 1rem
+                                        backgroundColor: '#1f1f1f',
+                                        border: '1px solid #4f46e5',
+                                        fontSize: '0.9rem',
+                                        borderRadius: '8px',
+                                        padding: '0.5rem 1rem',
                                     }}
                                 />
+
+
+
+
+
 
                                 {/* ---------------- Gradient Areas ---------------- */}
                                 <defs>
