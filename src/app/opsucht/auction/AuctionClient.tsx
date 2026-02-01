@@ -13,10 +13,7 @@ interface Props {
 export default function AuctionClient({initialAuction}: Props) {
     const [auction, setAuction] = useState<Page[]>(initialAuction);
     const [showAuction, setShowAuction] = useState<Page[]>();
-    const [category, setCategory] = useState(sessionStorage?.getItem("category") || "*");
-    const [searchBar, setSearchbar] = useState(sessionStorage?.getItem("searchBar") || "");
     const [refresh, setRefresh] = useState(Date.now)
-    const [orderBy, setOrderby] = useState(sessionStorage?.getItem("orderBy") || "moneyDesc");
     const router = useRouter()
     const fetchAuctions = async (cat: string) => {
         const url =
@@ -28,6 +25,21 @@ export default function AuctionClient({initialAuction}: Props) {
         setAuction(data);
         sortByAttributes(data);
     };
+
+    const [category, setCategory] = useState("*");
+    const [searchBar, setSearchbar] = useState("");
+    const [orderBy, setOrderby] = useState("moneyDesc");
+
+    useEffect(() => {
+        const storedCategory = sessionStorage.getItem("category");
+        const storedSearchBar = sessionStorage.getItem("searchBar");
+        const storedOrderBy = sessionStorage.getItem("orderBy");
+
+        if (storedCategory) setCategory(storedCategory);
+        if (storedSearchBar) setSearchbar(storedSearchBar);
+        if (storedOrderBy) setOrderby(storedOrderBy);
+    }, []);
+
 
 
     const sortByAttributes = (data: Page[]) => {
