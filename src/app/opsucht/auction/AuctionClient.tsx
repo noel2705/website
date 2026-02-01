@@ -13,10 +13,10 @@ interface Props {
 export default function AuctionClient({initialAuction}: Props) {
     const [auction, setAuction] = useState<Page[]>(initialAuction);
     const [showAuction, setShowAuction] = useState<Page[]>();
-    const [category, setCategory] = useState(sessionStorage.getItem("category") || "*");
-    const [searchBar, setSearchbar] = useState(sessionStorage.getItem("searchBar") || "");
+    const [category, setCategory] = useState(sessionStorage?.getItem("category") || "*");
+    const [searchBar, setSearchbar] = useState(sessionStorage?.getItem("searchBar") || "");
     const [refresh, setRefresh] = useState(Date.now)
-    const [orderBy, setOrderby] = useState(sessionStorage.getItem("orderBy") || "moneyDesc");
+    const [orderBy, setOrderby] = useState(sessionStorage?.getItem("orderBy") || "moneyDesc");
     const router = useRouter()
     const fetchAuctions = async (cat: string) => {
         const url =
