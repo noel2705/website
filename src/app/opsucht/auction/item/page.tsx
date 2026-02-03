@@ -14,7 +14,7 @@ import {
     Legend,
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
-import {Item} from "../types";
+import { Item } from '../types';
 
 ChartJS.register(
     CategoryScale,
@@ -26,14 +26,10 @@ ChartJS.register(
     Legend
 );
 
-
 const decodeBase64Utf8 = <T,>(base64: string): T => {
     try {
-        // ungültige Zeichen entfernen
         const cleaned = base64.replace(/[^A-Za-z0-9+/=]/g, '');
-        // atob in Bytes
         const bytes = Uint8Array.from(atob(cleaned), c => c.charCodeAt(0));
-        // TextDecoder für UTF-8
         const text = new TextDecoder('utf-8').decode(bytes);
         return JSON.parse(text) as T;
     } catch (err) {
@@ -41,12 +37,6 @@ const decodeBase64Utf8 = <T,>(base64: string): T => {
         throw err;
     }
 };
-
-
-
-
-
-
 
 class MinecraftNameResolver {
     private cache: Record<string, string> = {};
@@ -107,7 +97,6 @@ export default function ItemInfo() {
             const data2: Page[] = await res.json();
 
             const newData = data2.find(a => a.uid === data?.uid);
-
             if (newData) {
                 setData(prev => ({ ...prev, ...newData }));
             }
@@ -116,12 +105,10 @@ export default function ItemInfo() {
                 const uuids = Object.keys(newData.bids);
                 resolver.getNames(uuids).then(setNames);
             }
-
         }, 10000);
+
         return () => clearInterval(interval);
-    });
-
-
+    }, [data]);
 
     useEffect(() => {
         const search = searchParams.get('data');
@@ -130,18 +117,14 @@ export default function ItemInfo() {
         const parsed: Page = decodeBase64Utf8<Page>(search);
         setData(parsed);
 
-
-
         const uuids = parsed.bids ? Object.keys(parsed.bids) : [];
         resolver.getNames(uuids).then(setNames);
-
         resolver.getName(parsed.seller).then(setSellerName);
     }, [searchParams]);
 
-
     if (!data) return <p className="p-4 text-gray-500">Lade…</p>;
-    const sortedBidsForList = Object.entries(data.bids).sort((a, b) => b[1] - a[1]);
 
+    const sortedBidsForList = Object.entries(data.bids).sort((a, b) => b[1] - a[1]);
     const sortedBidsForChart = Object.entries(data.bids).sort((a, b) => a[1] - b[1]);
 
     const chartData = {
@@ -184,17 +167,15 @@ export default function ItemInfo() {
                 <h1 className="text-5xl font-bold text-white bg-black bg-opacity-50 px-4 py-2 rounded mb-4">
                     {data.item.displayName ?? data.item.material}
                 </h1>
-
                 <img
                     src={getItemImage(data)}
-                    onError={(e => {
-                        e.currentTarget.src =`https://img.mc-api.io/${data.item.material.toLowerCase()}.png`
-                    })}
+                    onError={(e) => {
+                        e.currentTarget.src = `https://img.mc-api.io/${data.item.material.toLowerCase()}.png`;
+                    }}
                     alt={data.item.displayName ?? data.item.material}
                     className="w-auto max-h-[600px]"
                 />
             </div>
-
 
             <div className="flex flex-wrap gap-6 text-gray-100 text-lg">
                 <p className="font-semibold">Verkäufer: {sellerName}</p>
@@ -211,27 +192,27 @@ export default function ItemInfo() {
                 </button>
             </div>
 
-
-            {(data.item.lore?.length > 0 || (data.item.enchantments && Object.keys(data.item.enchantments).length > 0)) && (
+            {(data.item.lore?.length || Object.keys(data.item.enchantments || {}).length) > 0 && (
                 <div className="flex flex-col md:flex-row gap-6 mt-4 w-full justify-center">
-
                     {data.item.lore?.length > 0 && (
                         <div className="bg-gray-900 bg-opacity-80 p-4 rounded max-w-xl w-full">
                             <h3 className="text-lg font-semibold text-white mb-3">Lore</h3>
                             <ul className="space-y-1 text-sm">
                                 {data.item.lore.map((line, i) => {
-                                    // Signatur
                                     if (line.startsWith("Signiert von")) {
+                                        const namePart = line.split("Signiert von ")[1]?.split(" am ")[0] || '';
+                                        const datePart = line.split(" am ")[1] || '';
                                         return (
                                             <li key={i}>
                                                 <span style={{ color: "#3da5f5" }}>Signiert von </span>
-                                                <span style={{ color: "#facc15" }}>_strikex_</span>
-                                                <span style={{ color: "#3da5f5" }}> am 01.08.2025</span>
+                                                <span style={{ color: "#facc15" }}>{namePart}</span>
+                                                {datePart && (
+                                                    <span style={{ color: "#3da5f5" }}> am {datePart}</span>
+                                                )}
                                             </li>
                                         );
                                     }
 
-                                    // Gewinntyp
                                     if (line.startsWith("Gewinntyp")) {
                                         const parts = line.split(" » ");
                                         return (
@@ -243,14 +224,13 @@ export default function ItemInfo() {
                                         );
                                     }
 
-                                    // Seltenheit
                                     if (line.startsWith("Seltenheit")) {
                                         const parts = line.split(" » ");
                                         const rarity = parts[1];
-                                        let color = "#f59e0b"; // Standard gelb
-                                        if (rarity.toLowerCase().includes("jackpot")) color = "#dc2626"; // rot
-                                        if (rarity.toLowerCase().includes("megajackpot")) color = "#7f1d1d"; // dunkelrot
-                                        if (rarity.toLowerCase().includes("unbezahlbar")) color = "#3b82f6"; // blau
+                                        let color = "#f59e0b";
+                                        if (rarity.toLowerCase().includes("jackpot")) color = "#dc2626";
+                                        if (rarity.toLowerCase().includes("megajackpot")) color = "#7f1d1d";
+                                        if (rarity.toLowerCase().includes("unbezahlbar")) color = "#3b82f6";
                                         return (
                                             <li key={i}>
                                                 <span style={{ color: "#3da5f5" }}>Seltenheit</span>
@@ -260,9 +240,7 @@ export default function ItemInfo() {
                                         );
                                     }
 
-                                    // Zustand mit Sterneanzeige
                                     if (line.startsWith("Zustand")) {
-                                        // Zahl auslesen, z.B. 2/3
                                         const match = line.match(/✯/g);
                                         const filled = match ? match.length : 0;
                                         return (
@@ -273,39 +251,25 @@ export default function ItemInfo() {
                                         );
                                     }
 
-                                    // Sonstige Lore-Zeilen
-                                    return (
-                                        <li key={i} className="italic text-gray-300">{line}</li>
-                                    );
+                                    return <li key={i} className="italic text-gray-300">{line}</li>;
                                 })}
                             </ul>
                         </div>
-
                     )}
-
-
 
                     {data.item.enchantments && Object.keys(data.item.enchantments).length > 0 && (
                         <div className="bg-gray-900 p-4 rounded shadow max-w-xl w-full">
-                            <h3 className="text-lg font-semibold text-white mb-3">
-                                Verzauberungen
-                            </h3>
-
+                            <h3 className="text-lg font-semibold text-white mb-3">Verzauberungen</h3>
                             <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-gray-200">
                                 {Object.entries(data.item.enchantments).map(([key, level]) => (
-                                    <li
-                                        key={key}
-                                        className="flex justify-between bg-gray-800 px-3 py-1 rounded"
-                                    >
-                            <span>
-                                {key
-                                    .replace('minecraft:', '')
-                                    .replace(/_/g, ' ')
-                                    .replace(/\b\w/g, c => c.toUpperCase())}
-                            </span>
-                                        <span className="font-semibold text-green-400">
-                                {level}
-                            </span>
+                                    <li key={key} className="flex justify-between bg-gray-800 px-3 py-1 rounded">
+                                        <span>
+                                            {key
+                                                .replace('minecraft:', '')
+                                                .replace(/_/g, ' ')
+                                                .replace(/\b\w/g, c => c.toUpperCase())}
+                                        </span>
+                                        <span className="font-semibold text-green-400">{level}</span>
                                     </li>
                                 ))}
                             </ul>
@@ -313,7 +277,6 @@ export default function ItemInfo() {
                     )}
                 </div>
             )}
-
 
             <div className="bg-gray-900 p-4 rounded shadow">
                 <h2 className="text-xl font-semibold mb-4 text-white">Alle Bieter</h2>
@@ -323,23 +286,15 @@ export default function ItemInfo() {
                             key={uuid}
                             className="flex items-center justify-between py-2 px-2 hover:bg-gray-800 rounded"
                         >
-                            <span className="font-medium text-white">
-                                {names[uuid] || 'Lade...'}
-                            </span>
+                            <span className="font-medium text-white">{names[uuid] || 'Lade...'}</span>
                             <div className="flex items-center gap-2">
                                 <span className="text-white font-semibold">{amount.toLocaleString()}</span>
-                                <img
-                                    src="/custom-items/money.svg"
-                                    alt="Money Icon"
-                                    className="w-5 h-5"
-                                />
+                                <img src="/custom-items/money.svg" alt="Money Icon" className="w-5 h-5" />
                             </div>
                         </li>
                     ))}
                 </ul>
             </div>
-
-
 
             <div className="bg-gray-900 p-4 rounded shadow">
                 <Line data={chartData} options={chartOptions} />
@@ -350,32 +305,29 @@ export default function ItemInfo() {
 
 const formatMoney = (money: number) => {
     if (money < 1000) return money.toLocaleString('en-us', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    if (money < 1000000) return (money / 1000).toLocaleString('en-us', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "K";
-    if (money < 1000000000) return (money / 1000000).toLocaleString('en-us', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "M";
-    if (money < 1000000000000) return (money / 1000000000).toLocaleString('en-us', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "Mrd";
-}
+    if (money < 1_000_000) return (money / 1000).toLocaleString('en-us', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "K";
+    if (money < 1_000_000_000) return (money / 1_000_000).toLocaleString('en-us', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "M";
+    return (money / 1_000_000_000).toLocaleString('en-us', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "Mrd";
+};
 
 const getItemImage = (auction: Page) => {
     return auction.item.icon ?? getItemIcon(auction.item);
-}
-
-
+};
 
 const getItemIcon = (item: Item) => {
     if (item.icon && item.icon.trim() !== "") return item.icon;
-    const normalized = item.displayName?.toLowerCase().
-    replace(/[´’']/g, "").
-    replace(/\s+/g, "_").
-    replace(/[^a-z0-9_]/g, "") || "";
+    const normalized = item.displayName?.toLowerCase()
+        .replace(/[´’']/g, "")
+        .replace(/\s+/g, "_")
+        .replace(/[^a-z0-9_]/g, "") || "";
     return `/custom-items/${normalized}.png`;
 };
+
 const renderStars = (filled: number, max: number = 3) => {
     const stars = [];
     for (let i = 1; i <= max; i++) {
         stars.push(
-            <span key={i} style={{ color: i <= filled ? "#facc15" : "#9ca3af" }}>
-                ✯
-            </span>
+            <span key={i} style={{ color: i <= filled ? "#facc15" : "#9ca3af" }}>✯</span>
         );
     }
     return stars;
