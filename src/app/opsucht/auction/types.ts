@@ -3,15 +3,19 @@ export interface Item {
     icon: string
     amount: number
     displayName: string
+    lore: string[]
+    enchantments: Record<string, number>
 }
 
 export interface Page {
+    uid: string
     seller: string
     item: Item
     category: string
-    currentBid: number
     startBid: number
+    currentBid: number
+    highestBidder: string
     bids: Record<string, number>
+    startTime: string
     endTime: string
-    uid: string
 }

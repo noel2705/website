@@ -26,7 +26,28 @@ ChartJS.register(
     Legend
 );
 
-// Minecraft API Resolver mit SessionStorage
+
+const decodeBase64Utf8 = <T,>(base64: string): T => {
+    try {
+        // ungültige Zeichen entfernen
+        const cleaned = base64.replace(/[^A-Za-z0-9+/=]/g, '');
+        // atob in Bytes
+        const bytes = Uint8Array.from(atob(cleaned), c => c.charCodeAt(0));
+        // TextDecoder für UTF-8
+        const text = new TextDecoder('utf-8').decode(bytes);
+        return JSON.parse(text) as T;
+    } catch (err) {
+        console.error("Fehler beim Decodieren von Base64 UTF-8:", err, base64);
+        throw err;
+    }
+};
+
+
+
+
+
+
+
 class MinecraftNameResolver {
     private cache: Record<string, string> = {};
 
@@ -106,15 +127,17 @@ export default function ItemInfo() {
         const search = searchParams.get('data');
         if (!search) return;
 
-        const decoded = atob(search);
-        const parsed: Page = JSON.parse(decoded);
+        const parsed: Page = decodeBase64Utf8<Page>(search);
         setData(parsed);
+
+
 
         const uuids = parsed.bids ? Object.keys(parsed.bids) : [];
         resolver.getNames(uuids).then(setNames);
 
         resolver.getName(parsed.seller).then(setSellerName);
     }, [searchParams]);
+
 
     if (!data) return <p className="p-4 text-gray-500">Lade…</p>;
     const sortedBidsForList = Object.entries(data.bids).sort((a, b) => b[1] - a[1]);
@@ -188,6 +211,110 @@ export default function ItemInfo() {
                 </button>
             </div>
 
+
+            {(data.item.lore?.length > 0 || (data.item.enchantments && Object.keys(data.item.enchantments).length > 0)) && (
+                <div className="flex flex-col md:flex-row gap-6 mt-4 w-full justify-center">
+
+                    {data.item.lore?.length > 0 && (
+                        <div className="bg-gray-900 bg-opacity-80 p-4 rounded max-w-xl w-full">
+                            <h3 className="text-lg font-semibold text-white mb-3">Lore</h3>
+                            <ul className="space-y-1 text-sm">
+                                {data.item.lore.map((line, i) => {
+                                    // Signatur
+                                    if (line.startsWith("Signiert von")) {
+                                        return (
+                                            <li key={i}>
+                                                <span style={{ color: "#3da5f5" }}>Signiert von </span>
+                                                <span style={{ color: "#facc15" }}>_strikex_</span>
+                                                <span style={{ color: "#3da5f5" }}> am 01.08.2025</span>
+                                            </li>
+                                        );
+                                    }
+
+                                    // Gewinntyp
+                                    if (line.startsWith("Gewinntyp")) {
+                                        const parts = line.split(" » ");
+                                        return (
+                                            <li key={i}>
+                                                <span style={{ color: "#3da5f5" }}>Gewinntyp </span>
+                                                <span style={{ color: "#9ca3af" }}>»</span>
+                                                <span style={{ color: "#3da5f5" }}> {parts[1]}</span>
+                                            </li>
+                                        );
+                                    }
+
+                                    // Seltenheit
+                                    if (line.startsWith("Seltenheit")) {
+                                        const parts = line.split(" » ");
+                                        const rarity = parts[1];
+                                        let color = "#f59e0b"; // Standard gelb
+                                        if (rarity.toLowerCase().includes("jackpot")) color = "#dc2626"; // rot
+                                        if (rarity.toLowerCase().includes("megajackpot")) color = "#7f1d1d"; // dunkelrot
+                                        if (rarity.toLowerCase().includes("unbezahlbar")) color = "#3b82f6"; // blau
+                                        return (
+                                            <li key={i}>
+                                                <span style={{ color: "#3da5f5" }}>Seltenheit</span>
+                                                <span style={{ color: "#9ca3af" }}> » </span>
+                                                <span style={{ color }}>{rarity}</span>
+                                            </li>
+                                        );
+                                    }
+
+                                    // Zustand mit Sterneanzeige
+                                    if (line.startsWith("Zustand")) {
+                                        // Zahl auslesen, z.B. 2/3
+                                        const match = line.match(/✯/g);
+                                        const filled = match ? match.length : 0;
+                                        return (
+                                            <li key={i}>
+                                                <span style={{ color: "#3da5f5" }}>Zustand: </span>
+                                                {renderStars(filled, 3)}
+                                            </li>
+                                        );
+                                    }
+
+                                    // Sonstige Lore-Zeilen
+                                    return (
+                                        <li key={i} className="italic text-gray-300">{line}</li>
+                                    );
+                                })}
+                            </ul>
+                        </div>
+
+                    )}
+
+
+
+                    {data.item.enchantments && Object.keys(data.item.enchantments).length > 0 && (
+                        <div className="bg-gray-900 p-4 rounded shadow max-w-xl w-full">
+                            <h3 className="text-lg font-semibold text-white mb-3">
+                                Verzauberungen
+                            </h3>
+
+                            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-gray-200">
+                                {Object.entries(data.item.enchantments).map(([key, level]) => (
+                                    <li
+                                        key={key}
+                                        className="flex justify-between bg-gray-800 px-3 py-1 rounded"
+                                    >
+                            <span>
+                                {key
+                                    .replace('minecraft:', '')
+                                    .replace(/_/g, ' ')
+                                    .replace(/\b\w/g, c => c.toUpperCase())}
+                            </span>
+                                        <span className="font-semibold text-green-400">
+                                {level}
+                            </span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    )}
+                </div>
+            )}
+
+
             <div className="bg-gray-900 p-4 rounded shadow">
                 <h2 className="text-xl font-semibold mb-4 text-white">Alle Bieter</h2>
                 <ul className="divide-y divide-gray-700">
@@ -212,6 +339,8 @@ export default function ItemInfo() {
                 </ul>
             </div>
 
+
+
             <div className="bg-gray-900 p-4 rounded shadow">
                 <Line data={chartData} options={chartOptions} />
             </div>
@@ -230,6 +359,8 @@ const getItemImage = (auction: Page) => {
     return auction.item.icon ?? getItemIcon(auction.item);
 }
 
+
+
 const getItemIcon = (item: Item) => {
     if (item.icon && item.icon.trim() !== "") return item.icon;
     const normalized = item.displayName?.toLowerCase().
@@ -237,4 +368,15 @@ const getItemIcon = (item: Item) => {
     replace(/\s+/g, "_").
     replace(/[^a-z0-9_]/g, "") || "";
     return `/custom-items/${normalized}.png`;
+};
+const renderStars = (filled: number, max: number = 3) => {
+    const stars = [];
+    for (let i = 1; i <= max; i++) {
+        stars.push(
+            <span key={i} style={{ color: i <= filled ? "#facc15" : "#9ca3af" }}>
+                ✯
+            </span>
+        );
+    }
+    return stars;
 };

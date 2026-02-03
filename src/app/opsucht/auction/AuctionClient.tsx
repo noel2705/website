@@ -10,6 +10,16 @@ interface Props {
 }
 
 
+const encodeBase64 = (obj: any) => {
+    return btoa(
+        encodeURIComponent(JSON.stringify(obj))
+            .replace(/%([0-9A-F]{2})/g, (_, p1) =>
+                String.fromCharCode(parseInt(p1, 16))
+            )
+    );
+};
+
+
 export default function AuctionClient({initialAuction}: Props) {
     const [auction, setAuction] = useState<Page[]>(initialAuction);
     const [showAuction, setShowAuction] = useState<Page[]>();
@@ -267,8 +277,10 @@ function AuctionCard({auction, router}: { auction: Page, router: AppRouterInstan
             </div>
 
             <button className="auction-button"
-                    onClick={() => router.push(`/opsucht/auction/item?data=${window.btoa(JSON.stringify(auction))}`)
-                    }>Informationen
+                    onClick={() =>
+                        router.push(`/opsucht/auction/item?data=${encodeBase64(auction)}`)
+                    }
+            >Informationen
             </button>
         </div>
     );
