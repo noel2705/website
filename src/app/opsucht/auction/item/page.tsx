@@ -278,7 +278,12 @@ export default function ItemInfo() {
                 </div>
             )}
 
-            <div className="bg-gray-900 p-4 rounded shadow">
+            {sortedBidsForList.length <= 0 &&
+                <h2 className="text-xl font-semibold mb-4 text-white">Keine aktiven Bieter</h2>
+
+            }
+
+            {sortedBidsForList.length > 0 && <div className="bg-gray-900 p-4 rounded shadow">
                 <h2 className="text-xl font-semibold mb-4 text-white">Alle Bieter</h2>
                 <ul className="divide-y divide-gray-700">
                     {sortedBidsForList.map(([uuid, amount]) => (
@@ -294,11 +299,11 @@ export default function ItemInfo() {
                         </li>
                     ))}
                 </ul>
-            </div>
+            </div>}
 
-            <div className="bg-gray-900 p-4 rounded shadow">
+            { sortedBidsForList.length > 0 && <div className="bg-gray-900 p-4 rounded shadow">
                 <Line data={chartData} options={chartOptions} />
-            </div>
+            </div>}
         </div>
     );
 }

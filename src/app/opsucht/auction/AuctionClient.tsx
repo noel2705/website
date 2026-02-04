@@ -1,5 +1,5 @@
 'use client';
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useMemo} from 'react';
 import {Page,Item} from './types';
 import "./auction.css";
 import {useRouter} from 'next/navigation';
@@ -23,7 +23,6 @@ const encodeBase64 = (obj: any) => {
 export default function AuctionClient({initialAuction}: Props) {
     const [auction, setAuction] = useState<Page[]>(initialAuction);
     const [showAuction, setShowAuction] = useState<Page[]>();
-    const [refresh, setRefresh] = useState(Date.now)
     const router = useRouter()
     const fetchAuctions = async (cat: string) => {
         const url =
@@ -41,13 +40,13 @@ export default function AuctionClient({initialAuction}: Props) {
     const [orderBy, setOrderby] = useState("moneyDesc");
 
     useEffect(() => {
-        const storedCategory = sessionStorage.getItem("category");
-        const storedSearchBar = sessionStorage.getItem("searchBar");
-        const storedOrderBy = sessionStorage.getItem("orderBy");
+        const storedCategory = sessionStorage?.getItem("category") || "*";
+        const storedSearchBar = sessionStorage?.getItem("searchBar") || '';
+        const storedOrderBy = sessionStorage?.getItem("orderBy") || 'moneyDesc';
 
-        if (storedCategory) setCategory(storedCategory);
-        if (storedSearchBar) setSearchbar(storedSearchBar);
-        if (storedOrderBy) setOrderby(storedOrderBy);
+        if (storedCategory != category) setCategory(storedCategory);
+        if (storedSearchBar != storedSearchBar) setSearchbar(storedSearchBar);
+        if (storedOrderBy != storedOrderBy) setOrderby(storedOrderBy);
     }, []);
 
 
@@ -93,12 +92,6 @@ export default function AuctionClient({initialAuction}: Props) {
         void fetchAuctions(category);
     }, [category]);
 
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setRefresh(prev => prev + 1000);
-        }, 1000);
-        return () => clearInterval(interval);
-    }, []);
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -210,25 +203,6 @@ export default function AuctionClient({initialAuction}: Props) {
     );
 }
 
-const formatEndDate = (a: string) => {
-    const milliToEnd = new Date(a).getTime() - Date.now()
-
-    if (milliToEnd < 0) {
-        return "Beendet"
-    }
-    const secToEnd = Math.floor(milliToEnd / 1000);
-    const seconds = secToEnd % 60;
-
-    const minToEnd = Math.floor(secToEnd / 60);
-    const minutes = minToEnd % 60;
-
-    const hourToEnd = Math.floor(minToEnd / 60);
-
-
-    return `${hourToEnd}h ${minutes}m ${seconds}s`
-
-}
-
 
 const formatMoney = (money: number) => {
     if (money < 1000) return money.toLocaleString('en-us', {minimumFractionDigits: 2, maximumFractionDigits: 2})
@@ -254,37 +228,80 @@ function getAmountBids(bids: Record<string, number>) {
 function AuctionCard({auction, router}: { auction: Page, router: AppRouterInstance }) {
     const itemName = auction.item.displayName ?? auction.item.material;
     const currentPrice = auction.currentBid;
-    const startPrice = auction.startBid;
     const img = getItemImage(auction)
     const endDate = auction.endTime;
     const amountBids = getAmountBids(auction.bids);
+
+    const [now, setNow] = useState(Date.now());
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setNow(Date.now());
+        }, 1000);
+
+        return () => clearInterval(interval);
+    }, []);
+
+    const endText = useMemo(() => {
+        const milliToEnd = new Date(endDate).getTime() - now;
+
+        if (milliToEnd <= 0) {
+            return "Beendet";
+        }
+
+        const secToEnd = Math.floor(milliToEnd / 1000);
+        const seconds = secToEnd % 60;
+        const minutes = Math.floor(secToEnd / 60) % 60;
+        const hours = Math.floor(secToEnd / 3600);
+
+        return `${hours}h ${minutes}m ${seconds}s`;
+    }, [endDate, now]);
+
     return (
         <div className="auction-card">
-            <img onError={(e => {
-                e.currentTarget.src = `https://img.mc-api.io/${auction.item.material.toLowerCase()}.png`
-            })} loading={"lazy"} src={img}/>
+            <img
+                onError={(e => {
+                    e.currentTarget.src = `https://img.mc-api.io/${auction.item.material.toLowerCase()}.png`
+                })}
+                loading={"lazy"}
+                src={img}
+                width={128}
+                height={128}
+            />
+
             <h2 className="auction-title">{itemName}</h2>
+
             <div className="auction-details">
                 <div className="price-row">
                     <p>Preis: {formatMoney(currentPrice) ?? "N/A"}</p>
                     <img src="/custom-items/money.svg" alt="Icon" width="24" height="24"/>
                 </div>
-                {formatEndDate(endDate) === "Beendet" && <p className={"red-text"}> {formatEndDate(endDate)}</p>}
-                {formatEndDate(endDate) !== "Beendet" && <p> Endet in: {formatEndDate(endDate)}</p>}
+
+                {endText === "Beendet" && (
+                    <p className={"red-text"}>{endText}</p>
+                )}
+
+                {endText !== "Beendet" && (
+                    <p>Endet in: {endText}</p>
+                )}
+
                 <p className={amountBids > 0 ? "green-text" : ""}>
                     Gebote: {amountBids}
                 </p>
             </div>
 
-            <button className="auction-button"
-                    onClick={() =>
-                        router.push(`/opsucht/auction/item?data=${encodeBase64(auction)}`)
-                    }
-            >Informationen
+            <button
+                className="auction-button"
+                onClick={() =>
+                    router.push(`/opsucht/auction/item?data=${encodeBase64(auction)}`)
+                }
+            >
+                Informationen
             </button>
         </div>
     );
 }
+
 
 
 const getItemImage = (auction: Page) => {
