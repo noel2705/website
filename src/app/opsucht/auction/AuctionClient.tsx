@@ -21,6 +21,8 @@ const encodeBase64 = (obj: any) => {
 
 
 export default function AuctionClient({initialAuction}: Props) {
+    const itemsPerLoad = 16;
+    const [renderCount, setRenderCount] = useState(itemsPerLoad);
     const [auction, setAuction] = useState<Page[]>(initialAuction);
     const [showAuction, setShowAuction] = useState<Page[]>();
     const router = useRouter()
@@ -91,6 +93,17 @@ export default function AuctionClient({initialAuction}: Props) {
         sessionStorage.setItem("category", category);
         void fetchAuctions(category);
     }, [category]);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 300) {
+                setRenderCount(prev => Math.min(prev + itemsPerLoad, showAuction?.length ?? 0));
+            }
+        };
+
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, [showAuction]);
 
 
     useEffect(() => {
@@ -195,10 +208,11 @@ export default function AuctionClient({initialAuction}: Props) {
 
 
             <div className="auction-grid">
-                {showAuction?.map(a => (
+                {showAuction?.slice(0, renderCount).map(a => (
                     <AuctionCard key={a.uid} auction={a} router={router}/>
                 ))}
             </div>
+
         </>
     );
 }
@@ -231,6 +245,8 @@ function AuctionCard({auction, router}: { auction: Page, router: AppRouterInstan
     const img = getItemImage(auction)
     const endDate = auction.endTime;
     const amountBids = getAmountBids(auction.bids);
+
+
 
     const [now, setNow] = useState(Date.now());
 
@@ -265,8 +281,8 @@ function AuctionCard({auction, router}: { auction: Page, router: AppRouterInstan
                 })}
                 loading={"lazy"}
                 src={img}
-                width={128}
-                height={128}
+                width={256}
+                height={256}
             />
 
             <h2 className="auction-title">{itemName}</h2>
