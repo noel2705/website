@@ -325,6 +325,7 @@ const getItemImage = (auction: Page) => {
 }
 
 const getItemIcon = (item: Item) => {
+
     if (item.icon && item.icon.trim() !== "") return item.icon;
     const normalized = item.displayName?.toLowerCase().replace(/[´’']/g, "").replace(/\s+/g, "_").replace(/[^a-z0-9_]/g, "") || "";
     return `/custom-items/${normalized}.png`;
