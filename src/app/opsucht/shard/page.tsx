@@ -3,7 +3,6 @@
 import { CSSProperties } from 'react';
 import React, { useState, useEffect } from 'react';
 
-// ---------------- TYPES ----------------
 type Rate = {
     [key: string]: number;
 };
@@ -15,15 +14,21 @@ type MarketPrice = {
     };
 };
 
-// ---------------- COMPONENT ----------------
+const ITEM_GRAEBER =
+    "minecraft:paper[item_name='{\"extra\":[{\"bold\":true,\"color\":\"gray\",\"italic\":false,\"obfuscated\":false,\"strikethrough\":false,\"text\":\"Gräbergemisch\",\"underlined\":false}],\"text\":\"\"}',custom_model_data=626,custom_name='{\"extra\":[{\"bold\":true,\"color\":\"gray\",\"italic\":false,\"obfuscated\":false,\"strikethrough\":false,\"text\":\"Gräbergemisch\",\"underlined\":false}],\"text\":\"\"}']";
+
+const ITEM_HOLZ =
+    "minecraft:paper[item_name='{\"extra\":[{\"bold\":true,\"color\":\"#926428\",\"italic\":false,\"obfuscated\":false,\"strikethrough\":false,\"text\":\"Holzbündel\",\"underlined\":false}],\"text\":\"\"}',custom_model_data=625,custom_name='{\"extra\":[{\"bold\":true,\"color\":\"#926428\",\"italic\":false,\"obfuscated\":false,\"strikethrough\":false,\"text\":\"Holzbündel\",\"underlined\":false}],\"text\":\"\"}']";
+
 const Page: React.FC = () => {
     const [rates, setRates] = useState<Rate>({});
     const [marketPrices, setMarketPrices] = useState<MarketPrice>({});
     const [amountDiamond, setAmountDiamond] = useState<number>(0);
     const [amountNetherite, setAmountNetherite] = useState<number>(0);
+    const [amountGraebergemisch, setAmountGraebergemisch] = useState<number>(0);
+    const [amountHolzbuendel, setAmountHolzbuendel] = useState<number>(0);
     const [bankShards, setBankShards] = useState<number>(0);
 
-    // ---------------- Shard-Kurse laden ----------------
     useEffect(() => {
         fetch('https://api.opsucht.net/merchant/rates')
             .then(res => res.json())
@@ -32,12 +37,13 @@ const Page: React.FC = () => {
                 data.forEach(item => {
                     rateObj[item.source] = item.exchangeRate;
                 });
+
+
                 setRates(rateObj);
             })
             .catch(console.error);
     }, []);
 
-    // ---------------- Marktpreise laden ----------------
     useEffect(() => {
         const fetchPrice = async (item: string) => {
             try {
@@ -61,37 +67,36 @@ const Page: React.FC = () => {
         loadPrices();
     }, []);
 
-    // ---------------- BankShards aus SessionStorage laden ----------------
     useEffect(() => {
         const storedShards = sessionStorage.getItem('bankShards');
         if (storedShards) setBankShards(Number(storedShards));
     }, []);
 
-    // ---------------- BankShards speichern ----------------
     useEffect(() => {
         sessionStorage.setItem('bankShards', String(bankShards));
     }, [bankShards]);
 
-    // ---------------- Berechnung ----------------
     const calculate = (amount: number, item: string) => {
         const rate = rates[item] || 0;
         const shards = amount * rate;
-        const priceBuy = rate > 0 ? (shards / rate) * (marketPrices[item]?.buy || 0) : 0;
-        const priceSell = rate > 0 ? (shards / rate) * (marketPrices[item]?.sell || 0) : 0;
+        const priceBuy = rate > 0 && marketPrices[item] ? (shards / rate) * (marketPrices[item]?.buy || 0) : 0;
+        const priceSell = rate > 0 && marketPrices[item] ? (shards / rate) * (marketPrices[item]?.sell || 0) : 0;
         return { shards, priceBuy, priceSell };
     };
 
     const diamond = calculate(amountDiamond, 'diamond_block');
     const netherite = calculate(amountNetherite, 'netherite_ingot');
-    const totalShardsAfterBuy = bankShards + diamond.shards + netherite.shards;
+    const graeber = calculate(amountGraebergemisch, ITEM_GRAEBER);
+    const holz = calculate(amountHolzbuendel, ITEM_HOLZ);
 
-    // ---------------- RENDER ----------------
+    const totalShardsAfterBuy =
+        bankShards + diamond.shards + netherite.shards + graeber.shards + holz.shards;
+
     return (
         <div style={styles.container}>
             <h1 style={styles.title}>Shard Rechner + Bank</h1>
 
             <div style={styles.row}>
-                {/* Diamond Block */}
                 <div style={styles.card}>
                     <h2>Diamond Block</h2>
                     <p>Kurs: {rates['diamond_block']?.toFixed(2) || '...'} Shards</p>
@@ -107,7 +112,6 @@ const Page: React.FC = () => {
                     <p style={{ color: 'lightgreen' }}>Verkaufspreis: {formatMoney(diamond.priceSell)} $</p>
                 </div>
 
-                {/* Netherite Ingot */}
                 <div style={styles.card}>
                     <h2>Netherite Ingot</h2>
                     <p>Kurs: {rates['netherite_ingot']?.toFixed(2) || '...'} Shards</p>
@@ -123,7 +127,32 @@ const Page: React.FC = () => {
                     <p style={{ color: 'lightgreen' }}>Verkaufspreis: {formatMoney(netherite.priceSell)} $</p>
                 </div>
 
-                {/* Bank */}
+                <div style={styles.card}>
+                    <h2>Gräbergemisch</h2>
+                    <p>Kurs: {rates[ITEM_GRAEBER]?.toFixed(2) || '...'} Shards</p>
+                    <input
+                        type="number"
+                        placeholder="Menge"
+                        value={amountGraebergemisch}
+                        onChange={(e) => setAmountGraebergemisch(Number(e.target.value))}
+                        style={styles.input}
+                    />
+                    <p style={{ color: '#8ab4ff' }}>Shards: {graeber.shards.toFixed(2)}</p>
+                </div>
+
+                <div style={styles.card}>
+                    <h2>Holzbündel</h2>
+                    <p>Kurs: {rates[ITEM_HOLZ]?.toFixed(2) || '...'} Shards</p>
+                    <input
+                        type="number"
+                        placeholder="Menge"
+                        value={amountHolzbuendel}
+                        onChange={(e) => setAmountHolzbuendel(Number(e.target.value))}
+                        style={styles.input}
+                    />
+                    <p style={{ color: '#8ab4ff' }}>Shards: {holz.shards.toFixed(2)}</p>
+                </div>
+
                 <div style={styles.card}>
                     <h2>Bank</h2>
                     <p>Aktuelle Shards:</p>
@@ -142,7 +171,6 @@ const Page: React.FC = () => {
     );
 };
 
-// ---------------- STYLES ----------------
 const styles: { [key: string]: CSSProperties } = {
     container: {
         padding: '30px',
@@ -181,7 +209,6 @@ const styles: { [key: string]: CSSProperties } = {
     },
 };
 
-// ---------------- FORMAT MONEY ----------------
 const formatMoney = (money: string | number) => {
     money = Number(money);
     if (money < 1000) return money.toLocaleString('en-us', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
