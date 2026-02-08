@@ -1,6 +1,6 @@
 'use client';
 import React, {useState, useEffect, useMemo} from 'react';
-import {Page,Item} from './types';
+import {Page, Item} from './types';
 import "./auction.css";
 import {useRouter} from 'next/navigation';
 import {AppRouterInstance} from "next/dist/shared/lib/app-router-context.shared-runtime";
@@ -22,19 +22,30 @@ const encodeBase64 = (obj: any) => {
 
 export default function AuctionClient({initialAuction}: Props) {
     const itemsPerLoad = 16;
+    const [isExpiredMode, setIsExpiredMode] = useState(false);
     const [renderCount, setRenderCount] = useState(itemsPerLoad);
     const [auction, setAuction] = useState<Page[]>(initialAuction);
     const [showAuction, setShowAuction] = useState<Page[]>();
     const router = useRouter()
     const fetchAuctions = async (cat: string) => {
-        const url =
-            cat === "*"
-                ? 'https://api.opsucht.net/auctions/active'
-                : `https://api.opsucht.net/auctions/active?category=${cat}`;
-        const res = await fetch(url);
-        const data: Page[] = await res.json();
+        let data: Page[] = [];
+        if (!isExpiredMode) {
+            const url =
+                cat === "*"
+                    ? 'https://api.opsucht.net/auctions/active'
+                    : `https://api.opsucht.net/auctions/active?category=${cat}`;
+            const res = await fetch(url);
+            data = await res.json();
+
+        } else {
+            const res = await fetch('/api/expired-auctions');
+            data = await res.json();
+
+        }
+
+
         setAuction(data);
-        sortByAttributes(data);
+        sortAuctions(data);
     };
 
     const [category, setCategory] = useState("*");
@@ -52,47 +63,56 @@ export default function AuctionClient({initialAuction}: Props) {
     }, []);
 
 
+    const sortAuctions = (auctionData: Page[]) => {
+        let filtered: Page[] = Array.isArray(auctionData) ? auctionData : [];
 
-    const sortByAttributes = (data: Page[]) => {
-        setShowAuction(data.toSorted((a, b) => {
+
+        if (searchBar.trim() !== '') {
+            filtered = filtered.filter(a =>
+                (a.item.displayName ?? a.item.material)
+                    .toLowerCase()
+                    .includes(searchBar.toLowerCase())
+            )
+        }
+
+
+        const sorted = [...filtered].sort((a, b) => {
             switch (orderBy) {
-                case "timeDesc": {
-                    return new Date(a.endTime).getTime() - new Date(b.endTime).getTime();
-                }
-                case "timeAsc": {
-                    return new Date(b.endTime).getTime() - new Date(a.endTime).getTime();
-                }
-
-                case "moneyAsc": {
-                    return a.currentBid - b.currentBid;
-                }
-
-                case "moneyDesc": {
-                    return b.currentBid - a.currentBid;
-                }
-
-                case "bitAmountDesc": {
-                    return getAmountBids(b.bids) - getAmountBids(a.bids);
-                }
-
-                case "bitAmontAsc" :{
-                    return getAmountBids(a.bids) - getAmountBids(b.bids);
-                }
+                case "timeDesc":
+                    return new Date(a.endTime).getTime() - new Date(b.endTime).getTime()
+                case "timeAsc":
+                    return new Date(b.endTime).getTime() - new Date(a.endTime).getTime()
+                case "moneyAsc":
+                    return a.currentBid - b.currentBid
+                case "moneyDesc":
+                    return b.currentBid - a.currentBid
+                case "bitAmountDesc":
+                    return getAmountBids(b.bids) - getAmountBids(a.bids)
+                case "bitAmontAsc":
+                    return getAmountBids(a.bids) - getAmountBids(b.bids)
+                default:
+                    return 0
             }
+        });
 
-            return 0;
-        }))
+
+        setShowAuction(sorted)
     }
 
+
     useEffect(() => {
-        sortByAttributes(auction);
+        sortAuctions(auction);
         sessionStorage.setItem("orderBy", orderBy);
     }, [orderBy]);
 
     useEffect(() => {
         sessionStorage.setItem("category", category);
         void fetchAuctions(category);
-    }, [category]);
+    }, [isExpiredMode, category]);
+
+
+
+
 
     useEffect(() => {
         const handleScroll = () => {
@@ -106,6 +126,8 @@ export default function AuctionClient({initialAuction}: Props) {
     }, [showAuction]);
 
 
+
+
     useEffect(() => {
         const interval = setInterval(() => {
             void fetchAuctions(category);
@@ -115,12 +137,13 @@ export default function AuctionClient({initialAuction}: Props) {
 
     useEffect(() => {
         sessionStorage.setItem("searchBar", searchBar);
-        setShowAuction(auction.filter(a => {
-            return (a.item.displayName ?? a.item.material).toLowerCase().includes(searchBar.toLowerCase())
-        }))
+        sortAuctions(auction);
     }, [searchBar]);
+
     return (
         <>
+
+
             <div className="search-row">
                 <input
                     type="text"
@@ -132,6 +155,15 @@ export default function AuctionClient({initialAuction}: Props) {
 
 
             <div className="auction-toolbar">
+
+                <div className="toggle-auctions">
+                    <button
+                        onClick={() => setIsExpiredMode(prev => !prev)}
+                        className={isExpiredMode ? "active" : ""}
+                    >
+                        {isExpiredMode ? "Abgelaufene Auktionen" : "Aktive Auktionen"}
+                    </button>
+                </div>
 
 
                 <div className="categorySwitcher">
@@ -194,15 +226,34 @@ export default function AuctionClient({initialAuction}: Props) {
 
                 </div>
 
-                <div className="sort">
-                    <select value={orderBy} onChange={e => setOrderby(e.target.value)}>
-                        <option value="moneyDesc">Preis: Groß → Klein</option>
-                        <option value="moneyAsc">Preis: Klein → Groß</option>
-                        <option value="timeDesc">Endet bald</option>
-                        <option value="timeAsc">Endet zuletzt</option>
-                        <option value="bitAmountDesc">Meiste Gebote</option>
-                        <option value="bitAmontAsc">Wenigste Gebote</option>
-                    </select>
+
+                <div className={"auction-toolbar-rarity"}>
+
+                    <div className={"raritySwitcher"}>
+
+
+                    </div>
+
+                </div>
+
+
+                <div className={"auction-toolbar-rarity"}>
+
+                    <div className="categorySwitcher">
+
+
+                        <div className="sort">
+                            <select value={orderBy} onChange={e => setOrderby(e.target.value)}>
+                                <option value="moneyDesc">Preis: Groß → Klein</option>
+                                <option value="moneyAsc">Preis: Klein → Groß</option>
+                                <option value="timeDesc">Endet bald</option>
+                                <option value="timeAsc">Endet zuletzt</option>
+                                <option value="bitAmountDesc">Meiste Gebote</option>
+                                <option value="bitAmontAsc">Wenigste Gebote</option>
+                            </select>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
@@ -235,9 +286,21 @@ const formatMoney = (money: number) => {
 }
 
 function getAmountBids(bids: Record<string, number>) {
-    return Object.keys(bids).length
+    return Object.keys(bids).length;
 }
 
+
+function getAmountUniqueBidders(bids: Record<string, number>) {
+    return Object.keys(bids).length;
+}
+
+
+function isDesired(auction: Page) {
+    const totalBids = getAmountBids(auction.bids);
+    const uniqueBidders = getAmountUniqueBidders(auction.bids);
+
+    return totalBids > 5 && uniqueBidders >= 5;
+}
 
 function AuctionCard({auction, router}: { auction: Page, router: AppRouterInstance }) {
     const itemName = auction.item.displayName ?? auction.item.material;
@@ -245,7 +308,7 @@ function AuctionCard({auction, router}: { auction: Page, router: AppRouterInstan
     const img = getItemImage(auction)
     const endDate = auction.endTime;
     const amountBids = getAmountBids(auction.bids);
-
+    const isdesired = isDesired(auction);
 
 
     const [now, setNow] = useState(Date.now());
@@ -274,17 +337,28 @@ function AuctionCard({auction, router}: { auction: Page, router: AppRouterInstan
     }, [endDate, now]);
 
     return (
-        <div className="auction-card">
-            <img
-                onError={(e => {
-                    e.currentTarget.src = `https://img.mc-api.io/${auction.item.material.toLowerCase()}.png`
-                })}
-                loading={"lazy"}
-                src={img}
-                width={256}
-                height={256}
-            />
+        <div className={`auction-card ${isdesired ? "desired" : ""}`}>
 
+
+            <div className="item-image-container">
+                <img
+                    onError={(e) => {
+                        e.currentTarget.src = `https://img.mc-api.io/${auction.item.material.toLowerCase()}.png`;
+                    }}
+                    loading="lazy"
+                    src={img}
+                    className="auction-item-img"
+                    alt={itemName}
+                />
+
+                {isdesired && (
+                    <img
+                        src="/desired.jpg"
+                        alt="Begehrt"
+                        className="desired-icon"
+                    />
+                )}
+            </div>
             <h2 className="auction-title">{itemName}</h2>
 
             <div className="auction-details">
@@ -315,9 +389,9 @@ function AuctionCard({auction, router}: { auction: Page, router: AppRouterInstan
                 Informationen
             </button>
         </div>
-    );
+    )
+        ;
 }
-
 
 
 const getItemImage = (auction: Page) => {
@@ -329,3 +403,15 @@ const getItemIcon = (item: Item) => {
     const normalized = item.displayName?.toLowerCase().replace(/[´’']/g, "").replace(/\s+/g, "_").replace(/[^a-z0-9_]/g, "") || "";
     return `/custom-items/${normalized}.png`;
 };
+
+
+async function saveExpiredAuction(auction: Page, isExpiredMode: boolean) {
+    if (isExpiredMode) return;
+    try {
+        await fetch('/api/save-auction', { method: 'POST', body: JSON.stringify(auction) });
+    } catch (err) {
+        console.error("Fehler beim Speichern eines veralteten Auktionsdatensatzes:", err, auction);
+    }
+}
+
+
