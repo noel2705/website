@@ -1,9 +1,8 @@
-// @ts-ignore
 import fetch from 'node-fetch';
 
 async function saveExpiredAuctions() {
     try {
-        const res = await fetch('http://localhost:3000/api/save-expired-auctions', {
+        const res = await fetch('http://localhost:3000/api/save-auction', {
             method: 'POST'
         });
     } catch (err) {
