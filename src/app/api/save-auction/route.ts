@@ -1,25 +1,40 @@
-import { NextResponse } from 'next/server';
+import { NextResponse } from 'next/server'
+import { createClient } from '@supabase/supabase-js'
+
+const supabase = createClient(
+    process.env.SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+)
 
 export async function POST(req: Request) {
     try {
-        const res = await fetch('https://api.opsucht.net/auctions/active');
-        const auctions = await res.json();
+
+        const res = await fetch('https://api.opsucht.net/auctions/active')
+        const auctions = await res.json()
 
         const expired = auctions.filter(
             (a: any) => new Date(a.endTime).getTime() < Date.now()
-        );
+        )
 
-        for (const auction of expired) {
-            await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/save-auction`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(auction),
-            });
+        if (expired.length === 0) {
+            return NextResponse.json({ saved: 0 })
         }
 
-        return NextResponse.json({ saved: expired.length });
+        const { data, error } = await supabase
+            .from('expired_auctions')
+            .insert(expired)
+
+        if (error) throw error
+
+
+
+        // @ts-ignore
+        console.log('Gespeichert:', data.length)
+
+        // @ts-ignore
+        return NextResponse.json({ saved: data.length })
     } catch (err) {
-        console.error('Fehler beim Speichern abgelaufener Auktionen:', err);
-        return NextResponse.json({ error: (err as Error).message }, { status: 500 });
+        console.error('Fehler beim Speichern abgelaufener Auktionen:', err)
+        return NextResponse.json({ error: (err as Error).message }, { status: 500 })
     }
 }

@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
-import { Page } from '../types';
+import React, {useEffect, useState} from 'react';
+import {useSearchParams, useRouter} from 'next/navigation';
+import {Page} from '../types';
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -13,8 +13,8 @@ import {
     Tooltip,
     Legend,
 } from 'chart.js';
-import { Line } from 'react-chartjs-2';
-import { Item } from '../types';
+import {Line} from 'react-chartjs-2';
+import {Item} from '../types';
 
 ChartJS.register(
     CategoryScale,
@@ -26,7 +26,24 @@ ChartJS.register(
     Legend
 );
 
-const decodeBase64Utf8 = <T,>(base64: string): T => {
+
+function isBedrock(uuid: string) {
+    return uuid.startsWith("00000000-0000-0000-0009");
+}
+
+const getPlayerProfile = async (uuid: string) => {
+    if (!isBedrock(uuid)) return {name: "Unbekannt", uuid};
+    const response = await fetch(`https://mc-api.io/name/${uuid}`);
+    const data = await response.json();
+
+    return {
+        name: "."  + data.name,
+        uuid: data.uuid,
+        cachedAt: data.cachedAt
+    };
+};
+
+const decodeBase64Utf8 = <T, >(base64: string): T => {
     try {
         const cleaned = base64.replace(/[^A-Za-z0-9+/=]/g, '');
         const bytes = Uint8Array.from(atob(cleaned), c => c.charCodeAt(0));
@@ -51,6 +68,11 @@ class MinecraftNameResolver {
 
         try {
             const cleanUuid = uuid.replace(/-/g, '');
+            if (isBedrock(uuid)) {
+                const profile = await getPlayerProfile(uuid);
+                this.cache[uuid] = profile.name;
+                return profile.name;
+            }
             const res = await fetch(`https://api.ashcon.app/mojang/v2/user/${cleanUuid}`);
             if (!res.ok) throw new Error('Fetch fehlgeschlagen');
             const data = await res.json();
@@ -59,9 +81,12 @@ class MinecraftNameResolver {
             sessionStorage.setItem(`mcname-${uuid}`, name);
             return name;
         } catch {
-            this.cache[uuid] = 'Unbekannt';
-            return 'Unbekannt';
+            const profile = await getPlayerProfile(uuid);
+            this.cache[uuid] = profile.name;
+            sessionStorage.setItem(`mcname-${uuid}`, profile.name);
+            return profile.name;
         }
+
     }
 
     async getNames(uuids: string[]): Promise<Record<string, string>> {
@@ -93,22 +118,22 @@ export default function ItemInfo() {
 
     useEffect(() => {
         const interval = setInterval(async () => {
+            if (!data) return;
             const res = await fetch("https://api.opsucht.net/auctions/active");
             const data2: Page[] = await res.json();
-
-            const newData = data2.find(a => a.uid === data?.uid);
+            const newData = data2.find(a => a.uid === data.uid);
             if (newData) {
-                setData(prev => ({ ...prev, ...newData }));
-            }
-
-            if (newData?.bids) {
-                const uuids = Object.keys(newData.bids);
-                resolver.getNames(uuids).then(setNames);
+                setData(prev => ({...prev, ...newData}));
+                if (newData.bids) {
+                    const uuids = Object.keys(newData.bids);
+                    resolver.getNames(uuids).then(setNames);
+                }
             }
         }, 10000);
 
         return () => clearInterval(interval);
-    }, [data]);
+    }, [data?.uid]);
+
 
     useEffect(() => {
         const search = searchParams.get('data');
@@ -157,7 +182,7 @@ export default function ItemInfo() {
             },
         },
         scales: {
-            y: { beginAtZero: true },
+            y: {beginAtZero: true},
         },
     };
 
@@ -204,10 +229,10 @@ export default function ItemInfo() {
                                         const datePart = line.split(" am ")[1] || '';
                                         return (
                                             <li key={i}>
-                                                <span style={{ color: "#3da5f5" }}>Signiert von </span>
-                                                <span style={{ color: "#facc15" }}>{namePart}</span>
+                                                <span style={{color: "#3da5f5"}}>Signiert von </span>
+                                                <span style={{color: "#facc15"}}>{namePart}</span>
                                                 {datePart && (
-                                                    <span style={{ color: "#3da5f5" }}> am {datePart}</span>
+                                                    <span style={{color: "#3da5f5"}}> am {datePart}</span>
                                                 )}
                                             </li>
                                         );
@@ -217,9 +242,9 @@ export default function ItemInfo() {
                                         const parts = line.split(" » ");
                                         return (
                                             <li key={i}>
-                                                <span style={{ color: "#3da5f5" }}>Gewinntyp </span>
-                                                <span style={{ color: "#9ca3af" }}>»</span>
-                                                <span style={{ color: "#3da5f5" }}> {parts[1]}</span>
+                                                <span style={{color: "#3da5f5"}}>Gewinntyp </span>
+                                                <span style={{color: "#9ca3af"}}>»</span>
+                                                <span style={{color: "#3da5f5"}}> {parts[1]}</span>
                                             </li>
                                         );
                                     }
@@ -233,9 +258,9 @@ export default function ItemInfo() {
                                         if (rarity.toLowerCase().includes("unbezahlbar")) color = "#3b82f6";
                                         return (
                                             <li key={i}>
-                                                <span style={{ color: "#3da5f5" }}>Seltenheit</span>
-                                                <span style={{ color: "#9ca3af" }}> » </span>
-                                                <span style={{ color }}>{rarity}</span>
+                                                <span style={{color: "#3da5f5"}}>Seltenheit</span>
+                                                <span style={{color: "#9ca3af"}}> » </span>
+                                                <span style={{color}}>{rarity}</span>
                                             </li>
                                         );
                                     }
@@ -245,7 +270,7 @@ export default function ItemInfo() {
                                         const filled = match ? match.length : 0;
                                         return (
                                             <li key={i}>
-                                                <span style={{ color: "#3da5f5" }}>Zustand: </span>
+                                                <span style={{color: "#3da5f5"}}>Zustand: </span>
                                                 {renderStars(filled, 3)}
                                             </li>
                                         );
@@ -294,25 +319,34 @@ export default function ItemInfo() {
                             <span className="font-medium text-white">{names[uuid] || 'Lade...'}</span>
                             <div className="flex items-center gap-2">
                                 <span className="text-white font-semibold">{amount.toLocaleString()}</span>
-                                <img src="/custom-items/money.svg" alt="Money Icon" className="w-5 h-5" />
+                                <img src="/custom-items/money.svg" alt="Money Icon" className="w-5 h-5"/>
                             </div>
                         </li>
                     ))}
                 </ul>
             </div>}
 
-            { sortedBidsForList.length > 0 && <div className="bg-gray-900 p-4 rounded shadow">
-                <Line data={chartData} options={chartOptions} />
+            {sortedBidsForList.length > 0 && <div className="bg-gray-900 p-4 rounded shadow">
+                <Line data={chartData} options={chartOptions}/>
             </div>}
         </div>
     );
 }
 
 const formatMoney = (money: number) => {
-    if (money < 1000) return money.toLocaleString('en-us', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    if (money < 1_000_000) return (money / 1000).toLocaleString('en-us', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "K";
-    if (money < 1_000_000_000) return (money / 1_000_000).toLocaleString('en-us', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "M";
-    return (money / 1_000_000_000).toLocaleString('en-us', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "Mrd";
+    if (money < 1000) return money.toLocaleString('en-us', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    if (money < 1_000_000) return (money / 1000).toLocaleString('en-us', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    }) + "K";
+    if (money < 1_000_000_000) return (money / 1_000_000).toLocaleString('en-us', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    }) + "M";
+    return (money / 1_000_000_000).toLocaleString('en-us', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    }) + "Mrd";
 };
 
 const getItemImage = (auction: Page) => {
@@ -332,7 +366,7 @@ const renderStars = (filled: number, max: number = 3) => {
     const stars = [];
     for (let i = 1; i <= max; i++) {
         stars.push(
-            <span key={i} style={{ color: i <= filled ? "#facc15" : "#9ca3af" }}>✯</span>
+            <span key={i} style={{color: i <= filled ? "#facc15" : "#9ca3af"}}>✯</span>
         );
     }
     return stars;

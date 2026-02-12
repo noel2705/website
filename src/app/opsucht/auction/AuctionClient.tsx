@@ -21,6 +21,10 @@ const encodeBase64 = (obj: any) => {
 
 
 export default function AuctionClient({initialAuction}: Props) {
+
+
+
+
     const itemsPerLoad = 16;
     const [isExpiredMode, setIsExpiredMode] = useState(false);
     const [renderCount, setRenderCount] = useState(itemsPerLoad);
@@ -140,9 +144,16 @@ export default function AuctionClient({initialAuction}: Props) {
         sortAuctions(auction);
     }, [searchBar]);
 
+
+
+
+
     return (
         <>
 
+            <button onClick={() => saveExpiredAuction(auction, isExpiredMode)}>
+                SAVEN
+            </button>
 
             <div className="search-row">
                 <input
@@ -184,20 +195,14 @@ export default function AuctionClient({initialAuction}: Props) {
                     </button>
 
                     <button
-                        onClick={() => setCategory("tools")}
-                        className={category === "tools" ? "active" : ""}
+                        onClick={() => setCategory("tools_armor")}
+                        className={category === "tools_armor" ? "active" : ""}
                     >
                         <img src="https://img.mc-api.io/iron_sword.png"/>
-                        Werkzeuge
+                        Werkzeuge & Rüstung
                     </button>
 
-                    <button
-                        onClick={() => setCategory("armor")}
-                        className={category === "armor" ? "active" : ""}
-                    >
-                        <img src="https://img.mc-api.io/iron_chestplate.png"/>
-                        Rüstung
-                    </button>
+
 
                     <button
                         onClick={() => setCategory("op_items")}
@@ -404,13 +409,26 @@ const getItemIcon = (item: Item) => {
     return `/custom-items/${normalized}.png`;
 };
 
-
-async function saveExpiredAuction(auction: Page, isExpiredMode: boolean) {
+async function saveExpiredAuction(auctions: Page[], isExpiredMode: boolean) {
     if (isExpiredMode) return;
+
+    const expired = auctions.filter(a => new Date(a.endTime).getTime() < Date.now());
+    console.log("Expired Auktionen:", expired.map(a => a.uid));
+
     try {
-        await fetch('/api/save-auction', { method: 'POST', body: JSON.stringify(auction) });
+        await Promise.all(
+            expired.map(a =>
+                fetch(`/api/save-auction`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(a),
+                })
+            )
+        );
+
+        console.log("Gespeichert:", expired.length);
     } catch (err) {
-        console.error("Fehler beim Speichern eines veralteten Auktionsdatensatzes:", err, auction);
+        console.error("Fehler beim Speichern:", err);
     }
 }
 
