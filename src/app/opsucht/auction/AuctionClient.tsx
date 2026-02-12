@@ -151,9 +151,7 @@ export default function AuctionClient({initialAuction}: Props) {
     return (
         <>
 
-            <button onClick={() => saveExpiredAuction(auction, isExpiredMode)}>
-                SAVEN
-            </button>
+
 
             <div className="search-row">
                 <input
