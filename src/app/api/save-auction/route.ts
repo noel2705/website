@@ -9,6 +9,7 @@ const supabase = createClient(
 export async function POST(req: Request) {
     try {
 
+        if(!supabase) throw new Error('Supabase nicht initialisiert')
         const res = await fetch('https://api.opsucht.net/auctions/active')
         const auctions = await res.json()
 
