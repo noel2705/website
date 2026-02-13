@@ -71,6 +71,7 @@ class MinecraftNameResolver {
             if (isBedrock(uuid)) {
                 const profile = await getPlayerProfile(uuid);
                 this.cache[uuid] = profile.name;
+                sessionStorage.setItem(`mcname-${uuid}`, "." + profile.name);
                 return profile.name;
             }
             const res = await fetch(`https://api.ashcon.app/mojang/v2/user/${cleanUuid}`);
