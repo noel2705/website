@@ -58,22 +58,24 @@ const decodeBase64Utf8 = <T, >(base64: string): T => {
 class MinecraftNameResolver {
     private cache: Record<string, string> = {};
 
-    async getName(uuid: string): Promise<string> {
-        if (this.cache[uuid]) return this.cache[uuid];
-        const stored = sessionStorage.getItem(`mcname-${uuid}`);
-        if (stored) {
-            this.cache[uuid] = stored;
-            return stored;
+    constructor(initialNames?: Record<string, string>) {
+        if (initialNames) {
+            Object.entries(initialNames).forEach(([uuid, name]) => {
+                this.cache[uuid] = name;
+            });
         }
+    }
 
+    private async fetchBedrockName(uuid: string): Promise<string> {
+        const profile = await getPlayerProfile(uuid);
+        this.cache[uuid] = profile.name;
+        sessionStorage.setItem(`mcname-${uuid}`, profile.name);
+        return profile.name;
+    }
+
+    private async fetchJavaName(uuid: string): Promise<string> {
+        const cleanUuid = uuid.replace(/-/g, '');
         try {
-            const cleanUuid = uuid.replace(/-/g, '');
-            if (isBedrock(uuid)) {
-                const profile = await getPlayerProfile(uuid);
-                this.cache[uuid] = profile.name;
-                sessionStorage.setItem(`mcname-${uuid}`, "." + profile.name);
-                return profile.name;
-            }
             const res = await fetch(`https://api.ashcon.app/mojang/v2/user/${cleanUuid}`);
             if (!res.ok) throw new Error('Fetch fehlgeschlagen');
             const data = await res.json();
@@ -82,23 +84,41 @@ class MinecraftNameResolver {
             sessionStorage.setItem(`mcname-${uuid}`, name);
             return name;
         } catch {
-            const profile = await getPlayerProfile(uuid);
-            this.cache[uuid] = profile.name;
-            sessionStorage.setItem(`mcname-${uuid}`, profile.name);
-            return profile.name;
+            // Fallback zu Bedrock-Profil, falls Java-Fetch fehlschlägt
+            return this.fetchBedrockName(uuid);
+        }
+    }
+
+    async getName(uuid: string): Promise<string> {
+        // 1. Cache prüfen
+        if (this.cache[uuid]) return this.cache[uuid];
+
+        // 2. sessionStorage prüfen
+        const stored = sessionStorage.getItem(`mcname-${uuid}`);
+        if (stored) {
+            this.cache[uuid] = stored;
+            return stored;
         }
 
+        // 3. Nur fetchen, wenn noch nicht bekannt
+        if (isBedrock(uuid)) {
+            return this.fetchBedrockName(uuid);
+        } else {
+            return this.fetchJavaName(uuid);
+        }
     }
 
     async getNames(uuids: string[]): Promise<Record<string, string>> {
         const result: Record<string, string> = {};
         const toFetch: string[] = [];
 
+        // 1. Prüfen, welche Namen schon im Cache sind
         uuids.forEach(uuid => {
             if (this.cache[uuid]) result[uuid] = this.cache[uuid];
             else toFetch.push(uuid);
         });
 
+        // 2. Nur für noch unbekannte Namen fetchen
         await Promise.all(
             toFetch.map(async uuid => {
                 result[uuid] = await this.getName(uuid);
@@ -108,6 +128,7 @@ class MinecraftNameResolver {
         return result;
     }
 }
+
 
 export default function ItemInfo() {
     const searchParams = useSearchParams();
