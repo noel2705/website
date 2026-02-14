@@ -145,13 +145,8 @@ export default function AuctionClient({initialAuction}: Props) {
     }, [searchBar]);
 
 
-
-
-
     return (
         <>
-
-
 
             <div className="search-row">
                 <input
