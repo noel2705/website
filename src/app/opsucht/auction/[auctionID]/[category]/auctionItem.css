@@ -1,0 +1,25 @@
+.info-bar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 10px 14px;
+    background: #666;
+    border-radius: 10px;
+    border: 2px solid #949494;
+    width: 75%;
+    justify-content: space-between;
+    max-width: 95%;
+    margin: 20px auto;
+    white-space: nowrap;
+}
+
+.info-bar span {
+    font-size: 14px;
+}
+
+.time {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: 10px;
+}

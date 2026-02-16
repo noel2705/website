@@ -1,0 +1,10 @@
+.backButton{
+    width: 100px;
+    height: 30px;
+    border-radius: 4px;
+    background: #666;
+}
+
+.backButton:hover{
+    cursor: pointer;
+}

@@ -1,5 +1,10 @@
 import fetch from "node-fetch";
 import {Page} from "@/app/opsucht/auction/types";
+import BackButton from "@/components/opsucht/auction/BackButton";
+import "./auctionItem.css";
+import {formatEndTime, formatMoney, getAmountBids} from "@/lib/auction";
+import EndTimeCard from "@/components/opsucht/auction/EndTimeCard";
+
 
 export default async function AuctionItemPage({
                                                   params,
@@ -7,20 +12,34 @@ export default async function AuctionItemPage({
     params: Promise<{ auctionID: string, category: string }>;
 }) {
     const {auctionID, category} = await params;
-
     const data: Page[] = await getAuctionItem(auctionID, category);
+
 
     return (
         <>
+
             {data.map(a => (
                 <div key={a.uid}>
-                    <h3>{a.item.displayName}</h3>
-                    <p>Verkäufer: {a.seller}</p>
-                    <p>Aktuelles Gebot: {a.currentBid}€</p>
+
+                    <div className="info-bar">
+                        <BackButton />
+
+                        <span>{getAmountBids(a.bids)} Gebote</span>
+                        <span>Aktuell: {formatMoney(a.currentBid)}</span>
+                        <span>Start: {formatMoney(a.startBid)}</span>
+
+                        <div className="time">
+                            <EndTimeCard endTime={a.endTime} />
+                        </div>
+                    </div>
+
+
+
                 </div>
             ))}
         </>
-    );
+    )
+        ;
 }
 
 

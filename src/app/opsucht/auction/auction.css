@@ -14,6 +14,7 @@
     border-radius: 8px;
     width: 250px;
     height: 350px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
     color: white;
     display: flex;
     flex-direction: column;
@@ -22,6 +23,13 @@
     box-sizing: border-box;
     border: 2px solid transparent;
     transition: border 0.3s, box-shadow 0.3s;
+}
+
+
+.auction-card h2 {
+    margin: 0 0 10px 0;
+    font-size: 18px;
+    font-weight: bold;
 }
 
 

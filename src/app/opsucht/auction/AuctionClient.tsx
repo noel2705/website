@@ -4,6 +4,8 @@ import {Page, Item} from './types';
 import "./auction.css";
 import {useRouter} from 'next/navigation';
 import {AppRouterInstance} from "next/dist/shared/lib/app-router-context.shared-runtime";
+import {formatMoney, getItemIcon, isDesired} from "@/lib/auction";
+import {getAmountBids} from "@/lib/auction";
 
 interface Props {
     initialAuction: Page[];
@@ -267,38 +269,10 @@ export default function AuctionClient({initialAuction}: Props) {
 }
 
 
-const formatMoney = (money: number) => {
-    if (money < 1000) return money.toLocaleString('en-us', {minimumFractionDigits: 2, maximumFractionDigits: 2})
-    if (money < 1000000) return (money / 1000).toLocaleString('en-us', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-    }) + "K"
-    if (money < 1000000000) return (money / 1000000).toLocaleString('en-us', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-    }) + "M"
-    if (money < 1000000000000) return (money / 1000000000).toLocaleString('en-us', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-    }) + "Mrd"
-}
-
-function getAmountBids(bids: Record<string, number>) {
-    return Object.keys(bids).length;
-}
 
 
-function getAmountUniqueBidders(bids: Record<string, number>) {
-    return Object.keys(bids).length;
-}
 
 
-function isDesired(auction: Page) {
-    const totalBids = getAmountBids(auction.bids);
-    const uniqueBidders = getAmountUniqueBidders(auction.bids);
-
-    return totalBids > 5 && uniqueBidders >= 5;
-}
 
 function AuctionCard({auction, router}: { auction: Page, router: AppRouterInstance }) {
     const itemName = auction.item.displayName ?? auction.item.material;
@@ -396,11 +370,6 @@ const getItemImage = (auction: Page) => {
     return auction.item.icon ?? getItemIcon(auction.item);
 }
 
-const getItemIcon = (item: Item) => {
-    if (item.icon && item.icon.trim() !== "") return item.icon;
-    const normalized = item.displayName?.toLowerCase().replace(/[´’']/g, "").replace(/\s+/g, "_").replace(/[^a-z0-9_]/g, "") || "";
-    return `/custom-items/${normalized}.png`;
-};
 
 
 
