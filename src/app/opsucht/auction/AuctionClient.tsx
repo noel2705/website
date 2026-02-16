@@ -245,7 +245,7 @@ export default function AuctionClient({initialAuction}: Props) {
                                 <option value="moneyDesc">Preis: Groß → Klein</option>
                                 <option value="moneyAsc">Preis: Klein → Groß</option>
                                 <option value="timeDesc">Endet bald</option>
-                                <option value="timeAsc">Endet zuletzt</option>
+                                <option value="timeAsc">Neuste</option>
                                 <option value="bitAmountDesc">Meiste Gebote</option>
                                 <option value="bitAmontAsc">Wenigste Gebote</option>
                             </select>
@@ -381,7 +381,7 @@ function AuctionCard({auction, router}: { auction: Page, router: AppRouterInstan
             <button
                 className="auction-button"
                 onClick={() =>
-                    router.push(`/opsucht/auction/item?data=${encodeBase64(auction)}`)
+                    router.push(`/opsucht/auction/${auction.uid}/${auction.category}`)
                 }
             >
                 Informationen
@@ -402,27 +402,7 @@ const getItemIcon = (item: Item) => {
     return `/custom-items/${normalized}.png`;
 };
 
-async function saveExpiredAuction(auctions: Page[], isExpiredMode: boolean) {
-    if (isExpiredMode) return;
 
-    const expired = auctions.filter(a => new Date(a.endTime).getTime() < Date.now());
-    console.log("Expired Auktionen:", expired.map(a => a.uid));
 
-    try {
-        await Promise.all(
-            expired.map(a =>
-                fetch(`/api/save-auction`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(a),
-                })
-            )
-        );
-
-        console.log("Gespeichert:", expired.length);
-    } catch (err) {
-        console.error("Fehler beim Speichern:", err);
-    }
-}
 
 
