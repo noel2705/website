@@ -9,7 +9,7 @@ export async function GET(
     { params }: { params: { userID: string } }
 ) {
 
-    const { userID } = await params;
+    const { userID } =  params;
 
     const { data, error } = await supabaseServer
         .from("JobData")
