@@ -1,25 +1,185 @@
+.auction-container {
+    background: #1a1a1a;
+    color: #fff;
+    border-radius: 14px;
+    padding: 16px;
+    box-shadow: 0 0 25px rgba(0,0,0,0.6);
+}
+
+/* ===== Header ===== */
+.info-name {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    margin-bottom: 12px;
+}
+
+.item-icon {
+    width: 42px;
+    height: 42px;
+}
+
+/* ===== Info-Bar ===== */
 .info-bar {
     display: flex;
     align-items: center;
-    gap: 16px;
-    padding: 10px 14px;
-    background: #666;
-    border-radius: 10px;
-    border: 2px solid #949494;
-    width: 75%;
     justify-content: space-between;
-    max-width: 95%;
-    margin: 20px auto;
-    white-space: nowrap;
+    background: #151515;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 14px;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04);
 }
 
 .info-bar span {
-    font-size: 14px;
+    opacity: 0.85;
 }
 
 .time {
     display: flex;
     align-items: center;
+}
+
+.lower-section {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 340px);
+    gap: 20px;
+    margin-top: 20px;
+}
+
+
+/* ===== Graph Card ===== */
+.price-card {
+    flex: 1;
+    background: #121212;
+    border-radius: 14px;
+    padding: 16px;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04);
+}
+
+/* ===== Side Panel ===== */
+.side-panel {
+    background: #121212;
+    border-radius: 14px;
+    padding: 14px;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04);
+}
+
+.side-panel h3 {
+    margin-bottom: 6px;
+    font-size: 13px;
+    color: #4aa3ff;
+}
+
+.side-panel ul {
+    padding-left: 12px;
+}
+
+.side-panel li {
+    font-size: 13px;
+    opacity: 0.9;
+}
+
+/* ===== Live Badge ===== */
+.live-badge {
+    background: #1f1f1f;
+    color: #4cff7a;
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
     gap: 6px;
-    margin-left: 10px;
+}
+
+.live-dot {
+    width: 6px;
+    height: 6px;
+    background: #4cff7a;
+    border-radius: 50%;
+}
+
+.side-wrapper {
+    min-width: 280px;
+    max-width: 340px;
+    width: 100%;
+}
+
+
+@media (max-width: 900px) {
+    .lower-section {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+@media (max-width: 600px) {
+    .info-bar {
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: center;
+        text-align: center;
+    }
+}
+
+.bids-panel {
+    margin-top: 20px;
+    background: #121212;
+    border-radius: 14px;
+    padding: 16px;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04);
+}
+
+.bids-panel h3 {
+    margin-bottom: 12px;
+    font-size: 14px;
+    color: #4aa3ff;
+}
+
+.bids-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.bids-list li {
+    display: grid;
+    grid-template-columns: 50px 1fr auto;
+    gap: 10px;
+    align-items: center;
+    background: #181818;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+}
+
+.bids-list li:hover {
+    background: #1f1f1f;
+}
+
+.rank {
+    opacity: 0.6;
+}
+
+.name {
+    font-weight: 500;
+}
+
+.price {
+    color: #4cff7a;
+    font-weight: 600;
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+    .bids-list li {
+        grid-template-columns: 40px 1fr;
+        grid-template-rows: auto auto;
+    }
+
+    .price {
+        grid-column: 1 / -1;
+        text-align: right;
+    }
 }

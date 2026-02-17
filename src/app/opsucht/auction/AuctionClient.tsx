@@ -356,6 +356,7 @@ function AuctionCard({auction, router}: { auction: Page, router: AppRouterInstan
                 className="auction-button"
                 onClick={() =>
                     router.push(`/opsucht/auction/${auction.uid}/${auction.category}`)
+                    //    router.push(`/opsucht/auction/item?data=${encodeBase64(auction)}`)
                 }
             >
                 Informationen

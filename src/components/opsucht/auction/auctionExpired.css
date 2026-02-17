@@ -1,0 +1,37 @@
+.auction-expired-container {
+    text-align: center;
+    padding: 40px 20px;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    background-color: #383838;
+    max-width: 500px;
+    margin: 40px auto;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.auction-expired-container h2 {
+    font-size: 28px;
+    color: #d32f2f;
+    margin-bottom: 12px;
+}
+
+.auction-expired-container p {
+    font-size: 16px;
+    color: #ffffff;
+    margin-bottom: 24px;
+}
+
+.auction-expired-button {
+    padding: 12px 24px;
+    font-size: 16px;
+    background-color: #1976d2;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.auction-expired-button:hover {
+    background-color: #1565c0;
+}

@@ -1,7 +1,7 @@
 import {Item, Page} from "@/app/opsucht/auction/types";
 
 export function formatMoney(money: number) {
-    if (money < 1000) return money.toLocaleString('en-us', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    if (money < 1000) return money.toLocaleString('en-us', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "$";
     if (money < 1000000) return (money / 1000).toLocaleString('en-us', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "K";
     if (money < 1000000000) return (money / 1000000).toLocaleString('en-us', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "M";
     if (money < 1000000000000) return (money / 1000000000).toLocaleString('en-us', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "Mrd";
@@ -31,7 +31,7 @@ export function getAmountUniqueBidders(bids: Record<string, number>) {
     return Object.keys(bids).length;
 }
 
-export function formatEndTime(endTime: string) {
+export function formatEndTime(endTime: string, currentTime: Date) {
 
 
 
