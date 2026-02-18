@@ -8,6 +8,7 @@ import PriceChart from "@/components/opsucht/auction/PriceChart";
 import MinecraftNameResolver from "@/lib/minecraftNameResolver";
 import ReloadButton from "@/components/opsucht/auction/ReloadButton";
 import AuctionExpired from "@/components/opsucht/auction/AuctionExpired";
+import UserPageButton from "@/components/opsucht/auction/UserPageButton";
 
 export default async function AuctionItemPage({
                                                   params,
@@ -100,7 +101,6 @@ export default async function AuctionItemPage({
                                 </div>
                             </div>
 
-                            {/* ===== Bieterliste ===== */}
                             {bidsSorted.length > 0 && (
                                 <div className="bids-panel">
                                     <h3>Bieterliste</h3>
@@ -109,9 +109,7 @@ export default async function AuctionItemPage({
                                         {bidsSorted.map(([uuid, amount], index) => (
                                             <li key={uuid}>
                                                 <span className="rank">#{index + 1}</span>
-                                                <span className="name">
-                                                    {namesMap[uuid] || "..."}
-                                                </span>
+                                                <UserPageButton name={namesMap[uuid]} uuid={a.seller}></UserPageButton>
                                                 <span className="price">
                                                     {formatMoney(amount)}
                                                 </span>

@@ -3,9 +3,9 @@ import React, {useState, useEffect, useMemo} from 'react';
 import {Page, Item} from './types';
 import "./auction.css";
 import {useRouter} from 'next/navigation';
-import {AppRouterInstance} from "next/dist/shared/lib/app-router-context.shared-runtime";
-import {formatMoney, getItemIcon, isDesired} from "@/lib/auction";
 import {getAmountBids} from "@/lib/auction";
+import {AuctionCard} from "@/components/opsucht/AuctionCard";
+import MinecraftNameResolver from "@/lib/minecraftNameResolver";
 
 interface Props {
     initialAuction: Page[];
@@ -24,15 +24,12 @@ const encodeBase64 = (obj: any) => {
 
 export default function AuctionClient({initialAuction}: Props) {
 
-
-
-
     const itemsPerLoad = 16;
     const [isExpiredMode, setIsExpiredMode] = useState(false);
     const [renderCount, setRenderCount] = useState(itemsPerLoad);
     const [auction, setAuction] = useState<Page[]>(initialAuction);
+    const [sellerNames, setSellerNames] = useState<Record<string, string>>({})
     const [showAuction, setShowAuction] = useState<Page[]>();
-    const router = useRouter()
     const fetchAuctions = async (cat: string) => {
         let data: Page[] = [];
         if (!isExpiredMode) {
@@ -49,11 +46,19 @@ export default function AuctionClient({initialAuction}: Props) {
 
         }
 
-
         setAuction(data);
         sortAuctions(data);
+        const rawNames = data.map(e => e.seller);
+        const resNames = await getSellerName(rawNames);
+        setSellerNames(resNames);
+
     };
 
+
+
+    const getSellerName = async (uids: string[])  => {
+        return new MinecraftNameResolver().getNames(uids);
+    }
     const [category, setCategory] = useState("*");
     const [searchBar, setSearchbar] = useState("");
     const [orderBy, setOrderby] = useState("moneyDesc");
@@ -260,119 +265,15 @@ export default function AuctionClient({initialAuction}: Props) {
 
             <div className="auction-grid">
                 {showAuction?.slice(0, renderCount).map(a => (
-                    <AuctionCard key={a.uid} auction={a} router={router}/>
+                    <AuctionCard key={a.uid} auction={a} auctionSellerName={sellerNames[a.seller]}/>
                 ))}
             </div>
 
         </>
     );
+
+
+
+
 }
-
-
-
-
-
-
-
-function AuctionCard({auction, router}: { auction: Page, router: AppRouterInstance }) {
-    const itemName = auction.item.displayName ?? auction.item.material;
-    const currentPrice = auction.currentBid;
-    const img = getItemImage(auction)
-    const endDate = auction.endTime;
-    const amountBids = getAmountBids(auction.bids);
-    const isdesired = isDesired(auction);
-
-
-    const [now, setNow] = useState(Date.now());
-
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setNow(Date.now());
-        }, 1000);
-
-        return () => clearInterval(interval);
-    }, []);
-
-    const endText = useMemo(() => {
-        const milliToEnd = new Date(endDate).getTime() - now;
-
-        if (milliToEnd <= 0) {
-            return "Beendet";
-        }
-
-        const secToEnd = Math.floor(milliToEnd / 1000);
-        const seconds = secToEnd % 60;
-        const minutes = Math.floor(secToEnd / 60) % 60;
-        const hours = Math.floor(secToEnd / 3600);
-
-        return `${hours}h ${minutes}m ${seconds}s`;
-    }, [endDate, now]);
-
-    return (
-        <div className={`auction-card ${isdesired ? "desired" : ""}`}>
-
-
-            <div className="item-image-container">
-                <img
-                    onError={(e) => {
-                        e.currentTarget.src = `https://img.mc-api.io/${auction.item.material.toLowerCase()}.png`;
-                    }}
-                    loading="lazy"
-                    src={img}
-                    className="auction-item-img"
-                    alt={itemName}
-                />
-
-                {isdesired && (
-                    <img
-                        src="/desired.jpg"
-                        alt="Begehrt"
-                        className="desired-icon"
-                    />
-                )}
-            </div>
-            <h2 className="auction-title">{itemName}</h2>
-
-            <div className="auction-details">
-                <div className="price-row">
-                    <p>Preis: {formatMoney(currentPrice) ?? "N/A"}</p>
-                    <img src="/custom-items/money.svg" alt="Icon" width="24" height="24"/>
-                </div>
-
-                {endText === "Beendet" && (
-                    <p className={"red-text"}>{endText}</p>
-                )}
-
-                {endText !== "Beendet" && (
-                    <p>Endet in: {endText}</p>
-                )}
-
-                <p className={amountBids > 0 ? "green-text" : ""}>
-                    Gebote: {amountBids}
-                </p>
-            </div>
-
-            <button
-                className="auction-button"
-                onClick={() =>
-                    router.push(`/opsucht/auction/${auction.uid}/${auction.category}`)
-                    //    router.push(`/opsucht/auction/item?data=${encodeBase64(auction)}`)
-                }
-            >
-                Informationen
-            </button>
-        </div>
-    )
-        ;
-}
-
-
-const getItemImage = (auction: Page) => {
-    return auction.item.icon ?? getItemIcon(auction.item);
-}
-
-
-
-
-
 

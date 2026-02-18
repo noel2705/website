@@ -6,6 +6,7 @@ import { supabaseServer } from "@/lib/supabaseServer"
 export async function POST(req: Request) {
     const { mc_name, password } = await req.json()
 
+
     const { data: user } = await supabaseServer
         .from("users")
         .select("*")

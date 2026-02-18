@@ -52,3 +52,23 @@ export function formatEndTime(endTime: string, currentTime: Date) {
 }
 
 
+
+export async function getActiveAuction(userUID: string) {
+    const url = "https://api.opsucht.net/auctions/active"
+
+    const res = await fetch(url)
+
+    const data: Page[] = await res.json();
+
+    return data.filter(value => userUID === value.seller || Object.keys(value.bids).some(bid => bid === userUID));
+}
+
+
+export const getItemImage = (auction: Page) => {
+    return auction.item.icon ?? getItemIcon(auction.item);
+}
+
+
+
+
+
