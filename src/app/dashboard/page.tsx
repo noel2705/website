@@ -8,5 +8,5 @@ export default async function Dashboard() {
         redirect("/login")
     }
 
-    return <div>Willkommen {user.name}</div>
+    return <div>Willkommen </div>
 }
