@@ -1,12 +1,16 @@
 'use client'
 import {Page} from "@/app/opsucht/auction/types";
 import {formatMoney, getAmountBids, getItemIcon, getItemImage, isDesired} from "@/lib/auction";
-import {useEffect, useMemo, useState} from "react";
-import {AppRouterInstance} from "next/dist/shared/lib/app-router-context.shared-runtime";
+import {ReactNode, useEffect, useMemo, useState} from "react";
 import {useRouter} from "next/navigation";
 import "@/app/opsucht/auction/auction.css";
-import MinecraftNameResolver from "@/lib/minecraftNameResolver";
-export function AuctionCard({auction, auctionSellerName}: { auction: Page, auctionSellerName: string}) {
+function AuctionCard({
+                                auction,
+                                auctionSellerName
+                            }: {
+    auction: Page;
+    auctionSellerName: ReactNode;
+}) {
     const itemName = auction.item.displayName ?? auction.item.material;
     const currentPrice = auction.currentBid;
     const img = getItemImage(auction)
@@ -100,3 +104,5 @@ export function AuctionCard({auction, auctionSellerName}: { auction: Page, aucti
     )
         ;
 }
+
+export default AuctionCard

@@ -4,7 +4,7 @@ import {Page, Item} from './types';
 import "./auction.css";
 import {useRouter} from 'next/navigation';
 import {getAmountBids} from "@/lib/auction";
-import {AuctionCard} from "@/components/opsucht/AuctionCard";
+import AuctionCard from "@/components/opsucht/AuctionCard";
 import MinecraftNameResolver from "@/lib/minecraftNameResolver";
 
 interface Props {

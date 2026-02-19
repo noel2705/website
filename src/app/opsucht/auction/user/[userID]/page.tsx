@@ -1,36 +1,69 @@
 import React from 'react';
-import {getActiveAuction} from "@/lib/auction";
-import {AuctionCard} from "@/components/opsucht/AuctionCard";
-import MinecraftNameResolver from "@/lib/minecraftNameResolver";
-
+import { getActiveAuction } from "@/lib/auction";
+import { isHighestBidder } from "@/lib/auction";
+import AuctionCard from "@/components/opsucht/AuctionCard";
+import UserName from "@/components/opsucht/auction/UserName";
+import "./userAuctions.css";
 
 export default async function UserAuctions({
                                                params,
                                            }: {
     params: Promise<{ userID: string }>;
-
 }) {
-    const {userID} = await params;
-    const userAuctions = await getActiveAuction(userID)
-    const nameResolver = new MinecraftNameResolver()
-    const resolvedSellers = await nameResolver.getNames(userAuctions.map(a => a.seller));
-    return (<>
+    const { userID } = await params;
 
+    const userAuctions = await getActiveAuction(userID);
 
-        <h1>Auktions Profil: {nameResolver.getName(userID)}</h1>
+    const eigeneAuktionen = userAuctions.filter(a => a.seller === userID);
+    const gebote = userAuctions.filter(a => a.bids && userID in a.bids);
 
-        {userAuctions.map(a => {
-            return <div key={a.uid}>
+    return (
+        <div className="user-auctions-container">
 
+            <h1>
+                Auktionsprofil: <UserName uuid={userID} />
+            </h1>
 
-                <div className={"auction-grid"}>
-                    <AuctionCard auction={a} auctionSellerName={resolvedSellers[a.seller]}></AuctionCard>
-                </div>
+            {eigeneAuktionen.length > 0 && (
+                <section>
+                    <h2 className="own-auction">Eigene Auktionen</h2>
+                    <div className="auction-grid">
+                        {eigeneAuktionen.map(a => (
+                            <AuctionCard
+                                key={a.uid}
+                                auction={a}
+                                auctionSellerName={<UserName uuid={a.seller} />}
+                            />
+                        ))}
+                    </div>
+                </section>
+            )}
 
-            </div>
+            {gebote.length > 0 && (
+                <section>
+                    <h2 className="bid-auction">Gebote</h2>
+                    <div className="auction-grid">
+                        {gebote.map(async a => {
+                            const highest = await isHighestBidder(a, userID);
 
-        })}
+                            return (
+                                <div key={a.uid} className="auction-wrapper">
+                                    <AuctionCard
+                                        auction={a}
+                                        auctionSellerName={<UserName uuid={a.seller} />}
+                                    />
+                                    <div className="bid-status">
+                                        <span className={highest ? "highest" : "outbid"}>
+                                            {highest ? "Höchstbietender" : "Überboten"}
+                                        </span>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </section>
+            )}
 
-
-    </>);
+        </div>
+    );
 }

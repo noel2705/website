@@ -71,4 +71,12 @@ export const getItemImage = (auction: Page) => {
 
 
 
+export  async function isHighestBidder(auction: any, userID: string): Promise<boolean> {
+    if (!auction.bids) return false;
+
+    const bids = Object.values(auction.bids) as number[];
+    const highestBid = Math.max(...bids);
+    return auction.bids[userID] === highestBid;
+}
+
 

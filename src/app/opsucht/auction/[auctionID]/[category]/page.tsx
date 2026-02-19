@@ -109,7 +109,7 @@ export default async function AuctionItemPage({
                                         {bidsSorted.map(([uuid, amount], index) => (
                                             <li key={uuid}>
                                                 <span className="rank">#{index + 1}</span>
-                                                <UserPageButton name={namesMap[uuid]} uuid={a.seller}></UserPageButton>
+                                                <UserPageButton name={namesMap[uuid]} uuid={uuid}></UserPageButton>
                                                 <span className="price">
                                                     {formatMoney(amount)}
                                                 </span>
