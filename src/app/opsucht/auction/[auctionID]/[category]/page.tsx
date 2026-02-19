@@ -9,6 +9,7 @@ import MinecraftNameResolver from "@/lib/minecraftNameResolver";
 import ReloadButton from "@/components/opsucht/auction/ReloadButton";
 import AuctionExpired from "@/components/opsucht/auction/AuctionExpired";
 import UserPageButton from "@/components/opsucht/auction/UserPageButton";
+import UserName from "@/components/opsucht/auction/UserName";
 
 export default async function AuctionItemPage({
                                                   params,
@@ -24,11 +25,8 @@ export default async function AuctionItemPage({
         <>
             {await Promise.all(
                 data.map(async (a) => {
-                    const uuids = Object.keys(a.bids);
-                    const namesMap: Record<string, string> = {};
-                    for (const uuid of uuids) {
-                        namesMap[uuid] = await resolver.getName(uuid);
-                    }
+
+
 
                     const bidsSorted = Object.entries(a.bids)
                         .sort((a, b) => b[1] - a[1]);
@@ -60,7 +58,7 @@ export default async function AuctionItemPage({
                             <div className="lower-section">
 
                                 <div className="price-card">
-                                    <PriceChart bids={a.bids} names={namesMap} />
+                                    <PriceChart bids={a.bids} />
                                 </div>
 
                                 <div className="side-wrapper">
@@ -109,7 +107,7 @@ export default async function AuctionItemPage({
                                         {bidsSorted.map(([uuid, amount], index) => (
                                             <li key={uuid}>
                                                 <span className="rank">#{index + 1}</span>
-                                                <UserPageButton name={namesMap[uuid]} uuid={uuid}></UserPageButton>
+                                                <UserPageButton name={<UserName uuid={uuid} />} uuid={uuid}></UserPageButton>
                                                 <span className="price">
                                                     {formatMoney(amount)}
                                                 </span>

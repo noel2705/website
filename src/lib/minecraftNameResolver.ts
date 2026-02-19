@@ -9,7 +9,7 @@ export async function getPlayerProfile(uuid: string): Promise<{ name: string; uu
         const res = await fetch(`https://mc-api.io/name/${uuid}`);
         if (!res.ok) throw new Error(`Fehler beim Abrufen von Bedrock-Profil: ${res.status}`);
         const data = await res.json();
-        return { name: data.name, uuid: data.uuid };
+        return { name: "." + data.name, uuid: data.uuid };
     } catch (err) {
         console.error("Fehler beim Laden des Bedrock-Profils", err);
         return { name: "Unbekannt", uuid };
@@ -29,27 +29,35 @@ export default class MinecraftNameResolver {
 
     private async fetchBedrockName(uuid: string): Promise<string> {
         const profile = await getPlayerProfile(uuid);
-        this.cache[uuid] = "." + profile.name;
+        this.cache[uuid] =  profile.name;
         if (typeof sessionStorage !== 'undefined') {
             sessionStorage.setItem(`mcname-${uuid}`, profile.name);
         }
-        return '.' + profile.name;
+        return  profile.name;
     }
 
-    private async fetchJavaName(uuid: string): Promise<string> {
+    private async fetchJavaName(uuid: string, retry = 2): Promise<string> {
         const cleanUuid = uuid.replace(/-/g, '');
+        await new Promise(r => setTimeout(r, 150));
+
         try {
             const res = await fetch(`https://api.ashcon.app/mojang/v2/user/${cleanUuid}`);
-            if (!res.ok) throw new Error('Java-API Fetch fehlgeschlagen bei UUID: ' + uuid);
+
+            if (res.status === 429 && retry > 0) {
+                await new Promise(r => setTimeout(r, 800));
+                return this.fetchJavaName(uuid, retry - 1);
+            }
+
+            if (!res.ok) throw new Error(`Java-API Fehler ${res.status}`);
+
             const data = await res.json();
             const name = data.username || 'Unbekannt';
+
             this.cache[uuid] = name;
-            if (typeof sessionStorage !== 'undefined') {
-                sessionStorage.setItem(`mcname-${uuid}`, name);
-            }
+            sessionStorage?.setItem(`mcname-${uuid}`, name);
+
             return name;
-        } catch (err) {
-            console.warn(`Java-API fehlgeschlagen für ${uuid}, versuche Bedrock Fallback`);
+        } catch {
             return this.fetchBedrockName(uuid);
         }
     }

@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -12,6 +12,7 @@ import {
     Legend,
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
+import MinecraftNameResolver from "@/lib/minecraftNameResolver";
 
 ChartJS.register(
     CategoryScale,
@@ -23,15 +24,28 @@ ChartJS.register(
     Legend
 );
 
+const resolver = new MinecraftNameResolver();
+
 interface PriceChartProps {
     bids: Record<string, number>; // { uuid: amount }
-    names?: Record<string, string>; // Optional: UUID → Spielername
 }
 
-export default function PriceChart({ bids, names }: PriceChartProps) {
+export default function PriceChart({ bids }: PriceChartProps) {
+    const [names, setNames] = useState<Record<string, string>>({});
+
+    useEffect(() => {
+        const uuids = Object.keys(bids);
+        if (!uuids.length) return;
+
+        resolver.getNames(uuids).then(setNames);
+    }, [bids]);
+
     const sortedBids = Object.entries(bids).sort((a, b) => a[1] - b[1]);
 
-    const labels = sortedBids.map(([uuid]) => names?.[uuid] || uuid.slice(0, 4));
+    const labels = sortedBids.map(([uuid]) =>
+        names[uuid] ?? uuid.slice(0, 4) + '…'
+    );
+
     const dataValues = sortedBids.map(([, amount]) => amount);
 
     const chartData = {
@@ -41,7 +55,7 @@ export default function PriceChart({ bids, names }: PriceChartProps) {
                 label: 'Gebotsverlauf',
                 data: dataValues,
                 fill: false,
-                borderColor: '#3da5f5',        // Neon-Blau Linie
+                borderColor: '#3da5f5',
                 backgroundColor: '#3da5f5',
                 tension: 0.3,
                 pointBackgroundColor: '#3da5f5',
@@ -55,7 +69,7 @@ export default function PriceChart({ bids, names }: PriceChartProps) {
     const chartOptions = {
         responsive: true,
         maintainAspectRatio: false,
-        layout: { padding: { left: 20, right: 40, top: 10, bottom: 20 } }, // Abstand vom Rand
+        layout: { padding: { left: 20, right: 40, top: 10, bottom: 20 } },
         plugins: {
             legend: { display: false },
             tooltip: {
@@ -87,7 +101,7 @@ export default function PriceChart({ bids, names }: PriceChartProps) {
                     maxTicksLimit: 5,
                 },
                 grid: {
-                    color: 'rgba(58, 165, 245, 0.2)', // leicht transparent
+                    color: 'rgba(58, 165, 245, 0.2)',
                 },
             },
             x: {
@@ -108,9 +122,14 @@ export default function PriceChart({ bids, names }: PriceChartProps) {
         },
     };
 
+    const loading = Object.keys(names).length === 0;
+
     return (
-        <div style={{ width: '100%', height: '250px', paddingRight: '60px' }}>
-            <Line data={chartData} options={chartOptions} />
+        <div
+            className={loading ? "chart-loading" : ""}
+            style={{ width: '100%', height: '250px', paddingRight: '60px' }}
+        >
+            <Line data={chartData} options={chartOptions as any} />
         </div>
     );
 }

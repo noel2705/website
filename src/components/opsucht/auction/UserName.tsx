@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import MinecraftNameResolver from "@/lib/minecraftNameResolver";
 
+const resolver = new MinecraftNameResolver();
+
 export default function UserName({ uuid }: { uuid: string }) {
     const [name, setName] = useState<string | null>(null);
 
@@ -10,7 +12,6 @@ export default function UserName({ uuid }: { uuid: string }) {
         let mounted = true;
 
         const load = async () => {
-            const resolver = new MinecraftNameResolver();
             const n = await resolver.getName(uuid);
             if (mounted) setName(n);
         };
@@ -22,5 +23,5 @@ export default function UserName({ uuid }: { uuid: string }) {
         };
     }, [uuid]);
 
-    return <>{name ?? "..."}</>;
+    return <>{name ?? "wird geladen…"}</>;
 }

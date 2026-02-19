@@ -29,6 +29,7 @@ export default function AuctionClient({initialAuction}: Props) {
     const [renderCount, setRenderCount] = useState(itemsPerLoad);
     const [auction, setAuction] = useState<Page[]>(initialAuction);
     const [sellerNames, setSellerNames] = useState<Record<string, string>>({})
+    const resolver = new MinecraftNameResolver();
     const [showAuction, setShowAuction] = useState<Page[]>();
     const fetchAuctions = async (cat: string) => {
         let data: Page[] = [];
@@ -48,7 +49,7 @@ export default function AuctionClient({initialAuction}: Props) {
 
         setAuction(data);
         sortAuctions(data);
-        const rawNames = data.map(e => e.seller);
+        const rawNames = [...new Set(data.map(e => e.seller))];
         const resNames = await getSellerName(rawNames);
         setSellerNames(resNames);
 
@@ -56,9 +57,10 @@ export default function AuctionClient({initialAuction}: Props) {
 
 
 
-    const getSellerName = async (uids: string[])  => {
-        return new MinecraftNameResolver().getNames(uids);
-    }
+    const getSellerName = async (uids: string[]) => {
+        return resolver.getNames(uids);
+    };
+
     const [category, setCategory] = useState("*");
     const [searchBar, setSearchbar] = useState("");
     const [orderBy, setOrderby] = useState("moneyDesc");
@@ -126,26 +128,38 @@ export default function AuctionClient({initialAuction}: Props) {
 
 
     useEffect(() => {
-        const handleScroll = () => {
-            if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 300) {
-                setRenderCount(prev => Math.min(prev + itemsPerLoad, showAuction?.length ?? 0));
+        const sentinel = document.getElementById('scroll-sentinel');
+        if (!sentinel) return;
+
+        const observer = new IntersectionObserver(
+            entries => {
+                if (entries[0].isIntersecting) {
+                    setRenderCount(prev =>
+                        Math.min(prev + itemsPerLoad, showAuction?.length ?? 0)
+                    );
+                }
+            },
+            {
+                root: null,
+                rootMargin: '300px',
+                threshold: 0
             }
-        };
+        );
 
-        window.addEventListener("scroll", handleScroll);
-        return () => window.removeEventListener("scroll", handleScroll);
+        observer.observe(sentinel);
+
+        return () => observer.disconnect();
     }, [showAuction]);
-
 
 
 
     useEffect(() => {
         const interval = setInterval(() => {
             void fetchAuctions(category);
-        }, 10000)
-        return () => clearInterval(interval)
-    })
+        }, 10000);
 
+        return () => clearInterval(interval);
+    }, [category, isExpiredMode]);
     useEffect(() => {
         sessionStorage.setItem("searchBar", searchBar);
         sortAuctions(auction);
@@ -268,6 +282,8 @@ export default function AuctionClient({initialAuction}: Props) {
                     <AuctionCard key={a.uid} auction={a} auctionSellerName={sellerNames[a.seller]}/>
                 ))}
             </div>
+
+            <div id="scroll-sentinel" style={{ height: 1 }} />
 
         </>
     );
