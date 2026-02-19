@@ -44,7 +44,7 @@ export default function AuctionItemDetails({ auction, names }: Props) {
             <div className="lower-section">
 
                 <div className="price-card">
-                    <PriceChart bids={auction.bids} names={names} />
+                    <PriceChart bids={auction.bids} />
                 </div>
 
                 <div className="side-wrapper">
