@@ -159,7 +159,8 @@ export default function AuctionClient({initialAuction}: Props) {
         }, 10000);
 
         return () => clearInterval(interval);
-    }, [category, isExpiredMode]);
+    }, []);
+
     useEffect(() => {
         sessionStorage.setItem("searchBar", searchBar);
         sortAuctions(auction);
