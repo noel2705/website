@@ -1,10 +1,14 @@
-import pgPromise from "pg-promise"
+import pgPromise from 'pg-promise'
 
-const pgp = pgPromise({
-    capSQL: true,
-})
+const pgp = pgPromise({ capSQL: true })
 
-const createDb = () =>  pgp(process.env.DATABASE_URL ?? '')
+const createDb = () =>
+    pgp({
+        connectionString: process.env.DATABASE_URL,
+        ssl: {
+            rejectUnauthorized: false,
+        },
+    })
 
 declare global {
     var db: ReturnType<typeof createDb> | undefined
@@ -12,11 +16,6 @@ declare global {
 
 export const db = global.db ?? createDb()
 
-if (process.env.NODE_ENV !== "production") {
+if (process.env.NODE_ENV !== 'production') {
     global.db = db
 }
-
-
-
-
-

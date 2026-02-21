@@ -1,59 +1,33 @@
-import { supabaseServer } from "@/lib/supabaseServer"
+import {db} from '../db';
 
 export class User {
-    id: string
-    mc_uuid: string
-    mc_name: string
-    verified: boolean
+    name: string
+    uuid: string
+    created_at: Date
 
-    constructor(data: any) {
-        this.id = data.id
-        this.mc_uuid = data.mc_uuid
-        this.mc_name = data.mc_name
-        this.verified = data.verified
+
+    constructor({ name, uuid, created_at }: { name: string, uuid: string, created_at: Date }) {
+        this.name = name
+        this.uuid = uuid
+        this.created_at = created_at
     }
 
-    static async getById(id: string): Promise<User | null> {
-        const { data } = await supabaseServer
-            .from("users")
-            .select("*")
-            .eq("id", id)
-            .single()
-
-        if (!data) return null
-
-        return new User(data)
-    }
-
-    static async getByMcUUID(uuid: string): Promise<User | null> {
-        const { data } = await supabaseServer
-            .from("users")
-            .select("*")
-            .eq("mc_uuid", uuid)
-            .single()
-
-        if (!data) return null
-
-        return new User(data)
+    static async getByUUID(uuid: string) {
+        try {
+            const userData = await db.oneOrNone('SELECT * FROM users WHERE mc_uuid = $1', uuid)
+            return userData ? new User(userData) : null
+        } catch (error) {
+            console.error('Error fetching user by UUID:', error);
+            throw error;
+        }
     }
 
 
-    getName() {
-        return this.mc_name
+    static async create(name: string, uuid: string) {
+        const sql = 'INSERT INTO users (mc_name, mc_uuid) VALUES ($1, $2)'
+        const row = await db.one(sql, [name, uuid])
+
+        return new User(row)
     }
 
-    async getActiveAuctions() {
-        const res = await fetch("https://api.opsucht.net/auctions/active")
-        const auctions = await res.json()
-
-        return auctions.filter(
-            (a: any) =>
-                a.seller.replace(/-/g, "").toLowerCase() ===
-                this.mc_uuid.replace(/-/g, "").toLowerCase()
-        )
-    }
-
-    isVerified() {
-        return this.verified
-    }
 }

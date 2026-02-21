@@ -29,7 +29,7 @@ function NavLink({ href, pathname, children }) {
     return (
         <Link
             href={href}
-            className={`link ${pathname === href ? "active" : ""}`}
+            className={`link ${pathname.startsWith(href) ? "active" : ""}`}
         >
             {children}
         </Link>

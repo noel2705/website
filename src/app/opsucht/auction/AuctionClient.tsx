@@ -48,13 +48,11 @@ export default function AuctionClient({initialAuction}: Props) {
         }
 
         setAuction(data);
-        sortAuctions(data);
         const rawNames = [...new Set(data.map(e => e.seller))];
         const resNames = await getSellerName(rawNames);
         setSellerNames(resNames);
 
     };
-
 
 
     const getSellerName = async (uids: string[]) => {
@@ -66,15 +64,14 @@ export default function AuctionClient({initialAuction}: Props) {
     const [orderBy, setOrderby] = useState("moneyDesc");
 
     useEffect(() => {
-        const storedCategory = sessionStorage?.getItem("category") || "*";
-        const storedSearchBar = sessionStorage?.getItem("searchBar") || '';
-        const storedOrderBy = sessionStorage?.getItem("orderBy") || 'moneyDesc';
+        const storedCategory = sessionStorage.getItem("category") || "*";
+        const storedSearchBar = sessionStorage.getItem("searchBar") || '';
+        const storedOrderBy = sessionStorage.getItem("orderBy") || 'moneyDesc';
 
-        if (storedCategory != category) setCategory(storedCategory);
-        if (storedSearchBar != storedSearchBar) setSearchbar(storedSearchBar);
-        if (storedOrderBy != storedOrderBy) setOrderby(storedOrderBy);
+        if (storedCategory !== category) setCategory(storedCategory);
+        if (storedSearchBar !== searchBar) setSearchbar(storedSearchBar);
+        if (storedOrderBy !== orderBy) setOrderby(storedOrderBy);
     }, []);
-
 
     const sortAuctions = (auctionData: Page[]) => {
         let filtered: Page[] = Array.isArray(auctionData) ? auctionData : [];
@@ -101,7 +98,7 @@ export default function AuctionClient({initialAuction}: Props) {
                     return b.currentBid - a.currentBid
                 case "bitAmountDesc":
                     return getAmountBids(b.bids) - getAmountBids(a.bids)
-                case "bitAmontAsc":
+                case "bitAmountAsc":
                     return getAmountBids(a.bids) - getAmountBids(b.bids)
                 default:
                     return 0
@@ -125,6 +122,10 @@ export default function AuctionClient({initialAuction}: Props) {
 
 
 
+
+    useEffect(() => {
+        sortAuctions(auction);
+    }, [auction, orderBy, searchBar]);
 
 
     useEffect(() => {
@@ -269,7 +270,7 @@ export default function AuctionClient({initialAuction}: Props) {
                                 <option value="timeDesc">Endet bald</option>
                                 <option value="timeAsc">Neuste</option>
                                 <option value="bitAmountDesc">Meiste Gebote</option>
-                                <option value="bitAmontAsc">Wenigste Gebote</option>
+                                <option value="bitAmountAsc">Wenigste Gebote</option>
                             </select>
                         </div>
                     </div>
