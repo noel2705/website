@@ -19,7 +19,7 @@
     "jsonwebtoken": "^9.0.3",
     "lucide-react": "^0.563.0",
     "mysql2": "^3.16.2",
-    "next": "16.1.5",
+    "next": "^16.1.6",
     "node-fetch": "^3.3.2",
     "pg-promise": "^12.6.1",
     "postgres": "^3.4.8",

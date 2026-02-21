@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import "./css/NavigationBar.css";
+import UserIcon from "./UserIcon";
 
 export default function NavigationBar() {
     const pathname = usePathname();
@@ -16,9 +17,7 @@ export default function NavigationBar() {
             </ul>
 
             <div className="right">
-                <Link href="/login" className="loginIcon">
-                    👤
-                </Link>
+             <UserIcon></UserIcon>
             </div>
         </nav>
     );

@@ -2,14 +2,16 @@ import {db} from '../db';
 
 export class User {
     name: string
-    uuid: string
+    mc_uuid: string
+    password: string
     created_at: Date
 
 
-    constructor({ name, uuid, created_at }: { name: string, uuid: string, created_at: Date }) {
+    constructor({ name, mc_uuid, created_at, password}: { name: string, mc_uuid: string, created_at: Date, password: string }) {
         this.name = name
-        this.uuid = uuid
+        this.mc_uuid = mc_uuid
         this.created_at = created_at
+        this.password = password
     }
 
     static async getByUUID(uuid: string) {
@@ -29,5 +31,7 @@ export class User {
 
         return new User(row)
     }
+
+
 
 }

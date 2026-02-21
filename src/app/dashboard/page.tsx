@@ -1,12 +1,21 @@
 import { redirect } from "next/navigation"
-import { getUser } from "@/lib/auth"
+import { cookies } from "next/headers"
+import { verifyJWT } from "@/lib/jwt"
 
 export default async function Dashboard() {
-    const user = await getUser()
+    const cookieStore = await cookies()
+    const token = cookieStore.get("token")?.value
 
-    if (!user) {
+    if (!token) {
         redirect("/login")
     }
 
-    return <div>Willkommen </div>
+    try {
+        const payload = verifyJWT(token!)
+
+        return <div>Willkommen, du bist eingeloggt!</div>
+    } catch (err) {
+        // Token ungültig → Login
+        redirect("/login")
+    }
 }

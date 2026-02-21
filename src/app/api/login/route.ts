@@ -1,27 +1,34 @@
-import bcrypt from "bcrypt"
-import { createJWT } from "@/lib/jwt"
-import { cookies } from "next/headers"
-import { supabaseServer } from "@/lib/supabaseServer"
+import {User} from "@/lib/models/User";
+import MinecraftNameResolver from "@/lib/minecraftNameResolver";
+import bcrypt from "bcrypt";
+import {createJWT} from "@/lib/jwt";
+import {cookies} from "next/headers";
+import {db} from "@/lib/db";
 
 export async function POST(req: Request) {
     const { mc_name, password } = await req.json()
 
+    const mc_uuid = await new MinecraftNameResolver().getUUID(mc_name)
 
-    const { data: user } = await supabaseServer
-        .from("users")
-        .select("*")
-        .eq("mc_name", mc_name)
-        .single()
-
-
-    if (!user || !user.password_hash) {
-        return new Response("User nicht gefunden", { status: 401 })
+    if (!mc_uuid) {
+        return Response.json({ error: "Minecraft-Name nicht gefunden" }, { status: 404 })
     }
 
-    const valid = await bcrypt.compare(password, user.password_hash)
+    const userData: User[] = await db.any(
+        "SELECT mc_uuid, password FROM users WHERE mc_uuid = $1",
+        [mc_uuid]
+    )
+
+    if (userData.length === 0) {
+        return Response.json({ error: "Du hast noch keinen Account!" }, { status: 404 })
+    }
+
+    const user = userData[0]
+
+    const valid = await bcrypt.compare(password, user.password)
 
     if (!valid) {
-        return new Response("Falsches Passwort", { status: 401 })
+        return Response.json({ error: "Falsches Passwort" }, { status: 401 })
     }
 
     const token = createJWT({ sub: user.mc_uuid })

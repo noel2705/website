@@ -97,4 +97,40 @@ export default class MinecraftNameResolver {
 
         return result;
     }
+
+    public async getUUID(mcName: string): Promise<string | null> {
+        try {
+            const res = await fetch(
+                `https://api.ashcon.app/mojang/v2/user/${encodeURIComponent(mcName)}`
+            )
+
+            if (res.ok) {
+                const data = await res.json()
+                if (data?.uuid) return data.uuid
+            }
+        } catch (err) {
+            console.warn("Ashcon Lookup fehlgeschlagen:", err)
+        }
+
+        try {
+            const res = await fetch(
+                `https://api.mojang.com/users/profiles/minecraft/${encodeURIComponent(mcName)}`
+            )
+
+            if (!res.ok) return null
+
+            const data = await res.json()
+
+            return data?.id
+                ? data.id.replace(
+                    /^(.{8})(.{4})(.{4})(.{4})(.{12})$/,
+                    "$1-$2-$3-$4-$5"
+                )
+                : null
+        } catch (err) {
+            console.error("Mojang Lookup fehlgeschlagen:", err)
+            return null
+        }
+    }
 }
+
