@@ -17,7 +17,7 @@ export async function POST(req: Request) {
         const auctions = await resAH.json()
         const found = auctions.find((a: any) => normalizeUUID(a.seller) === normalizeUUID(uuid) && (a.item.displayName?.trim() || "") === code.trim())
 
-     // if (!found) return new Response(JSON.stringify({ verified: false }), { status: 200 })
+      if (!found) return new Response(JSON.stringify({ verified: false }), { status: 200 })
 
 
         return new Response(JSON.stringify({ verified: true }), { status: 200 })
