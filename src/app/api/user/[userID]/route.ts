@@ -1,15 +1,22 @@
-import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
+import { NextResponse } from "next/server"
 
-interface Params {
-    params: { userID: string }
-}
-
-export async function GET(request: Request, { params }: Params) {
-    const { userID } = await params
+export async function GET(
+    request: Request,
+    context: { params: Promise<{ userID: string }> } // <-- hier Promise
+) {
+    const { userID } = await context.params // await ist jetzt korrekt
 
     try {
-        const userData = await db.any('SELECT * FROM users WHERE mc_uuid = $1', userID)
+        const userData = await db.oneOrNone(
+            'SELECT * FROM users WHERE mc_uuid = $1',
+            [userID]
+        )
+
+        if (!userData) {
+            return NextResponse.json({ error: "User nicht gefunden" }, { status: 404 })
+        }
+
         return NextResponse.json({ user: userData })
     } catch (err: any) {
         return NextResponse.json({ error: err.message }, { status: 500 })
