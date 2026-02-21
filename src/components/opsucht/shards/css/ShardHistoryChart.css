@@ -1,0 +1,37 @@
+.shard-chart {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #666;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.filter-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.filter-buttons button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 8px;
+    background-color: #4bc0c0;
+    color: white;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.filter-buttons button:hover {
+    background-color: #36a2a2;
+    transform: translateY(-2px);
+}
+
+.filter-buttons button.active {
+    background-color: #2c7a7a;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}

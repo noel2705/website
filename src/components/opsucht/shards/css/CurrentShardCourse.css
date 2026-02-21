@@ -1,0 +1,45 @@
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 16px;
+}
+
+.rate-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.rate-box {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #666;
+    padding: 16px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.rate-name {
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.rate-value {
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.rate-red {
+    color: #dc2626; /* Rot für niedrigen Kurs */
+}
+
+.rate-green {
+    color: #16a34a; /* Grün für ausreichenden Kurs */
+}

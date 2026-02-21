@@ -32,6 +32,10 @@ export async function POST(req: Request) {
             [mc_uuid, mc_name, hashedPassword, true, new Date()]
         )
 
+        await db.none(
+            'INSERT INTO shards ("mc_uuid", "totalShards", "shardsGoal", "tradeHistory") VALUES ($1, $2, $3, $4)',
+            [mc_uuid, 0, 0, JSON.stringify({})]
+        )
         return new Response(JSON.stringify({ success: true }), { status: 200 })
 
     } catch (err: any) {
