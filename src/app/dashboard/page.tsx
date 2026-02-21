@@ -1,21 +1,37 @@
-import { redirect } from "next/navigation"
-import { cookies } from "next/headers"
-import { verifyJWT } from "@/lib/jwt"
+import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
+import { verifyJWT } from "@/lib/jwt";
+import LogOutButton from "@/components/dashboard/LogOutButton";
+import DashBoardAuctions from "@/components/dashboard/DashBoardAuctions";
+import "./dashboard.css";
+import ShardComponenetDashboard from "@/components/dashboard/ShardComponenetDashboard";
 
 export default async function Dashboard() {
-    const cookieStore = await cookies()
-    const token = cookieStore.get("token")?.value
+    const cookieStore = await cookies();
+    const cookie = cookieStore.get("token");
 
-    if (!token) {
-        redirect("/login")
+    if (!cookie || !cookie.value) {
+        redirect("/login");
     }
 
-    try {
-        const payload = verifyJWT(token!)
+    const token = cookie.value;
 
-        return <div>Willkommen, du bist eingeloggt!</div>
+    try {
+        const payload = verifyJWT(token);
+        const uuid = payload.sub as string;
+
+        return (
+            <div>
+                <div className={"category-container"}>
+                    <DashBoardAuctions uuid={uuid} />
+                    <ShardComponenetDashboard uuid={uuid}/>
+
+                </div>
+                <LogOutButton />
+            </div>
+        );
     } catch (err) {
-        // Token ungültig → Login
-        redirect("/login")
+        console.error(err);
+        redirect("/login");
     }
 }

@@ -1,7 +1,7 @@
 import React from 'react';
 import { getActiveAuction } from "@/lib/auction";
 import { isHighestBidder } from "@/lib/auction";
-import AuctionCard from "@/components/opsucht/AuctionCard";
+import AuctionCard from "@/components/opsucht/auction/AuctionCard";
 import UserName from "@/components/opsucht/auction/UserName";
 import "./userAuctions.css";
 
@@ -23,6 +23,10 @@ export default async function UserAuctions({
             <h1>
                 Auktionsprofil: <UserName uuid={userID} />
             </h1>
+
+            {eigeneAuktionen.length === 0 && gebote.length === 0 && (
+                <p className={"no-auctions"}>Keine aktiven Auktionen oder Gebote gefunden.</p>
+            )}
 
             {eigeneAuktionen.length > 0 && (
                 <section>

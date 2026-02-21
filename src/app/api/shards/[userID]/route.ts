@@ -3,13 +3,13 @@ import { NextResponse } from "next/server"
 
 export async function GET(
     request: Request,
-    context: { params: Promise<{ userID: string }> } // <-- hier Promise
+    context: { params: Promise<{ userID: string }> }
 ) {
-    const { userID } = await context.params // await ist jetzt korrekt
+    const { userID } = await context.params
 
     try {
         const userData = await db.oneOrNone(
-            'SELECT * FROM users WHERE mc_uuid = $1',
+            'SELECT * FROM shards WHERE mc_uuid = $1',
             [userID]
         )
 
