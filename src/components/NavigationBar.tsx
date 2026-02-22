@@ -14,7 +14,7 @@ export default function NavigationBar() {
         async function fetchUuid() {
             try {
                 const res = await fetch("/api/me");
-                if (!res.ok) throw new Error("Fehler beim Abrufen der UUID");
+                if (!res.ok) return setUuid(null);
                 const data = await res.json();
                 setUuid(data.uuid);
             } catch (err) {

@@ -19,7 +19,6 @@ export default async function AuctionItemPage({
     const { auctionID, category } = await params;
     const data: Page[] = await getAuctionItem(auctionID, category);
     const isExpired = data.length > 0 && new Date(data[0].endTime) < new Date();
-    const resolver = new MinecraftNameResolver();
 
     return (
         <>

@@ -1,33 +1,25 @@
-import { redirect } from "next/navigation";
-import { cookies } from "next/headers";
-import { verifyJWT } from "@/lib/jwt";
-import LogOutButton from "@/components/dashboard/LogOutButton";
-import DashBoardAuctions from "@/components/dashboard/DashBoardAuctions";
+import {redirect} from "next/navigation";
+import {cookies} from "next/headers";
 import "./dashboard.css";
-import ShardComponenetDashboard from "@/components/dashboard/ShardComponenetDashboard";
+import UserName from "@/components/opsucht/auction/UserName";
+import {getUUID} from "@/hooks/useServerUUID";
 
 export default async function Dashboard() {
     const cookieStore = await cookies();
     const cookie = cookieStore.get("token");
-
     if (!cookie || !cookie.value) {
         redirect("/login");
     }
 
-    const token = cookie.value;
-
     try {
-        const payload = verifyJWT(token);
-        const uuid = payload.sub as string;
+        const uuid = await getUUID();
+        if (!uuid) redirect("/login");
 
         return (
-            <div>
-                <div className={"category-container"}>
-                    <DashBoardAuctions uuid={uuid} />
-                    <ShardComponenetDashboard uuid={uuid}/>
-
-                </div>
-                <LogOutButton />
+            <div className="dashboard-container">
+                <h1>Willkommen <UserName uuid={uuid}/>!</h1>
+                <h3>Dies ist dein Dashboard. Drücke auf die Felder auf deiner Linken seite, um auf die Funktionen
+                    zuzugreifen</h3>
             </div>
         );
     } catch (err) {

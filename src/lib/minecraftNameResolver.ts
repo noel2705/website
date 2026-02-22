@@ -51,14 +51,17 @@ export default class MinecraftNameResolver {
             if (!res.ok) throw new Error(`Java-API Fehler ${res.status}`);
 
             const data = await res.json();
-            const name = data.username || 'Unbekannt';
+            const name = data.username || 'Fehler';
 
             this.cache[uuid] = name;
             sessionStorage?.setItem(`mcname-${uuid}`, name);
 
             return name;
         } catch {
-            return this.fetchBedrockName(uuid);
+            if(isBedrock(uuid)) {
+                return this.fetchBedrockName(uuid);
+            }
+            return "'Fehler beim Laden'";
         }
     }
 

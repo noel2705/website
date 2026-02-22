@@ -1,20 +1,115 @@
-.category-container {
+/* Root Layout */
+.dashboard-layout {
     display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    justify-content: center;
-    background: #666;
+    min-height: 100vh;
+    background: #0d1117;
+    color: #c9d1d9;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-.category-container button{
-    padding: 10px 20px;
-    font-size: 16px;
-    cursor: pointer;
-    background: #3c3c3c;
-    border: none;
-    border-radius: 5px;
-    transition: background 0.3s ease;
+/* Sidebar */
+.sidebar {
+    width: 260px;
+    background: #010409;
+    border-right: 1px solid #30363d;
+    display: flex;
+    flex-direction: column;
+    padding: 1.2rem;
 }
-.category-container button:hover {
-    background: #555;
+
+/* Sidebar Title */
+.sidebar-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: #f0f6fc;
+}
+
+/* Navigation */
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+/* Navigation Links */
+.sidebar-link {
+    padding: 0.6rem 0.8rem;
+    border-radius: 6px;
+    color: #c9d1d9;
+    text-decoration: none;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.sidebar-link:hover {
+    background: #161b22;
+    color: #58a6ff;
+}
+
+/* Active Link (optional, wenn du active state willst) */
+.sidebar-link.active {
+    background: #1f6feb;
+    color: white;
+}
+
+/* Sidebar Footer */
+.sidebar-footer {
+    margin-top: auto;
+    padding-top: 1rem;
+    border-top: 1px solid #30363d;
+}
+
+/* Main Content */
+.dashboard-content {
+    flex: 1;
+    padding: 2rem;
+    overflow-y: auto;
+}
+
+/* Content Title */
+.dashboard-content h1 {
+    font-size: 1.8rem;
+    margin-bottom: 0.6rem;
+}
+
+/* Content Text */
+.dashboard-content p {
+    font-size: 0.95rem;
+    color: #8b949e;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .sidebar {
+        width: 210px;
+    }
+}
+
+@media (max-width: 700px) {
+    .dashboard-layout {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        flex-direction: row;
+        align-items: center;
+        overflow-x: auto;
+    }
+
+    .sidebar-title {
+        display: none;
+    }
+
+    .sidebar-nav {
+        flex-direction: row;
+    }
+
+    .sidebar-footer {
+        display: none;
+    }
 }

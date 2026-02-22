@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from "react"
-import "../../../dashboard/shards/shardManager.css"
+import "./shardManager.css"
 import ShardTopBar from "@/components/opsucht/shards/ShardTopBar"
 import ShardHistoryChart from "@/components/opsucht/shards/ShardHistoryChart"
 import UploadShardButton from "@/components/opsucht/shards/UploadShardButton"

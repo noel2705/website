@@ -1,5 +1,5 @@
 'use client'
-import "@/app/opsucht/shards/[userID]/shardManager.css"
+import "@/app/dashboard/shards/shardManager.css"
 import { useEffect, useState } from "react"
 
 export default function ShardTopBar({ refreshKey }: { refreshKey: number }) {
