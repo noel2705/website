@@ -8,11 +8,13 @@ import UploadShardButton from "@/components/opsucht/shards/UploadShardButton"
 import CurrentShardCourse from "@/components/opsucht/shards/CurrentShardCourse"
 import NotLoggedIn from "@/components/icon/NotLogined";
 import { isLogin } from '@/hooks/useUserUUID';
+import {getSessionUser} from "@/hooks/useUser";
+import NoPermission from "@/components/icon/NoPermission";
 
 export default function Dashboard() {
     const [refreshKey, setRefreshKey] = useState(0)
     const { uuid, loading } = isLogin()
-
+    const { user} = getSessionUser();
 
 
     if (loading) {
@@ -23,6 +25,19 @@ export default function Dashboard() {
         return <NotLoggedIn></NotLoggedIn>
     }
 
+    const hasShardAccess =
+        user?.hasPermission("view_shards_panel") ||
+        user?.hasPermission("beta_access")
+
+    if (!hasShardAccess) {
+        return (
+            <NoPermission
+                title="🧪 Beta Feature"
+                message="Dieser Bereich ist aktuell noch nicht für dich freigeschaltet."
+                backHref="/dashboard"
+            />
+        )
+    }
     return (
         <div style={{ padding: "20px", display: "flex", flexDirection: "column", gap: "20px" }}>
             <ShardTopBar refreshKey={refreshKey} />

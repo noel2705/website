@@ -1,18 +1,10 @@
-import NoPermission from "@/components/icon/NoPermission";
+import AdminContent from "@/components/dashboard/admin/AdminContent";
 
-export default function admin() {
-    const isAdmin = false;
+export default function AdminPage() {
+
     return (
-        <div>
-            {isAdmin ? (
-                <div>
-                    <h1>Willkommen auf deinem Profil!</h1>
-                    <p>Hier kannst du deine Informationen und Einstellungen verwalten.</p>
-                </div>
-                ) : (
-                    <NoPermission />
-                )
-            }
-        </div>
+        <>
+                <AdminContent />
+        </>
     );
 }

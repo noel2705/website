@@ -5,13 +5,15 @@ export class User {
     mc_uuid: string
     password: string
     created_at: Date
+    role: string
 
 
-    constructor({ name, mc_uuid, created_at, password}: { name: string, mc_uuid: string, created_at: Date, password: string }) {
+    constructor({ name, mc_uuid, created_at, password, role}: { name: string, mc_uuid: string, created_at: Date, password: string, role: string }) {
         this.name = name
         this.mc_uuid = mc_uuid
         this.created_at = created_at
         this.password = password
+        this.role = role
     }
 
     static async getByUUID(uuid: string) {
@@ -25,12 +27,6 @@ export class User {
     }
 
 
-    static async create(name: string, uuid: string) {
-        const sql = 'INSERT INTO users (mc_name, mc_uuid) VALUES ($1, $2)'
-        const row = await db.one(sql, [name, uuid])
-
-        return new User(row)
-    }
 
 
 

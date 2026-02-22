@@ -30,7 +30,7 @@ export default function NavigationBar() {
             <ul className="list">
                 <li><NavLink href="/opsucht/auction" pathname={pathname}>Auktionen</NavLink></li>
                 <li><NavLink href="/opsucht/market" pathname={pathname}>Market</NavLink></li>
-                    <li><NavLink href={`/opsucht/shards/${uuid}`} pathname={pathname}>Shard</NavLink></li>
+                    <li><NavLink href={`/dashboard/shards`} pathname={pathname}>Shard</NavLink></li>
             </ul>
 
             <div className="right">

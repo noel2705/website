@@ -1,12 +1,22 @@
-'use client';
+'use client'
 
-export default function NoPermission() {
+type NoPermissionProps = {
+    title?: string
+    message?: string
+    backHref?: string
+}
+
+export default function NoPermission({
+                                         title = "🔒 Keine Berechtigung",
+                                         message = "Du hast keine Rechte, diese Kategorie zu nutzen.",
+                                         backHref = "/"
+                                     }: NoPermissionProps) {
     return (
         <div className="not-logged-in">
             <div className="card">
-                <h1>🔒 Du hast keine Rechte diese Kategorie zu nutzen!</h1>
-                <p>Melde dich bei einem Admin!</p>
-                <a href="/opsucht/auction" className="login-button">Zurück</a>
+                <h1>{title}</h1>
+                <p>{message}</p>
+                <a href={backHref} className="login-button">Zurück</a>
             </div>
 
             <style jsx global>{`
@@ -67,5 +77,5 @@ export default function NoPermission() {
                 }
             `}</style>
         </div>
-    );
+    )
 }
