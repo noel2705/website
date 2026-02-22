@@ -1,6 +1,7 @@
 'use client'
 import "@/app/dashboard/shards/shardManager.css"
 import { useEffect, useState } from "react"
+import {formatMoney} from "@/lib/auction";
 
 export default function ShardTopBar({ refreshKey }: { refreshKey: number }) {
     const [currentShards, setCurrentShards] = useState<number | null>(null)
@@ -39,8 +40,8 @@ export default function ShardTopBar({ refreshKey }: { refreshKey: number }) {
 
     return (
         <div className="top-bar">
-            <h2>Shards: {currentShards}</h2>
-            <h2>Ziel: {targetShards}</h2>
+            <h2>Shards: {formatMoney(currentShards)}</h2>
+            <h2>Ziel: {formatMoney(targetShards)}</h2>
         </div>
     )
 }

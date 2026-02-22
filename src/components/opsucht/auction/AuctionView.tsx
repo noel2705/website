@@ -3,6 +3,7 @@ import { getActiveAuction, isHighestBidder } from "@/lib/auction";
 import AuctionCard from "@/components/opsucht/auction/AuctionCard";
 import UserName from "@/components/opsucht/auction/UserName";
 import "./css/userAuctions.css";
+import StarBorder from "@/components/icon/animated/StartBorder";
 
 export default async function AuctionView({ userID }: { userID: string }) {
     const userAuctions = await getActiveAuction(userID);
@@ -13,9 +14,17 @@ export default async function AuctionView({ userID }: { userID: string }) {
     return (
         <div className="user-auctions-container">
 
-            <h1>
+
+            <StarBorder
+                as="h1"
+                className="star-title-center"
+                color="cyan"
+                speed="5s"
+            >
                 Auktionsprofil: <UserName uuid={userID} />
-            </h1>
+            </StarBorder>
+
+
 
             {eigeneAuktionen.length === 0 && gebote.length === 0 && (
                 <p className="no-auctions">

@@ -5,6 +5,7 @@ import Link from "next/link"
 import LogOutButton from "@/components/dashboard/LogOutButton"
 import { isLogin } from "@/hooks/useUserUUID"
 import NotLoggedIn from "@/components/icon/NotLogined";
+import Loading from "@/app/loading";
 
 export default function DashboardLayout({
                                             children,
@@ -13,9 +14,7 @@ export default function DashboardLayout({
 }) {
     const { uuid, loading } = isLogin()
 
-    if (loading) {
-        return <div className="dashboard-loading">Lädt...</div>
-    }
+    if (loading) return <Loading />
 
     if (!uuid) {
         return <NotLoggedIn />
