@@ -3,22 +3,27 @@
 import "./dashboard.css"
 import Link from "next/link"
 import LogOutButton from "@/components/dashboard/LogOutButton"
-import { isLogin } from "@/hooks/useUserUUID"
+import {isLogin} from "@/hooks/useUserUUID"
 import NotLoggedIn from "@/components/icon/NotLogined";
 import Loading from "@/app/loading";
+import {useEffect} from "react";
+import {getSessionUser} from "@/hooks/useUser";
 
 export default function DashboardLayout({
                                             children,
                                         }: {
     children: React.ReactNode
 }) {
-    const { uuid, loading } = isLogin()
+    const {uuid, loading} = isLogin()
 
-    if (loading) return <Loading />
+    const isAdmin = getSessionUser().user?.hasPermission("dashboard.view.admin")
+    if (loading) return <Loading/>
 
     if (!uuid) {
-        return <NotLoggedIn />
+        return <NotLoggedIn/>
+
     }
+
 
     return (
         <div className="dashboard-layout">
@@ -39,13 +44,14 @@ export default function DashboardLayout({
                         ⚙️ Einstellungen
                     </Link>
 
-                    <Link href="/dashboard/admin" className="sidebar-link">
+                    {isAdmin && <Link href="/dashboard/admin" className="sidebar-link">
                         👤 Administration
                     </Link>
+                    }
                 </nav>
 
                 <div className="sidebar-footer">
-                    <LogOutButton />
+                    <LogOutButton/>
                 </div>
             </aside>
 

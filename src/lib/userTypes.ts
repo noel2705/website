@@ -1,4 +1,5 @@
 import { Permission } from "./permissions";
+import {has} from "es-toolkit/compat";
 
 export interface IUser {
     uuid: string;
@@ -16,7 +17,11 @@ export function buildUser(data: {
         uuid: data.uuid,
         permissions: data.permissions,
         hasPermission(permission) {
-            return this.permissions.includes(permission);
+            const hasPermission = this.permissions.includes(permission);
+            if(hasPermission) return true;
+
+            if(this.permissions.includes("admin.role")) return true;
+            return false;
         }
     };
 }

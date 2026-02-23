@@ -26,8 +26,8 @@ export default function Dashboard() {
     }
 
     const hasShardAccess =
-        user?.hasPermission("view_shards_panel") ||
-        user?.hasPermission("beta_access")
+        user?.hasPermission("view.shards.panel") ||
+        user?.hasPermission("beta.access")
 
     if (!hasShardAccess) {
         return (

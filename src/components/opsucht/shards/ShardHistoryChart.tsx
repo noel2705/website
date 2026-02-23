@@ -12,6 +12,7 @@ import {
     Tooltip,
     Legend,
 } from "chart.js"
+import {fetchFontFile} from "next/dist/compiled/@next/font/dist/google/fetch-font-file";
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend)
 
@@ -34,7 +35,7 @@ const COLORS = [
 export default function ShardHistoryChart({ refreshKey }: { refreshKey: number }) {
     const [history, setHistory] = useState<TradeHistory[]>([])
     const [userID, setUserID] = useState<string | null>(null)
-    const [filter, setFilter] = useState<"2h" | "24h" | "7d" | "all">("all")
+    const [filter, setFilter] = useState<"2h" | "24h" | "7d" | "14d" | "all">("all")
 
     useEffect(() => {
         const fetchUUID = async () => {
@@ -69,12 +70,14 @@ export default function ShardHistoryChart({ refreshKey }: { refreshKey: number }
 
     const filteredHistory = history.filter(h => {
         const now = Date.now()
-        switch (filter) {
-            case "2h": return h.timestamp >= now - 2 * 60 * 60 * 1000
-            case "24h": return h.timestamp >= now - 24 * 60 * 60 * 1000
-            case "7d": return h.timestamp >= now - 7 * 24 * 60 * 60 * 1000
-            default: return true
+        const ranges: Record<string, number> = {
+            "2h": 2 * 60 * 60 * 1000,
+            "24h": 24 * 60 * 60 * 1000,
+            "7d": 7 * 24 * 60 * 60 * 1000,
+            "14d": 14 * 24 * 60 * 60 * 1000,
         }
+
+        return filter === "all" ? true : h.timestamp >= now - ranges[filter]
     })
 
     const items = Array.from(new Set(filteredHistory.map(h => h.item))).sort()
@@ -124,16 +127,19 @@ export default function ShardHistoryChart({ refreshKey }: { refreshKey: number }
     return (
         <div className="shard-chart">
             <div className="filter-buttons">
-                {["2h", "24h", "7d", "all"].map(f => (
+                {["2h", "24h", "7d", "14d", "all"].map(f => (
                     <button
                         key={f}
                         onClick={() => setFilter(f as any)}
                         className={filter === f ? "active" : ""}
                     >
-                        {f === "2h" ? "Letzte 2 Stunden" :
-                            f === "24h" ? "Letzte 24 Stunden" :
-                                f === "7d" ? "Letzte 7 Tage" :
-                                    "Alle Trades"}
+                        {{
+                            "2h": "Letzte 2 Stunden",
+                            "24h": "Letzte 24 Stunden",
+                            "7d": "Letzte 7 Tage",
+                            "14d": "Letzte 14 Tage",
+                            "all": "Alle Trades"
+                        }[f]}
                     </button>
                 ))}
             </div>

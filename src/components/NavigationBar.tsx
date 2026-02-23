@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import "./css/NavigationBar.css";
 import UserIcon from "./icon/UserIcon";
+import {getSessionUser} from "@/hooks/useUser";
 
 export default function NavigationBar() {
     const pathname = usePathname();
