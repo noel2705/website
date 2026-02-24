@@ -23,6 +23,32 @@ interface TradeHistory {
     timestamp: number
 }
 
+
+function FilterButtons({ filter, setFilter }: {
+    filter: string,
+    setFilter: (f: any) => void
+}) {
+    return (
+        <div className="filter-buttons">
+            {["2h", "24h", "7d", "14d", "all"].map(f => (
+                <button
+                    key={f}
+                    onClick={() => setFilter(f)}
+                    className={filter === f ? "active" : ""}
+                >
+                    {{
+                        "2h": "Letzte 2 Stunden",
+                        "24h": "Letzte 24 Stunden",
+                        "7d": "Letzte 7 Tage",
+                        "14d": "Letzte 14 Tage",
+                        "all": "Alle Trades"
+                    }[f]}
+                </button>
+            ))}
+        </div>
+    )
+}
+
 const COLORS = [
     "rgba(75,192,192,1)",
     "rgba(255,99,132,1)",
@@ -35,6 +61,7 @@ const COLORS = [
 export default function ShardHistoryChart({ refreshKey }: { refreshKey: number }) {
     const [history, setHistory] = useState<TradeHistory[]>([])
     const [userID, setUserID] = useState<string | null>(null)
+    const [fullscreen, setFullscreen] = useState(false)
     const [filter, setFilter] = useState<"2h" | "24h" | "7d" | "14d" | "all">("all")
 
     useEffect(() => {
@@ -126,28 +153,25 @@ export default function ShardHistoryChart({ refreshKey }: { refreshKey: number }
 
     return (
         <div className="shard-chart">
-            <div className="filter-buttons">
-                {["2h", "24h", "7d", "14d", "all"].map(f => (
-                    <button
-                        key={f}
-                        onClick={() => setFilter(f as any)}
-                        className={filter === f ? "active" : ""}
-                    >
-                        {{
-                            "2h": "Letzte 2 Stunden",
-                            "24h": "Letzte 24 Stunden",
-                            "7d": "Letzte 7 Tage",
-                            "14d": "Letzte 14 Tage",
-                            "all": "Alle Trades"
-                        }[f]}
-                    </button>
-                ))}
-            </div>
+            <FilterButtons filter={filter} setFilter={setFilter} />
 
             {filteredHistory.length > 0 ? (
                 <Line data={chartData} options={options} />
             ) : (
                 <p>Keine Handelsdaten vorhanden.</p>
+            )}
+
+            <button onClick={() => setFullscreen(true)}>Vergrößern</button>
+                {fullscreen && (
+                    <div className="chart-overlay">
+                        <div className="chart-overlay-content">
+                            <button className="close-btn" onClick={() => setFullscreen(false)}>✕</button>
+
+                            <FilterButtons filter={filter} setFilter={setFilter} />
+
+                            <Line data={chartData} options={options} />
+                        </div>
+                    </div>
             )}
         </div>
     )

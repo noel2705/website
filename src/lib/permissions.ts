@@ -4,6 +4,7 @@ export const permissionsList = [
     "dashboard.view.admin",
     "admin.role",
     "beta.access",
+    "view.shard.calculator"
 ] as const
 
 export type Permission = (typeof permissionsList)[number]

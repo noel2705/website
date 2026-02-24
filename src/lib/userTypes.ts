@@ -1,5 +1,4 @@
 import { Permission } from "./permissions";
-import {has} from "es-toolkit/compat";
 
 export interface IUser {
     uuid: string;

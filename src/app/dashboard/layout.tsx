@@ -50,10 +50,7 @@ export default function DashboardLayout({
                     }
                 </nav>
 
-                <div className="sidebar-footer">
-                    <LogOutButton/>
-                </div>
-            </aside>
+                  </aside>
 
             <main className="dashboard-content">
                 {children}

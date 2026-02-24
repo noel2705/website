@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "OPSUCHT Dashboard",
+  title: "OPDASH",
   description: "Created by nospighost, Fabian260108",
     icons: {
         icon: "/ghost.png",

@@ -1,0 +1,56 @@
+.shard-calculator-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    padding-left: 0;
+}
+
+.shard-calculator-card {
+    max-width: 4500px;
+    width: 32%;
+    background: linear-gradient(135deg, #2f2f2f, #3a3a3a);
+    border-radius: 16px;
+    padding: 25px 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+}
+
+.mode-switch {
+    display: flex;
+    gap: 10px;
+}
+
+.mode-switch button {
+    flex: 1;
+    padding: 10px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    background: #444;
+    color: white;
+}
+
+.mode-switch button.active {
+    background: linear-gradient(135deg, #4bc0c0, #36a2a2);
+}
+
+.calc-result {
+    margin-top: 10px;
+    background: linear-gradient(135deg, #4bc0c0, #195454);
+    border-radius: 14px;
+    padding: 16px;
+    text-align: center;
+    font-size: 18px;
+}
+
+.calc-result strong {
+    display: block;
+    font-size: 28px;
+}
+
+.item-input {
+    background: #666;
+
+}

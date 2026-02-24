@@ -1,27 +1,27 @@
 'use client'
 
-import { useEffect, useState } from "react"
+import {useEffect, useState} from "react"
 import "./shardManager.css"
 import ShardTopBar from "@/components/opsucht/shards/ShardTopBar"
 import ShardHistoryChart from "@/components/opsucht/shards/ShardHistoryChart"
 import UploadShardButton from "@/components/opsucht/shards/UploadShardButton"
 import CurrentShardCourse from "@/components/opsucht/shards/CurrentShardCourse"
 import NotLoggedIn from "@/components/icon/NotLogined";
-import { isLogin } from '@/hooks/useUserUUID';
+import {isLogin} from '@/hooks/useUserUUID';
 import {getSessionUser} from "@/hooks/useUser";
 import NoPermission from "@/components/icon/NoPermission";
+import ShardCalculator from "@/components/opsucht/shards/ShardCalculator";
 
 export default function Dashboard() {
     const [refreshKey, setRefreshKey] = useState(0)
-    const { uuid, loading } = isLogin()
-    const { user} = getSessionUser();
-
+    const {uuid, loading} = isLogin()
+    const {user} = getSessionUser();
 
     if (loading) {
         return <p>Lädt...</p>
     }
 
-    if(!uuid){
+    if (!uuid) {
         return <NotLoggedIn></NotLoggedIn>
     }
 
@@ -39,8 +39,8 @@ export default function Dashboard() {
         )
     }
     return (
-        <div style={{ padding: "20px", display: "flex", flexDirection: "column", gap: "20px" }}>
-            <ShardTopBar refreshKey={refreshKey} />
+        <div style={{padding: "20px", display: "flex", flexDirection: "column", gap: "20px"}}>
+            <ShardTopBar refreshKey={refreshKey}/>
 
             <div style={{
                 display: "flex",
@@ -49,18 +49,23 @@ export default function Dashboard() {
                 alignItems: "flex-start",
                 flexWrap: "wrap"
             }}>
-                <div style={{ flex: 1, minWidth: "300px" }}>
-                    <ShardHistoryChart refreshKey={refreshKey} />
+                <div style={{flex: 1, minWidth: "300px"}}>
+                    <ShardHistoryChart refreshKey={refreshKey}/>
                 </div>
 
-                <div style={{ flex: 1, minWidth: "250px" }}>
-                    <UploadShardButton onUploadSuccess={() => setRefreshKey(v => v + 1)} />
+                <div style={{flex: 1, minWidth: "250px"}}>
+                    <UploadShardButton onUploadSuccess={() => setRefreshKey(v => v + 1)}/>
                 </div>
 
-                <div style={{ flex: 1, minWidth: "250px" }}>
-                    <CurrentShardCourse />
+                <div style={{flex: 1, minWidth: "250px"}}>
+                    <CurrentShardCourse/>
                 </div>
             </div>
+
+
+            {  user?.hasPermission("view.shard.calculator") && <ShardCalculator/>}
+
+
         </div>
     )
 }
