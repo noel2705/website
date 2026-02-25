@@ -136,6 +136,7 @@ export async function verifyMinecraftAccount(mc_name: string, code: string) {
             `https://api.mojang.com/users/profiles/minecraft/${mc_name}`
         )
 
+
         if (!resUuid.ok) {
             return { error: "Spieler nicht gefunden" }
         }
@@ -143,6 +144,7 @@ export async function verifyMinecraftAccount(mc_name: string, code: string) {
         const { id: uuid } = await resUuid.json()
 
         const resAH = await fetch("https://api.opsucht.net/auctions/active")
+
         const auctions = await resAH.json()
 
         const found = auctions.find(
@@ -151,7 +153,7 @@ export async function verifyMinecraftAccount(mc_name: string, code: string) {
                 (a.item.displayName?.trim() || "") === code.trim()
         )
 
-        return { verified: true }
+        return { verified: true } // ONLY USED IN DEVELOPMENT
         return { verified: Boolean(found)}
 
     } catch (e) {
