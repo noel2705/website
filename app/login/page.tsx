@@ -9,6 +9,7 @@ import { checkUserPassword } from '@/lib/login/auth'
 
 export default function LoginPage() {
     const [mcName, setMcName] = useState('')
+    const [step, setStep] = useState(1)
     const [code, setCode] = useState('')
     const [status, setStatus] = useState('')
     const [polling, setPolling] = useState<NodeJS.Timer | null>(null)

@@ -1,3 +1,4 @@
+'use server'
 import { verifyJWT } from "../utils/jwt"
 import {cookies} from "next/headers";
 
@@ -13,7 +14,7 @@ export async function logoutUser() {
         return { success: true }
     } catch (e) {
         console.error(e)
-        return { error: "Logout fehlgeschlagen" }
+        return { error: "Logout fehlgeschlagen" + e}
     }
 }
 

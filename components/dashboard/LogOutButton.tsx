@@ -1,15 +1,14 @@
 'use client'
+import {logoutUser} from "@/lib/user/userManagement";
+
 export default function LogOutButton() {
     async function handleLogout() {
         try {
-            const response = await fetch("/api/logout", {
-                method: "POST",
-            })
-
-            if (response.ok) {
-                window.location.href = "/login"
-            } else {
+           const response = await logoutUser()
+            if (response.error) {
                 console.error("Logout fehlgeschlagen")
+            } else {
+                window.location.href = "/login"
             }
         } catch (error) {
             console.error("Fehler beim Logout:", error)
