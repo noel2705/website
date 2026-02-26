@@ -150,7 +150,7 @@ export default function LoginModul() {
                     {step === "anvil" && (
                         <div>
                             <h1>Minecraft Verifizierung</h1>
-                            <p>Nehme ein Item und nenne es so um: </p>
+                            <p>Nehme ein Item und nenne es im Amboss so um: </p>
 
                             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px" }}>
                                 <p className="code-text" style={{ margin: 0, userSelect: "all" }}>{code}</p>
@@ -171,7 +171,7 @@ export default function LoginModul() {
                                 </span>
                             </div>
                             <br/>
-                            <img src={"/login/anvil.png"} alt="Amboss in Minecraft"/>
+                            <img  src={"/login/anvil.png"} alt="Amboss in Minecraft"/>
                             <button onClick={() => setStep("item-auction")}>Weiter</button>
                             <br/>
                             <button onClick={() => setStep("Register")}>Zurück</button>
@@ -221,14 +221,24 @@ export default function LoginModul() {
                         <h2 className={"status"}>{status}</h2>
                     </div>}
 
+                    <br></br>
                     <h3 onClick={() => setRegisterMode(false)}>Du hast bereits einen Account?</h3>
                 </div>
             ) : (
                 <div className="container">
                     <h1>Login</h1>
 
-                    <h3 onClick={() => setRegisterMode(true)}>Du hast noch keinen Account?</h3>
+                    <input type={"text"} id={"mcNameInput"} placeholder={"Minecraft Name"} value={mcName ?? ""}
+                               onChange={e => setMcName(e.target.value)}/>
+                    <input type={"password"} id={"passwordInput"} placeholder={"Passwort"} value={password}
+                               onChange={e => setPassword(e.target.value)}/>
+
+                    <button onClick={loginHandler}>Login</button>
+
                     <br/>
+                    <br/>
+                    <h3 onClick={() => setRegisterMode(true)}>Du hast noch keinen Account?</h3>
+
                     <h2 className={"status"}>{status}</h2>
                 </div>
             )}

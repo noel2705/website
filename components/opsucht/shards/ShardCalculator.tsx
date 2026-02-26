@@ -63,7 +63,14 @@ export default function ShardCalculator() {
                 </div>
 
                 <label>Item</label>
-           t
+
+                <select className={"item-change"} value={item} onChange={e => setItem(e.target.value)}>
+                    {Object.entries(ITEM_MAP).map(([key, label]) => (
+                        <option key={key} value={key}>
+                            {label}
+                        </option>
+                    ))}
+                </select>
 
                 <label>
                     {mode === "itemsToShards" ? "Item Anzahl" : "Shard Anzahl"}
