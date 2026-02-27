@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import {getSessionUser} from "@/hooks/useUser";
 
 export default function UserIcon({ pathname }: { pathname: string }) {
     const [loggedIn, setLoggedIn] = useState<boolean | null>(null);
@@ -9,8 +10,13 @@ export default function UserIcon({ pathname }: { pathname: string }) {
     useEffect(() => {
         async function checkLogin() {
             try {
-                const logged = await isLoggedIn();
-                setLoggedIn(logged);
+                const {user, loading} = await getSessionUser()
+
+                if(!user){
+                    setLoggedIn(false)
+                    return
+                }
+                setLoggedIn(true);
             } catch {
                 setLoggedIn(false);
             }
@@ -19,15 +25,7 @@ export default function UserIcon({ pathname }: { pathname: string }) {
         checkLogin();
     }, []);
 
-    async function isLoggedIn() {
-        try {
-            const res = await fetch("/api/check-login");
-            const data = await res.json();
-            return data.loggedIn;
-        } catch {
-            return false;
-        }
-    }
+
 
     if (loggedIn === null) return null;
 
@@ -38,7 +36,7 @@ export default function UserIcon({ pathname }: { pathname: string }) {
         href={href}
         className={`link ${isActive ? "active" : ""}`}
     >
-        {loggedIn ? "Dein Profil" : "👤"}
+        {!loggedIn ? "Dein Profil" : "👤"}
     </Link>
     );
 }
