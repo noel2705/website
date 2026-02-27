@@ -1,42 +1,31 @@
 "use client";
-
-import { useState, useEffect } from "react";
 import Link from "next/link";
 import {getSessionUser} from "@/hooks/useUser";
 
-export default function UserIcon({ pathname }: { pathname: string }) {
-    const [loggedIn, setLoggedIn] = useState<boolean | null>(null);
-
-    useEffect(() => {
-        async function checkLogin() {
-            try {
-                const {user, loading} = await getSessionUser()
-
-                if(!user){
-                    setLoggedIn(false)
-                    return
-                }
-                setLoggedIn(true);
-            } catch {
-                setLoggedIn(false);
-            }
-        }
-
-        checkLogin();
-    }, []);
+export default function UserIcon({pathname}: { pathname: string }) {
 
 
 
-    if (loggedIn === null) return null;
+    const { user, loading } = getSessionUser();
+
+    if (loading) return null;
+
+    const loggedIn = !!user;
 
     const href = loggedIn ? "/dashboard" : "/login";
     const isActive = pathname === href || pathname.startsWith(href + "/");
+
     return (
-    <Link
-        href={href}
-        className={`link ${isActive ? "active" : ""}`}
-    >
-        {!loggedIn ? "Dein Profil" : "👤"}
-    </Link>
+        <>
+            <Link
+                href={href}
+                className={`link ${isActive ? "active" : ""}`}
+            >
+                {loggedIn ? "Dein Profil" : "👤"}
+            </Link>
+
+
+
+        </>
     );
 }
