@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useState } from "react"
-import "./css/ShardCalculator.css"
+import "../../css/shard/ShardCalculator.css"
 
 type Mode = "itemsToShards" | "shardsToItems"
 

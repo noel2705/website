@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import "./css/auctionExpired.css"; // optional, für Styling
+import "../../css/auction/auctionExpired.css"; // optional, für Styling
 
 const AuctionExpired = () => {
     return (

@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react"
 import Folder from "@/components/icon/animated/FolderIcon"
-import "./css/UploadShardButton.css"
+import "../../css/shard/UploadShardButton.css"
 
 export default function UploadShardButton({ onUploadSuccess }: { onUploadSuccess: () => void }) {
     const [message, setMessage] = useState("Drücke auf den Ordner, um deine Shard-Daten zu importieren")

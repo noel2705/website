@@ -2,7 +2,7 @@ import React from 'react';
 import {getActiveAuction, isHighestBidder} from "@/lib/utils/auction";
 import AuctionCard from "@/components/opsucht/auction/AuctionCard";
 import UserName from "@/components/opsucht/auction/UserName";
-import "./css/userAuctions.css";
+import "../../css/auction/userAuctions.css";
 import StarBorder from "@/components/icon/animated/StartBorder";
 import {getMarkedAuctions} from "@/lib/utils/auction.server";
 import {EventEmitter} from 'events';

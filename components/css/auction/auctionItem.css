@@ -184,3 +184,9 @@
     }
 }
 
+
+.lore-common { color: #fff; }
+.lore-rare { color: #3b82f6; }
+.lore-epic { color: #8b5cf6; }
+.lore-legendary { color: #f59e0b; }
+.lore-mega { color: #ef4444; }

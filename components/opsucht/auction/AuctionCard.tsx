@@ -3,7 +3,7 @@ import {Page} from "@/app/opsucht/auction/types";
 import {formatMoney, getAmountBids, getItemIcon, getItemImage, isDesired} from "@/lib/utils/auction";
 import {ReactNode, useEffect, useMemo, useState} from "react";
 import {useRouter} from "next/navigation";
-import "@/app/opsucht/auction/auction.css";
+import "@/components/css/auction/auction.css";
 import UserPageButton from "@/components/opsucht/auction/UserPageButton";
 
 function AuctionCard({

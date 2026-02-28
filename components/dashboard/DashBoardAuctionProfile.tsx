@@ -1,7 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 
-export default function DashBoardAuctions({ uuid }: { uuid: string }) {
+export default function DashBoardAuctionProfile({ uuid }: { uuid: string }) {
     const router = useRouter();
 
     return (

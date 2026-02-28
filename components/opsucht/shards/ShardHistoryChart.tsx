@@ -1,5 +1,5 @@
 'use client'
-import "./css/ShardHistoryChart.css"
+import "../../css/shard/ShardHistoryChart.css"
 import { useEffect, useState } from "react"
 import { Line } from "react-chartjs-2"
 import {

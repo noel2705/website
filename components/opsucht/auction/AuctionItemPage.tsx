@@ -2,7 +2,7 @@
 
 import {Page} from "@/app/opsucht/auction/types";
 import BackButton from "@/components/buttons/BackButton";
-import "./css/auctionItem.css";
+import "../../css/auction/auctionItem.css";
 import {
     formatMoney,
     getItemIcon,
@@ -16,6 +16,7 @@ import UserName from "@/components/opsucht/auction/UserName";
 import {getSessionUser} from "@/hooks/useUser";
 import {useEffect, useState} from "react";
 import {isAuctionMarked, setAuctionMarked, unmarkAuction} from "@/lib/utils/auction.server";
+import ColoredLore from "@/components/opsucht/auction/ColoredLore";
 
 export default function AuctionItemPage({
                                             data,
@@ -92,11 +93,11 @@ export default function AuctionItemPage({
                                             {a.item.lore?.length > 0 && (
                                                 <div>
                                                     <h3>Lore</h3>
-                                                    <ul>
-                                                        {a.item.lore.map((line, i) => (
-                                                            <li key={i}>{line}</li>
-                                                        ))}
-                                                    </ul>
+                                                    {a.item.lore?.length > 0 && (
+                                                        <div>
+                                                            <ColoredLore loreLines={a.item.lore} />
+                                                        </div>
+                                                    )}
                                                 </div>
                                             )}
 

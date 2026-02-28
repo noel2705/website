@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './css/FolderIcon.css';
+import '../../css/icons/FolderIcon.css';
 
 interface FolderProps {
     color?: string;

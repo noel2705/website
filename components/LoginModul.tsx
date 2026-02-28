@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
-import './login.css'
+import './css/login.css'
 
 import { loginUser, verifyMinecraftAccount, registerUser, checkUserPassword } from '@/lib/login/auth'
 import { generateCode } from "@/lib/login/utils";

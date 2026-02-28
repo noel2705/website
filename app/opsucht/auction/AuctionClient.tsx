@@ -1,7 +1,7 @@
 'use client';
 import React, {useState, useEffect, useMemo} from 'react';
 import {Page, Item} from './types';
-import "./auction.css";
+import "../../../components/css/auction/auction.css";
 import {useRouter} from 'next/navigation';
 import {getAmountBids} from "@/lib/utils/auction";
 import AuctionCard from "@/components/opsucht/auction/AuctionCard";

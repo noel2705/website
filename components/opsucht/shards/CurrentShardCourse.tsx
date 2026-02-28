@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import './css/CurrentShardCourse.css'
+import '../../css/shard/CurrentShardCourse.css'
 
 interface Rate {
     source: string

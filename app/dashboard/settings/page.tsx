@@ -1,4 +1,4 @@
-import LogOutButton from "@/components/dashboard/LogOutButton";
+import LogOutButton from "@/components/buttons/LogOutButton";
 
 export default function (){
     return (

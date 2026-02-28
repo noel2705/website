@@ -2,7 +2,7 @@
 
 import "./dashboard.css"
 import Link from "next/link"
-import LogOutButton from "@/components/dashboard/LogOutButton"
+import LogOutButton from "@/components/buttons/LogOutButton"
 import {isLogin} from "@/hooks/useUserUUID"
 import NotLoggedIn from "@/components/icon/NotLogined";
 import Loading from "@/app/loading";
