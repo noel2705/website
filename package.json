@@ -19,6 +19,7 @@
     "gsap": "^3.14.2",
     "jsonwebtoken": "^9.0.3",
     "lucide-react": "^0.563.0",
+    "motion": "^12.34.3",
     "mysql2": "^3.16.2",
     "next": "^16.1.6",
     "node-fetch": "^3.3.2",
@@ -49,7 +50,7 @@
   "description": "This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).",
   "main": "index.js",
   "keywords": [],
-  "author": "",
+  "author": "nospighost",
   "license": "ISC",
   "type": "module"
 }
