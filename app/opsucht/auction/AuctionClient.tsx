@@ -183,15 +183,6 @@ export default function AuctionClient({initialAuction}: Props) {
 
             <div className="auction-toolbar">
 
-                <div className="toggle-auctions">
-                    <button
-                        onClick={() => setIsExpiredMode(prev => !prev)}
-                        className={isExpiredMode ? "active" : ""}
-                    >
-                        {isExpiredMode ? "Abgelaufene Auktionen" : "Aktive Auktionen"}
-                    </button>
-                </div>
-
 
                 <div className="categorySwitcher">
                     <button

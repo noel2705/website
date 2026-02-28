@@ -4,6 +4,8 @@ import {formatMoney, getAmountBids, getItemIcon, getItemImage, isDesired} from "
 import {ReactNode, useEffect, useMemo, useState} from "react";
 import {useRouter} from "next/navigation";
 import "@/app/opsucht/auction/auction.css";
+import UserPageButton from "@/components/opsucht/auction/UserPageButton";
+
 function AuctionCard({
                                 auction,
                                 auctionSellerName
@@ -69,7 +71,10 @@ function AuctionCard({
             <h2 className="auction-title">{itemName}</h2>
 
             <div className="auction-details">
-                <p className={"auction-seller"}>Verkäufer: {auctionSellerName}</p>
+
+                <p className="auction-seller">
+                    Verkäufer: <UserPageButton name={auctionSellerName} uuid={auction.seller} />
+                </p>
                 <div className="price-row">
                     <p>Preis: {formatMoney(currentPrice) ?? "N/A"}</p>
                     <img src="/custom-items/money.svg" alt="Icon" width="24" height="24"/>

@@ -1,7 +1,7 @@
 'use client';
 
 import {Page} from "@/app/opsucht/auction/types";
-import BackButton from "@/components/opsucht/auction/BackButton";
+import BackButton from "@/components/buttons/BackButton";
 import "./css/auctionItem.css";
 import {
     formatMoney,
@@ -9,13 +9,13 @@ import {
 } from "@/lib/utils/auction";
 import EndTimeCard from "@/components/opsucht/auction/EndTimeCard";
 import PriceChart from "@/components/opsucht/auction/PriceChart";
-import ReloadButton from "@/components/opsucht/auction/ReloadButton";
+import ReloadButton from "@/components/buttons/ReloadButton";
 import AuctionExpired from "@/components/opsucht/auction/AuctionExpired";
 import UserPageButton from "@/components/opsucht/auction/UserPageButton";
 import UserName from "@/components/opsucht/auction/UserName";
 import {getSessionUser} from "@/hooks/useUser";
 import {useEffect, useState} from "react";
-import {isAuctionMarked} from "@/lib/utils/auction.server";
+import {isAuctionMarked, setAuctionMarked, unmarkAuction} from "@/lib/utils/auction.server";
 
 export default function AuctionItemPage({
                                             data,
@@ -66,7 +66,11 @@ export default function AuctionItemPage({
                             <span>{bidsSorted.length} Gebote</span>
                             <span>Aktuell: {formatMoney(a.currentBid)}</span>
                             <button onClick={e => {
-                                setIsMarked(prev => !prev);
+                                if(isMarked) {
+                                    unmarkAuction(user, auctionID).then(() => setIsMarked(false));
+                                } else {
+                                    setAuctionMarked(user, auctionID).then(() => setIsMarked(true));
+                                }
 
                             }}>{isMarked ? "Gemerkt" : "Merken"}</button>
                             <span>Start: {formatMoney(a.startBid)}</span>
