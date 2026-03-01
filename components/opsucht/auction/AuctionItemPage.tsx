@@ -67,7 +67,7 @@ export default function AuctionItemPage({
                             <span>{bidsSorted.length} Gebote</span>
                             <span>Aktuell: {formatMoney(a.currentBid)}</span>
                             <button onClick={e => {
-                                if(isMarked) {
+                                if (isMarked) {
                                     unmarkAuction(user, auctionID).then(() => setIsMarked(false));
                                 } else {
                                     setAuctionMarked(user, auctionID).then(() => setIsMarked(true));
@@ -95,7 +95,7 @@ export default function AuctionItemPage({
                                                     <h3>Lore</h3>
                                                     {a.item.lore?.length > 0 && (
                                                         <div>
-                                                            <ColoredLore loreLines={a.item.lore} />
+                                                            <ColoredLore loreLines={a.item.lore}/>
                                                         </div>
                                                     )}
                                                 </div>
@@ -124,7 +124,7 @@ export default function AuctionItemPage({
                             </div>
                         </div>
 
-                        {bidsSorted.length > 0 && (
+                        {bidsSorted.length > 0 ? (
                             <div className="bids-panel">
                                 <h3>Bieterliste</h3>
                                 <ul className="bids-list">
@@ -140,6 +140,12 @@ export default function AuctionItemPage({
                       </span>
                                         </li>
                                     ))}
+                                </ul>
+                            </div>
+                        ) : (
+                            <div className="bids-panel">
+                                <ul className="bids-list">
+                                    <h1>Keine Aktiven Bieter</h1>
                                 </ul>
                             </div>
                         )}

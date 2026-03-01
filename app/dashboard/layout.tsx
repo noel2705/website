@@ -44,6 +44,11 @@ export default function DashboardLayout({
                         ⚙️ Einstellungen
                     </Link>
 
+                    <Link href="/dashboard/opdash-mod" className="sidebar-link">
+                        🔗 OPDash-Mod
+                    </Link>
+
+
                     {isAdmin && <Link href="/dashboard/admin" className="sidebar-link">
                         👤 Administration
                     </Link>

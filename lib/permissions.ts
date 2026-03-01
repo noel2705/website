@@ -3,6 +3,7 @@ export const permissionsList = [
     "view.shards.panel",
     "dashboard.view.admin",
     "admin.role",
+    "view.opdash.mod",
     "beta.access",
     "view.shard.calculator"
 ] as const
