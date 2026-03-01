@@ -17,8 +17,8 @@ const NAV_ITEMS = [
 ]
 
 export default function DashboardLayout({
-                                            children,
-                                        }: {
+    children,
+}: {
     children: React.ReactNode
 }) {
     const {uuid, loading} = isLogin()
@@ -37,7 +37,7 @@ export default function DashboardLayout({
             <aside className="sidebar">
                 <div className="sidebar-head">
                     <h2 className="sidebar-title">Dashboard</h2>
-                    <p className="sidebar-subtitle">Hier ist dein Persönliches Dashboard</p>
+                    <p className="sidebar-subtitle">Hier ist dein persönliches Dashboard.</p>
                 </div>
 
                 <nav className="sidebar-nav">

@@ -10,7 +10,11 @@ export default async function MainPage({
 
     const data: Page[] = await getAuctionItem(auctionID, category);
 
-    return <AuctionItemPage data={data} auctionID={auctionID} />;
+    return (
+        <div className="app-shell">
+            <AuctionItemPage data={data} auctionID={auctionID} />
+        </div>
+    );
 }
 
 async function getAuctionItem(uid: string, category: string): Promise<Page[]> {

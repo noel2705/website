@@ -7,6 +7,10 @@ export default async function Page() {
     const data: Page[] = await res.json();
 
 
-    return <AuctionClient initialAuction={data} />;
+    return (
+        <div className="app-shell">
+            <AuctionClient initialAuction={data} />
+        </div>
+    );
 }
 

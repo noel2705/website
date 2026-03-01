@@ -3,7 +3,7 @@ import MarketClient from "@/app/opsucht/market/MarketClient";
 
 const page = () => {
     return (
-        <div>
+        <div className="app-shell">
             <MarketClient />
         </div>
     );

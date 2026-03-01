@@ -1,78 +1,75 @@
-/* ----------------------- */
-/* Container & Dark Mode   */
-/* ----------------------- */
 .market-container {
-    padding: 2rem;
-    font-family: Arial, sans-serif;
-    background-color: #121212;
-    color: white;
-    min-height: 100vh;
+    padding: 1rem;
+    font-family: "Space Grotesk", "Manrope", "Segoe UI", sans-serif;
+    color: #ecf7ff;
 }
 
 .market-title {
     text-align: center;
-    margin-bottom: 1rem;
-    color: #ffffff;
+    margin: 0 0 1rem;
+    font-size: clamp(1.5rem, 2.2vw, 2rem);
+    letter-spacing: 0.02em;
+    color: #f3fbff;
 }
 
-/* ---------------- Tabs ---------------- */
 .market-tabs {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.25rem;
     justify-content: center;
     position: sticky;
-    top: 0;
-    background-color: #121212;
-    padding: 0.5rem 0;
+    top: 58px;
+    padding: 0.7rem;
     z-index: 10;
+    border-radius: 14px;
+    border: 1px solid rgba(147, 197, 253, 0.25);
+    background: rgba(8, 16, 27, 0.8);
+    backdrop-filter: blur(10px);
 }
 
 .market-tab-btn {
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
-    border: 1px solid #4f46e5;
-    background-color: transparent;
-    color: white;
+    padding: 0.45rem 0.86rem;
+    border-radius: 999px;
+    border: 1px solid rgba(94, 234, 212, 0.45);
+    background: rgba(11, 38, 52, 0.5);
+    color: #d7f7ff;
     cursor: pointer;
-    transition: all 0.3s ease;
+    font-weight: 600;
+    transition: all 0.2s ease;
 }
 
 .market-tab-btn:hover,
 .market-tab-btn.active {
-    background-color: #4f46e5;
-    color: white;
-    transform: scale(1.05);
+    background: linear-gradient(135deg, #5eead4, #22d3ee);
+    color: #052f3d;
+    box-shadow: 0 8px 18px rgba(34, 211, 238, 0.33);
 }
 
-/* ---------------- Kategorien ---------------- */
 .market-category {
-    margin-bottom: 2rem;
+    margin-bottom: 1.8rem;
 }
 
 .category-title {
-    margin-bottom: 1rem;
-    color: #ffffff;
+    margin: 0 0 0.8rem;
+    padding-left: 0.7rem;
+    border-left: 4px solid #22d3ee;
+    color: #d8ebff;
 }
 
-/* ---------------- Grid ---------------- */
 .market-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 0.85rem;
 }
 
-/* ---------------- Cards ---------------- */
 .market-card {
-    background-color: #1f1f1f;
-    border-radius: 12px;
-    padding: 1rem;
-    min-width: 150px;
-    max-width: 200px;
-    flex: 1 1 150px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.5);
-    transition: all 0.3s ease-in-out;
+    background: linear-gradient(165deg, rgba(10, 26, 40, 0.84), rgba(8, 19, 30, 0.92));
+    border-radius: 14px;
+    padding: 0.78rem;
+    border: 1px solid rgba(148, 163, 184, 0.26);
+    box-shadow: 0 10px 22px rgba(3, 8, 18, 0.35);
+    transition: transform 0.18s ease, border-color 0.2s ease, box-shadow 0.2s ease;
     text-align: center;
     cursor: pointer;
     display: flex;
@@ -85,9 +82,9 @@
 }
 
 .market-card:hover {
-    transform: translateY(-5px) scale(1.02);
-    box-shadow: 0 8px 20px rgba(79,70,229,0.6);
-    background-color: #1f1f1f;
+    transform: translateY(-4px);
+    box-shadow: 0 16px 28px rgba(3, 12, 24, 0.45);
+    border-color: rgba(94, 234, 212, 0.48);
 }
 
 @keyframes fadeInUp {
@@ -97,7 +94,6 @@
     }
 }
 
-/* ---------------- Item ---------------- */
 .market-item-img {
     width: 64px;
     height: 64px;
@@ -105,50 +101,45 @@
     object-fit: contain;
 }
 
-/* ---------------- Item Name ---------------- */
 .item-name {
     margin-bottom: 0.3rem;
-    font-weight: bold;
-    color: white;
-    white-space: normal;      /* Zeilenumbruch erlauben */
+    font-weight: 700;
+    color: #f5fbff;
+    white-space: normal;
     overflow: hidden;
-    text-overflow: ellipsis;  /* abgeschnittene letzte Zeile mit "..." */
+    text-overflow: ellipsis;
     display: -webkit-box;
-    -webkit-line-clamp: 2;    /* max. 2 Zeilen */
+    -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
-    word-wrap: break-word;    /* lange Wörter umbrechen */
-    font-size: 0.9rem;
+    word-wrap: break-word;
+    font-size: 0.88rem;
 }
 
-
 .buy-price {
-    color: #dc2626; /* Best Buy = Rot */
-    margin: 0.2rem 0;
-    font-weight: bold;
-    text-shadow: 0 0 4px #dc262633;
+    color: #fca5a5;
+    margin: 0.14rem 0;
+    font-weight: 700;
 }
 
 .sell-price {
-    color: #16a34a; /* Best Sell = Grün */
-    margin: 0.2rem 0;
-    font-weight: bold;
-    text-shadow: 0 0 4px #16a34a33;
+    color: #6ee7b7;
+    margin: 0.14rem 0;
+    font-weight: 700;
 }
 
 .loading-text {
     text-align: center;
-    color: #ffffff;
-    margin-top: 2rem;
+    color: #d1e4f8;
+    margin-top: 1rem;
 }
 
-/* ---------------- Modal / Preisdiagramm ---------------- */
 .modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0,0,0,0.85);
+    background-color: rgba(2, 6, 12, 0.84);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -158,64 +149,86 @@
 }
 
 .modal-content {
-    background-color: #1f1f1f;
-    padding: 2rem;
-    border-radius: 12px;
-    width: 90%;
-    max-width: 700px;
+    background: linear-gradient(160deg, rgba(10, 25, 39, 0.95), rgba(7, 17, 28, 0.98));
+    border: 1px solid rgba(125, 211, 252, 0.34);
+    padding: 1.2rem;
+    border-radius: 14px;
+    width: 92%;
+    max-width: 760px;
     color: white;
     position: relative;
-    box-shadow: 0 0 20px rgba(79,70,229,0.4);
+    box-shadow: 0 16px 36px rgba(2, 8, 18, 0.6);
     overflow: hidden;
 }
 
-/* ---------------- Recharts Linienpunkte ---------------- */
-.chart-line-dot {
-    stroke: none !important; /* entfernt weißen Rand */
+.market-modal-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.4rem;
+    gap: 0.7rem;
 }
 
-/* ---------------- Recharts Linien ---------------- */
+.market-modal-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 8px;
+}
+
+.market-modal-title {
+    margin: 0;
+    text-transform: capitalize;
+    color: #ecf8ff;
+}
+
+.market-modal-close {
+    margin-left: auto;
+}
+
+.chart-line-dot {
+    stroke: none !important;
+}
+
 .chart-line-buy {
-    stroke: #dc2626; /* Best Buy = Rot */
+    stroke: #dc2626;
     filter: drop-shadow(0 0 6px #dc2626);
 }
 
 .chart-line-sell {
-    stroke: #16a34a; /* Best Sell = Grün */
+    stroke: #16a34a;
     filter: drop-shadow(0 0 6px #16a34a);
 }
 
-/* ---------------- Line-Hintergrund Areas ---------------- */
 .chart-area-buy {
-    fill: rgba(220,38,38,0.3); /* rot transparent */
+    fill: rgba(220, 38, 38, 0.3);
 }
 
 .chart-area-sell {
-    fill: rgba(22,163,74,0.3); /* grün transparent */
+    fill: rgba(22, 163, 74, 0.3);
 }
 
-/* ---------------- Tooltip ---------------- */
 .recharts-tooltip-wrapper {
-    background-color: #1f1f1f !important;
-    border: 1px solid #4f46e5;
+    background-color: #0f1f30 !important;
+    border: 1px solid rgba(94, 234, 212, 0.42);
     border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.6);
+    box-shadow: 0 6px 16px rgba(2, 8, 18, 0.55);
     color: white !important;
     font-size: 0.9rem;
 }
 
-/* ---------------- Punktnamen / Text innerhalb Box ---------------- */
 .chart-label {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 80px; /* innerhalb Box */
+    max-width: 80px;
     font-size: 0.85rem;
     fill: #fff;
 }
 
-/* ---------------- Responsive ---------------- */
-@media (max-width: 500px) {
+@media (max-width: 560px) {
+    .market-tabs {
+        top: 54px;
+    }
+
     .market-card {
         min-width: 120px;
         max-width: 150px;
@@ -228,7 +241,7 @@
     }
 
     .market-tab-btn {
-        padding: 0.4rem 0.8rem;
-        font-size: 0.9rem;
+        padding: 0.35rem 0.75rem;
+        font-size: 0.85rem;
     }
 }

@@ -1,44 +1,34 @@
 .user-auctions-container {
     max-width: 1400px;
     margin: auto;
-    padding: 24px 18px 60px;
+    padding: 0.5rem 0.6rem 1rem;
 }
 
 .user-auctions-container h1 {
     text-align: center;
-    margin-bottom: 36px;
-    font-size: 30px;
+    margin-bottom: 1.4rem;
+    font-size: clamp(1.5rem, 2.6vw, 2.1rem);
     font-weight: 700;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.02em;
+    color: #f0f9ff;
 }
 
 .user-auctions-container section {
-    margin-bottom: 54px;
+    margin-bottom: 1.5rem;
 }
 
-
-
-
-.auction-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 20px;
-}
-
-.own-auction {
-    font-size: 22px;
-    margin-bottom: 16px;
-    border-left: 5px solid #2563eb;
-    padding-left: 12px;
-    font-weight: 600;
+.own-auction,
+.bid-auction {
+    font-size: 1.18rem;
+    margin-bottom: 0.9rem;
+    padding-left: 0.72rem;
+    font-weight: 700;
+    color: #e7f3ff;
+    border-left: 4px solid #22d3ee;
 }
 
 .bid-auction {
-    font-size: 22px;
-    margin-bottom: 16px;
-    border-left: 5px solid #22c55e;
-    padding-left: 12px;
-    font-weight: 600;
+    border-left-color: #6ee7b7;
 }
 
 .auction-wrapper {
@@ -54,12 +44,12 @@
 
 .highest,
 .outbid {
-    padding: 6px 16px;
+    padding: 6px 14px;
     border-radius: 999px;
     font-size: 12px;
     font-weight: 700;
     color: white;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
 }
 
@@ -73,34 +63,25 @@
     box-shadow: 0 0 10px rgba(239, 68, 68, 0.45);
 }
 
+.no-auctions {
+    text-align: center;
+    margin: 12px auto;
+    color: #e3f1ff;
+    padding: 0.95rem;
+    border: 1px solid rgba(148, 163, 184, 0.33);
+    border-radius: 12px;
+    background: linear-gradient(160deg, rgba(11, 27, 43, 0.8), rgba(9, 17, 28, 0.92));
+    font-size: 1rem;
+    max-width: 440px;
+}
+
 @media (max-width: 768px) {
     .user-auctions-container {
-        padding: 16px 10px 50px;
-    }
-
-    .user-auctions-container h1 {
-        font-size: 24px;
+        padding: 0.25rem 0.2rem 0.75rem;
     }
 
     .own-auction,
     .bid-auction {
-        font-size: 18px;
+        font-size: 1.03rem;
     }
-
-    .auction-grid {
-        gap: 14px;
-    }
-}
-
-
-.no-auctions {
-    text-align: center;
-    margin: 20px auto;
-    color: white;
-    padding: 15px;
-    border: 2px solid #a9a9a9;
-    border-radius: 8px;
-    background-color: #333;
-    font-size: 1.1rem;
-    max-width: 400px;
 }

@@ -1,0 +1,124 @@
+.admin-panel {
+    padding: 0.5rem;
+}
+
+.admin-panel h2 {
+    margin: 0 0 0.8rem;
+    color: #f2f9ff;
+}
+
+.admin-loading {
+    margin: 0.5rem 0;
+    color: #d3e6fa;
+}
+
+.admin-user-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 0.85rem;
+}
+
+.admin-user-card {
+    border: 1px solid rgba(148, 163, 184, 0.28);
+    border-radius: 14px;
+    padding: 0.9rem;
+    box-shadow: 0 10px 22px rgba(2, 8, 18, 0.35);
+    background: linear-gradient(160deg, rgba(10, 28, 43, 0.82), rgba(8, 19, 30, 0.9));
+    position: relative;
+    color: #d8e9fb;
+}
+
+.admin-user-card h3 {
+    margin: 0 0 0.55rem;
+    color: #f2f9ff;
+}
+
+.admin-user-card p {
+    margin: 0.25rem 0;
+    word-break: break-all;
+}
+
+.admin-permission-badge {
+    display: inline-block;
+    background: rgba(45, 212, 191, 0.2);
+    border: 1px solid rgba(94, 234, 212, 0.35);
+    color: #b5f8ef;
+    padding: 4px 8px;
+    border-radius: 999px;
+    font-size: 12px;
+}
+
+.admin-edit-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    border: 1px solid rgba(56, 189, 248, 0.45);
+    background: rgba(8, 47, 73, 0.75);
+    color: #dff7ff;
+    padding: 0.28rem 0.55rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.admin-edit-button:hover {
+    background: rgba(14, 116, 144, 0.8);
+}
+
+.admin-permission-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.admin-edit-area {
+    margin-top: 0.75rem;
+    border-top: 1px solid rgba(148, 163, 184, 0.24);
+    padding-top: 0.75rem;
+}
+
+.admin-role-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 0.55rem;
+}
+
+.admin-role-button,
+.admin-save-button {
+    border: 1px solid rgba(94, 234, 212, 0.45);
+    border-radius: 9px;
+    background: linear-gradient(135deg, #5eead4, #22d3ee);
+    color: #032c36;
+    padding: 0.34rem 0.66rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.admin-save-button {
+    margin-top: 0.55rem;
+}
+
+.admin-checkbox-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.42rem;
+    max-height: 220px;
+    overflow: auto;
+    padding-right: 0.2rem;
+}
+
+.admin-permission-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.42rem;
+    background: rgba(15, 23, 42, 0.68);
+    border: 1px solid rgba(148, 163, 184, 0.23);
+    padding: 0.38rem 0.48rem;
+    border-radius: 8px;
+    font-size: 12px;
+    color: #deecfa;
+    cursor: pointer;
+}

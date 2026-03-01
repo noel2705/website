@@ -1,56 +1,50 @@
 .navbar {
+    position: sticky;
+    top: 0;
+    z-index: 60;
     display: flex;
     align-items: center;
     justify-content: space-between;
-
-    height: 60px;
-    padding: 0 24px;
-    background-color: #0f172a;
+    min-height: 60px;
+    padding: 0.6rem 1rem;
+    background: rgba(7, 14, 22, 0.8);
+    border-bottom: 1px solid rgba(148, 163, 184, 0.26);
+    backdrop-filter: blur(12px);
 }
 
 .list {
     display: flex;
-    gap: 20px;
+    gap: 0.65rem;
     list-style: none;
     margin: 0;
     padding: 0;
+    flex-wrap: wrap;
 }
 
 .link {
-    color: #cbd5f5;
+    color: #cfdeef;
     text-decoration: none;
-    font-size: 18px;
-    font-weight: 500;
-    position: relative;
-
-    transition: color 0.3s ease;
+    font-size: 0.94rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    padding: 0.45rem 0.75rem;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
 }
 
 .link:hover {
-    color: white;
-    animation: glowPulse 1.5s infinite;
+    color: #fff;
+    background: rgba(45, 212, 191, 0.16);
+    border-color: rgba(94, 234, 212, 0.45);
 }
 
-.link::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    bottom: -6px;
-
-    width: 0%;
-    height: 2px;
-    background-color: #00ffff;
-
-    transition: width 0.3s ease;
-}
-
-.link:hover::after,
-.active::after {
-    width: 100%;
-}
-
+.link.active,
 .active {
-    color: white;
+    color: #053237;
+    background: linear-gradient(135deg, #5eead4, #2dd4bf);
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 6px 16px rgba(20, 184, 166, 0.3);
 }
 
 .right {
@@ -58,21 +52,14 @@
     align-items: center;
 }
 
-.loginIcon {
-    font-size: 22px;
-    cursor: pointer;
-    text-decoration: none;
-    color: white;
+@media (max-width: 680px) {
+    .navbar {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
 
-    transition: transform 0.2s ease;
-}
-
-.loginIcon:hover {
-    transform: scale(1.15);
-}
-
-@keyframes glowPulse {
-    0% { text-shadow: 0 0 5px #00ffff; }
-    50% { text-shadow: 0 0 15px #00ffff; }
-    100% { text-shadow: 0 0 5px #00ffff; }
+    .right {
+        align-self: flex-end;
+    }
 }

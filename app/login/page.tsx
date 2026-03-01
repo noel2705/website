@@ -3,7 +3,7 @@ import LoginModul from '@/components/LoginModul'
 
 export default function MainPage() {
     return (
-        <div>
+        <div className="app-shell">
             <LoginModul />
         </div>
     )

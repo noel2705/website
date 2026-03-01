@@ -1,27 +1,10 @@
 export default function Loading() {
-    const styles = {
-        container: {
-            height: "100vh",
-            display: "flex",
-            flexDirection: "column" as const,
-            justifyContent: "center",
-            alignItems: "center",
-            gap: "12px",
-        },
-        spinner: {
-            width: "40px",
-            height: "40px",
-            border: "4px solid #ccc",
-            borderTop: "4px solid #00ffff",
-            borderRadius: "50%",
-            animation: "spin 1s linear infinite",
-        },
-    };
-
     return (
-        <div style={styles.container}>
-            <div style={styles.spinner}></div>
-            <p>Loading auction card...</p>
+        <div className="status-screen">
+            <div className="status-card app-loader">
+                <div className="app-spinner"></div>
+                <p>Lade Auktionsdaten...</p>
+            </div>
         </div>
     );
 }

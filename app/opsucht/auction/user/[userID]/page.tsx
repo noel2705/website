@@ -6,5 +6,9 @@ export default async function AuctionPage({
     params: { userID: string };
 }) {
     const { userID } = await params;
-    return <AuctionView userID={userID} />;
+    return (
+        <div className="app-shell">
+            <AuctionView userID={userID} />
+        </div>
+    );
 }

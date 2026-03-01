@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react"
 import { permissionsList, Permission, ROLE_PRESETS } from "@/lib/permissions"
+import "@/components/css/admin.css"
 
-// User-Typ
 type User = {
     mc_uuid: string
     mc_name: string
@@ -18,10 +18,8 @@ export default function AdminUserList() {
     const [editingUser, setEditingUser] = useState<string | null>(null)
     const [selectedPermissions, setSelectedPermissions] = useState<Permission[]>([])
 
-    // Alle Permissions importiert
     const ALL_PERMISSIONS: Permission[] = permissionsList as unknown as Permission[]
 
-    // Fetch Users
     useEffect(() => {
         fetch("/api/admin/getAllUsers")
             .then(res => res.json())
@@ -35,9 +33,8 @@ export default function AdminUserList() {
             })
     }, [])
 
-    if (loading) return <p>Lädt Benutzer...</p>
+    if (loading) return <p className="admin-loading">Laedt Benutzer...</p>
 
-    // Permission togglen
     const togglePermission = (perm: Permission) => {
         setSelectedPermissions(prev =>
             prev.includes(perm)
@@ -46,13 +43,11 @@ export default function AdminUserList() {
         )
     }
 
-    // Rollen preset anwenden
     const applyRolePreset = (role: string) => {
         const perms = ROLE_PRESETS[role] || []
         setSelectedPermissions(perms)
     }
 
-    // Speichern
     const savePermissions = async (uuid: string) => {
         try {
             const res = await fetch(`/api/admin/user/${uuid}`, {
@@ -71,14 +66,14 @@ export default function AdminUserList() {
     }
 
     return (
-        <div style={{ padding: "20px" }}>
+        <div className="admin-panel">
             <h2>Benutzerverwaltung</h2>
 
-            <div className="user-grid">
+            <div className="admin-user-grid">
                 {users.map(u => (
-                    <div key={u.mc_uuid} className="user-card">
+                    <div key={u.mc_uuid} className="admin-user-card">
                         <button
-                            className="edit-button"
+                            className="admin-edit-button"
                             onClick={() => {
                                 setEditingUser(u.mc_uuid)
                                 setSelectedPermissions([...u.permissions])
@@ -89,53 +84,43 @@ export default function AdminUserList() {
 
                         <h3>{u.mc_name}</h3>
                         <p>UUID: {u.mc_uuid}</p>
-                        <p>Verifiziert: {u.verified ? "✅" : "❌"}</p>
+                        <p>Verifiziert: {u.verified ? "Ja" : "Nein"}</p>
 
-                        <div className="permission-list">
+                        <div className="admin-permission-list">
                             {u.permissions.map(p => (
-                                <span key={p} className="permission-badge">{p}</span>
+                                <span key={p} className="admin-permission-badge">{p}</span>
                             ))}
                         </div>
 
                         {editingUser === u.mc_uuid && (
-                            <div style={{ marginTop: "8px" }}>
-                                {/* Rollen Presets */}
-                                <div style={{ marginBottom: "6px" }}>
+                            <div className="admin-edit-area">
+                                <div className="admin-role-row">
                                     {Object.keys(ROLE_PRESETS).map(role => (
                                         <button
                                             key={role}
                                             onClick={() => applyRolePreset(role)}
-                                            style={{
-                                                marginRight: "6px",
-                                                padding: "4px 8px",
-                                                borderRadius: "6px",
-                                                cursor: "pointer"
-                                            }}
+                                            className="admin-role-button"
                                         >
                                             {role}
                                         </button>
                                     ))}
                                 </div>
 
-                                {/* Einzelne Permissions */}
-                                {ALL_PERMISSIONS.map(p => (
-                                    <label key={p} className="permission-checkbox">
-                                        <input
-                                            type="checkbox"
-                                            checked={selectedPermissions.includes(p)}
-                                            onChange={() => togglePermission(p)}
-                                        />
-                                        {p}
-                                    </label>
-                                ))}
+                                <div className="admin-checkbox-grid">
+                                    {ALL_PERMISSIONS.map(p => (
+                                        <label key={p} className="admin-permission-checkbox">
+                                            <input
+                                                type="checkbox"
+                                                checked={selectedPermissions.includes(p)}
+                                                onChange={() => togglePermission(p)}
+                                            />
+                                            {p}
+                                        </label>
+                                    ))}
+                                </div>
 
                                 <button
-                                    style={{
-                                        marginTop: "6px",
-                                        padding: "4px 8px",
-                                        borderRadius: "6px",
-                                        cursor: "pointer"
-                                    }}
+                                    className="admin-save-button"
                                     onClick={() => savePermissions(u.mc_uuid)}
                                 >
                                     Speichern
@@ -147,65 +132,6 @@ export default function AdminUserList() {
                     </div>
                 ))}
             </div>
-
-            {/* Styles */}
-            <style jsx>{`
-                .user-grid {
-                    display: grid;
-                    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-                    gap: 20px;
-                    margin-top: 20px;
-                }
-                .user-card {
-                    border: 1px solid #444;
-                    border-radius: 12px;
-                    padding: 16px;
-                    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-                    position: relative;
-                }
-                .permission-badge {
-                    display: inline-block;
-                    background-color: #2563eb;
-                    color: white;
-                    padding: 4px 8px;
-                    border-radius: 6px;
-                    font-size: 12px;
-                    margin: 2px 2px 2px 0;
-                }
-                .edit-button {
-                    position: absolute;
-                    top: 12px;
-                    right: 12px;
-                    background-color: #ff9800;
-                    color: white;
-                    border: none;
-                    padding: 4px 8px;
-                    border-radius: 6px;
-                    cursor: pointer;
-                    font-size: 12px;
-                }
-                .edit-button:hover { background-color: #e68a00; }
-                .permission-list {
-                    display: flex;
-                    flex-wrap: wrap;
-                    gap: 6px;
-                    margin-top: 8px;
-                }
-                .permission-checkbox {
-                    display: flex;
-                    align-items: center;
-                    gap: 4px;
-                    background: #444;
-                    padding: 4px 8px;
-                    border-radius: 6px;
-                    font-size: 12px;
-                    cursor: pointer;
-                }
-                @media (prefers-color-scheme: light) {
-                    .user-card { background-color: #f5f5f5; color: #111; border: 1px solid #ccc; }
-                    .permission-checkbox { background: #ddd; color: #111; }
-                }
-            `}</style>
         </div>
     )
 }

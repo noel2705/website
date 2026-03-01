@@ -1,40 +1,21 @@
 "use client";
 
 export default function Error({
-
-
-                                  error,
-                                  reset,
-                              }: {
+    error,
+    reset,
+}: {
     error: Error;
     reset: () => void;
 }) {
-
-
-    const styles = {
-        container: {
-            height: "100vh",
-            display: "flex",
-            flexDirection: "column" as const,
-            justifyContent: "center",
-            alignItems: "center",
-            gap: "16px",
-        },
-        button: {
-            padding: "10px 16px",
-            cursor: "pointer",
-        },
-    };
-
-
     return (
-        <div style={styles.container}>
-            <h2>Ups 😵‍💫</h2>
-            <p>Etwas ist schiefgelaufen.</p>
-
-            <button onClick={reset} style={styles.button}>
-                Erneut versuchen
-            </button>
+        <div className="status-screen">
+            <div className="status-card">
+                <h2>Ups, da ist etwas schiefgelaufen.</h2>
+                <p>{error.message || "Bitte versuche es erneut."}</p>
+                <div className="status-actions">
+                    <button onClick={reset} className="app-button">Erneut versuchen</button>
+                </div>
+            </div>
         </div>
     );
 }

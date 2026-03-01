@@ -10,10 +10,8 @@ export default function opdashPage(){
         return <NoPermission message={"Dieses Feature ist noch in Bearbeitung!"}></NoPermission>
     }
     return (
-        <>
-
+        <div className="dashboard-page">
             <OPDashMod/>
-
-        </>
+        </div>
     )
 }

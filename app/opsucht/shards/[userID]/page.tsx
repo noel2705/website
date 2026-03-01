@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import "../../../dashboard/shards/shardManager.css"
 import ShardTopBar from "@/components/opsucht/shards/ShardTopBar"
 import ShardHistoryChart from "@/components/opsucht/shards/ShardHistoryChart"
@@ -13,38 +13,28 @@ export default function Dashboard() {
     const [refreshKey, setRefreshKey] = useState(0)
     const { uuid, loading } = isLogin()
 
+    if (loading) return <p className="shards-loading">Laedt Shard-Daten...</p>
 
-
-    if (loading) {
-        return <p>Lädt...</p>
-    }
-
-    if(!uuid){
+    if (!uuid) {
         return <NotLoggedIn></NotLoggedIn>
     }
 
     return (
-        <div style={{ padding: "20px", display: "flex", flexDirection: "column", gap: "20px" }}>
+        <div className="dashboard-shards-page">
             <ShardTopBar refreshKey={refreshKey} />
 
-            <div style={{
-                display: "flex",
-                gap: "20px",
-                justifyContent: "space-between",
-                alignItems: "flex-start",
-                flexWrap: "wrap"
-            }}>
-                <div style={{ flex: 1, minWidth: "300px" }}>
+            <div className="shards-grid">
+                <section className="shards-card shards-card-chart">
                     <ShardHistoryChart refreshKey={refreshKey} />
-                </div>
+                </section>
 
-                <div style={{ flex: 1, minWidth: "250px" }}>
+                <section className="shards-card shards-card-upload">
                     <UploadShardButton onUploadSuccess={() => setRefreshKey(v => v + 1)} />
-                </div>
+                </section>
 
-                <div style={{ flex: 1, minWidth: "250px" }}>
+                <section className="shards-card shards-card-rates">
                     <CurrentShardCourse />
-                </div>
+                </section>
             </div>
         </div>
     )
