@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import { verifyJWT } from "@/lib/utils/jwt";
 import AuctionView from "@/components/opsucht/auction/AuctionView";
-import {formatUUID} from "@/lib/utils/auction";
+import {formatUUID} from "@/lib/utils/auction/auction";
 
 export default async function DashboardAuctions() {
     const cookieStore = await cookies();

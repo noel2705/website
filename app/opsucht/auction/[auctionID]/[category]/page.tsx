@@ -1,4 +1,4 @@
-import { Page } from "@/app/opsucht/auction/types";
+import { Page } from "@/lib/utils/types";
 import AuctionItemPage from "@/components/opsucht/auction/AuctionItemPage";
 
 export default async function MainPage({

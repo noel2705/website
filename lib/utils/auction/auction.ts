@@ -1,4 +1,4 @@
-import {Item, Page} from "@/app/opsucht/auction/types";
+import {Item, Page} from "@/lib/utils/types";
 import {IUser} from "@/lib/utils/userTypes";
 export function formatMoney(money: number) {
     if (money < 1000) return money.toLocaleString('en-us', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + "$";

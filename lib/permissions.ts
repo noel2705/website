@@ -16,3 +16,9 @@ export const ROLE_PRESETS: Record<string, Permission[]> = {
     User: ["view.shards.panel"],
     BetaTester: ["beta.access"]
 }
+
+export const defaultPermissions = `{${[
+    "view.shards.panel",
+    "view.shard.calculator",
+    "view.opdash.mod"
+].join(",")}}`

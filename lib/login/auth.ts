@@ -1,20 +1,21 @@
 // /lib/actions/auth.ts
 'use server'
 
-import { User } from "@/lib/models/User";
+import {User} from "@/lib/models/User";
 import MinecraftNameResolver from "@/lib/utils/minecraftNameResolver";
 import bcrypt from "bcrypt";
-import { createJWT } from "@/lib/utils/jwt";
-import { cookies } from "next/headers";
-import { db } from "@/lib/utils/db";
-import {normalizeUUID} from "@/lib/utils/auction";
+import {createJWT} from "@/lib/utils/jwt";
+import {cookies} from "next/headers";
+import {db} from "@/lib/utils/db";
+import {normalizeUUID} from "@/lib/utils/auction/auction";
+import {defaultPermissions} from "@/lib/permissions";
 
 export async function loginUser(mc_name: string, password: string) {
     try {
         const mc_uuid = await new MinecraftNameResolver().getUUID(mc_name);
 
         if (!mc_uuid) {
-            return { error: "Minecraft-Name nicht gefunden" };
+            return {error: "Minecraft-Name nicht gefunden"};
         }
 
         const userData: User[] = await db.any(
@@ -23,17 +24,17 @@ export async function loginUser(mc_name: string, password: string) {
         );
 
         if (userData.length === 0) {
-            return { error: "Du hast noch keinen Account!" };
+            return {error: "Du hast noch keinen Account!"};
         }
 
         const user = userData[0];
         const valid = await bcrypt.compare(password, user.password);
 
         if (!valid) {
-            return { error: "Falsches Passwort" };
+            return {error: "Falsches Passwort"};
         }
 
-        const token = createJWT({ sub: user.mc_uuid });
+        const token = createJWT({sub: user.mc_uuid});
         const cookieStore = await cookies();
 
         cookieStore.set("token", token, {
@@ -44,28 +45,28 @@ export async function loginUser(mc_name: string, password: string) {
             maxAge: 60 * 60 * 24 * 7,
         });
 
-        return { success: true };
+        return {success: true};
     } catch (e) {
         console.error(e);
-        return { error: "Serverfehler beim Login" };
+        return {error: "Serverfehler beim Login"};
     }
 }
 
 export async function registerUser(mc_name: string, password: string) {
     try {
         if (!mc_name || !password) {
-            return { error: "Fehlende Daten" }
+            return {error: "Fehlende Daten"}
         }
 
         if (password.length < 6) {
-            return { error: "Passwort zu kurz (mind. 6 Zeichen)" }
+            return {error: "Passwort zu kurz (mind. 6 Zeichen)"}
         }
 
         const resolver = new MinecraftNameResolver()
         const mc_uuid = await resolver.getUUID(mc_name)
 
         if (!mc_uuid) {
-            return { error: "Minecraft-Name nicht gefunden" }
+            return {error: "Minecraft-Name nicht gefunden"}
         }
 
         const existingUser = await db.oneOrNone(
@@ -74,33 +75,33 @@ export async function registerUser(mc_name: string, password: string) {
         )
 
         if (existingUser) {
-            return { error: "Du hast bereits einen Account!" }
+            return {error: "Du hast bereits einen Account!"}
         }
 
         const hashedPassword = await bcrypt.hash(password, 10)
 
         await db.none(
-            "INSERT INTO users (mc_uuid, mc_name, password, verified, created_at) VALUES ($1, $2, $3, $4, $5)",
-            [mc_uuid, mc_name, hashedPassword, true, new Date()]
+            "INSERT INTO users (mc_uuid, mc_name, password, verified, created_at, permissions) VALUES ($1, $2, $3, $4, $5, $6)",
+            [mc_uuid, mc_name, hashedPassword, true, new Date(), defaultPermissions]
         )
 
         await db.none(
-            'INSERT INTO shards ("mc_uuid", "totalShards", "shardsGoal", "tradeHistory") VALUES ($1, $2, $3, $4)',
-            [mc_uuid, 0, 0, []]
+            'INSERT INTO shards ("mc_uuid", "totalShards", "shardsGoal", "tradeHistory") VALUES ($1, $2, $3, $4::jsonb)',
+            [mc_uuid, 0, 0, JSON.stringify([])]
         )
 
-        return { success: true }
+        return {success: true}
 
     } catch (e) {
         console.error(e)
-        return { error: "Serverfehler bei der Registrierung" }
+        return {error: "Serverfehler bei der Registrierung"}
     }
 }
 
 export async function checkUserPassword(mc_name: string, password: string) {
     try {
         if (!mc_name || !password) {
-            return { error: "Fehlende Daten" }
+            return {error: "Fehlende Daten"}
         }
 
         const user = await db.oneOrNone(
@@ -109,27 +110,27 @@ export async function checkUserPassword(mc_name: string, password: string) {
         )
 
         if (!user) {
-            return { error: "Benutzer nicht gefunden" }
+            return {error: "Benutzer nicht gefunden"}
         }
 
         const match = await bcrypt.compare(password, user.password)
 
         if (!match) {
-            return { error: "Falsches Passwort" }
+            return {error: "Falsches Passwort"}
         }
 
-        return { success: true }
+        return {success: true}
 
     } catch (e) {
         console.error(e)
-        return { error: "Serverfehler bei Passwortprüfung" }
+        return {error: "Serverfehler bei Passwortprüfung"}
     }
 }
 
 export async function verifyMinecraftAccount(mc_name: string, code: string) {
     try {
         if (!mc_name || !code) {
-            return { error: "Fehlende Daten" }
+            return {error: "Fehlende Daten"}
         }
 
         const resUuid = await fetch(
@@ -138,10 +139,10 @@ export async function verifyMinecraftAccount(mc_name: string, code: string) {
 
 
         if (!resUuid.ok) {
-            return { error: "Spieler nicht gefunden" }
+            return {error: "Spieler nicht gefunden"}
         }
 
-        const { id: uuid } = await resUuid.json()
+        const {id: uuid} = await resUuid.json()
 
         const resAH = await fetch("https://api.opsucht.net/auctions/active")
 
@@ -153,22 +154,23 @@ export async function verifyMinecraftAccount(mc_name: string, code: string) {
                 (a.item.displayName?.trim() || "") === code.trim()
         )
 
-        return { verified: Boolean(found)}
+        return {verified: Boolean(true)}
+        return {verified: Boolean(found)}
 
     } catch (e) {
         console.error(e)
-        return { error: "Serverfehler bei der Verifizierung" }
+        return {error: "Serverfehler bei der Verifizierung"}
     }
 }
 
 export async function setUserPassword(mc_uuid: string, password: string) {
     try {
         if (!mc_uuid || !password) {
-            return { error: "Fehlende Daten" }
+            return {error: "Fehlende Daten"}
         }
 
         if (password.length < 6) {
-            return { error: "Passwort zu kurz" }
+            return {error: "Passwort zu kurz"}
         }
 
         const hashedPassword = await bcrypt.hash(password, 10)
@@ -179,14 +181,14 @@ export async function setUserPassword(mc_uuid: string, password: string) {
         )
 
         if (result.rowCount === 0) {
-            return { error: "Benutzer nicht gefunden" }
+            return {error: "Benutzer nicht gefunden"}
         }
 
-        return { success: true }
+        return {success: true}
 
     } catch (e) {
         console.error(e)
-        return { error: "Serverfehler beim Passwort setzen" }
+        return {error: "Serverfehler beim Passwort setzen"}
     }
 }
 

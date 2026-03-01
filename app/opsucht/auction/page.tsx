@@ -1,6 +1,6 @@
 import AuctionClient from "./AuctionClient";
 // @ts-ignore
-import { Page } from "./types";
+import { Page } from "../../../lib/utils/types";
 
 
 export default async function Page() {

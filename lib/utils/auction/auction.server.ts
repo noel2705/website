@@ -2,7 +2,7 @@
 
 import { IUser } from "@/lib/utils/userTypes";
 import { db } from "@/lib/utils/db";
-import {Page} from "@/app/opsucht/auction/types";
+import {Page} from "@/lib/utils/types";
 
 
 export async function isAuctionMarked(

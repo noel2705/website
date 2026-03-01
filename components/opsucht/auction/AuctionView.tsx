@@ -1,12 +1,12 @@
 import React from 'react';
-import {getActiveAuction, isHighestBidder} from "@/lib/utils/auction";
+import {getActiveAuction, isHighestBidder} from "@/lib/utils/auction/auction";
 import AuctionCard from "@/components/opsucht/auction/AuctionCard";
 import UserName from "@/components/opsucht/auction/UserName";
 import "../../css/auction/userAuctions.css";
 import StarBorder from "@/components/icon/animated/StartBorder";
-import {getMarkedAuctions} from "@/lib/utils/auction.server";
+import {getMarkedAuctions} from "@/lib/utils/auction/auction.server";
 import {EventEmitter} from 'events';
-import {Page} from "@/app/opsucht/auction/types";
+import {Page} from "@/lib/utils/types";
 import BackButton from "@/components/buttons/BackButton";
 
 export default async function AuctionView({userID}: { userID: string }) {

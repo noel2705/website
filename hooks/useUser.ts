@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { IUser, buildUser } from "@/lib/utils/userTypes";
 

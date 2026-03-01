@@ -1,6 +1,6 @@
 import pgPromise from 'pg-promise'
 
-const pgp = pgPromise({ capSQL: true })
+const pgp = pgPromise({capSQL: true})
 
 const createDb = () =>
     pgp({
@@ -19,3 +19,10 @@ export const db = global.db ?? createDb()
 if (process.env.NODE_ENV !== 'production') {
     global.db = db
 }
+
+
+export const tables = [
+    "users",
+    "shards",
+    "auctions"
+];

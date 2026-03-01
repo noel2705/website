@@ -2,8 +2,8 @@
 
 import React from 'react';
 import PriceChart from './PriceChart';
-import { Page } from '@/app/opsucht/auction/types';
-import { formatMoney, getItemIcon } from '@/lib/utils/auction';
+import { Page } from '@/lib/utils/types';
+import { formatMoney, getItemIcon } from '@/lib/utils/auction/auction';
 
 interface Props {
     auction: Page;

@@ -1,6 +1,8 @@
 'use server'
-import { verifyJWT } from "../utils/jwt"
+import {verifyJWT} from "../utils/jwt"
 import {cookies} from "next/headers";
+import {db} from "@/lib/utils/db";
+import {tables} from "@/lib/utils/db";
 
 export async function logoutUser() {
     try {
@@ -11,10 +13,10 @@ export async function logoutUser() {
             path: "/",
         })
 
-        return { success: true }
+        return {success: true}
     } catch (e) {
         console.error(e)
-        return { error: "Logout fehlgeschlagen" + e}
+        return {error: "Logout fehlgeschlagen" + e}
     }
 }
 
@@ -24,16 +26,15 @@ export async function checkLoginStatus() {
         const cookieStore = await cookies()
         const token = cookieStore.get("token")?.value
 
-        if (!token) return { loggedIn: false }
+        if (!token) return {loggedIn: false}
 
         verifyJWT(token)
 
-        return { loggedIn: true }
+        return {loggedIn: true}
     } catch {
-        return { loggedIn: false }
+        return {loggedIn: false}
     }
 }
-
 
 
 export async function getAuthUser() {
@@ -47,4 +48,24 @@ export async function getAuthUser() {
     } catch {
         return null
     }
+}
+
+export async function deleteUserAccount(uuid: string) {
+
+    try {
+        for (const table of tables) {
+            const sql = `DELETE
+                         FROM ${table}
+                         WHERE mc_uuid = $1`
+            await db?.none(sql, [uuid])
+
+            return {success: true}
+
+        }
+    } catch (err) {
+        console.error(err)
+        return {error: "Fehler beim Löschen des Accounts: " + err}
+    }
+
+
 }

@@ -34,13 +34,8 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <NavigationBar />
-        <div className="site-shell">{children}</div>
-        <footer className="site-footer">
-          <div className="site-footer-inner">
-            <span>© {new Date().getFullYear()} OPDASH</span>
-            <Link href="/datenschutz">Datenschutz</Link>
-          </div>
-        </footer>
+        {children}
+
       </body>
     </html>
   );

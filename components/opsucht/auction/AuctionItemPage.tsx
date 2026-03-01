@@ -1,12 +1,12 @@
 'use client';
 
-import {Page} from "@/app/opsucht/auction/types";
+import {Page} from "@/lib/utils/types";
 import BackButton from "@/components/buttons/BackButton";
 import "../../css/auction/auctionItem.css";
 import {
     formatMoney,
     getItemIcon,
-} from "@/lib/utils/auction";
+} from "@/lib/utils/auction/auction";
 import EndTimeCard from "@/components/opsucht/auction/EndTimeCard";
 import PriceChart from "@/components/opsucht/auction/PriceChart";
 import ReloadButton from "@/components/buttons/ReloadButton";
@@ -15,7 +15,7 @@ import UserPageButton from "@/components/opsucht/auction/UserPageButton";
 import UserName from "@/components/opsucht/auction/UserName";
 import {getSessionUser} from "@/hooks/useUser";
 import {useEffect, useState} from "react";
-import {isAuctionMarked, setAuctionMarked, unmarkAuction} from "@/lib/utils/auction.server";
+import {isAuctionMarked, setAuctionMarked, unmarkAuction} from "@/lib/utils/auction/auction.server";
 import ColoredLore from "@/components/opsucht/auction/ColoredLore";
 
 export default function AuctionItemPage({

@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from "react";
 import TimerIcon from "@/components/icon/TimerIcon";
-import { formatEndTime } from "@/lib/utils/auction";
+import { formatEndTime } from "@/lib/utils/auction/auction";
 
 interface EndTimeCardProps {
     endTime: string;

@@ -3,7 +3,7 @@ import { NextResponse } from "next/server"
 import { db } from "@/lib/utils/db"
 
 export async function PATCH(req: Request, context: { params: Promise<{ uuid: string }> }) {
-    const { uuid } = await context.params; // await params hier
+    const { uuid } = await context.params;
     const body = await req.json();
 
     if (!Array.isArray(body.permissions)) throw new Error("permissions must be an array");

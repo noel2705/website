@@ -1,6 +1,6 @@
 'use client'
-import {Page} from "@/app/opsucht/auction/types";
-import {formatMoney, getAmountBids, getItemIcon, getItemImage, isDesired} from "@/lib/utils/auction";
+import {Page} from "@/lib/utils/types";
+import {formatMoney, getAmountBids, getItemIcon, getItemImage, isDesired} from "@/lib/utils/auction/auction";
 import {ReactNode, useEffect, useMemo, useState} from "react";
 import {useRouter} from "next/navigation";
 import "@/components/css/auction/auction.css";

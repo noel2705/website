@@ -1,9 +1,9 @@
 'use client';
 import React, {useState, useEffect, useMemo} from 'react';
-import {Page, Item} from './types';
+import {Page, Item} from '../../../lib/utils/types';
 import "../../../components/css/auction/auction.css";
 import {useRouter} from 'next/navigation';
-import {getAmountBids} from "@/lib/utils/auction";
+import {getAmountBids} from "@/lib/utils/auction/auction";
 import AuctionCard from "@/components/opsucht/auction/AuctionCard";
 import MinecraftNameResolver from "@/lib/utils/minecraftNameResolver";
 
