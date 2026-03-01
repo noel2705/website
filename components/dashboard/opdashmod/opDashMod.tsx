@@ -2,46 +2,70 @@
 import "@/components/css/opdashmod.css"
 import Link from "next/link";
 
-
 export default function OPDashMod() {
-
-
     return (
-        <>
-            <h1>OPDash-Mod</h1>
+        <div className="opdash-container">
 
-            <p className={"opdash-info"}>Mit hilfe dieser Mod hast du eine Übersicht über deine Shard-Trades.
-                Zudem kannst du jeder Zeit berechnen, was deine Items in Shards Wert sind. Behalte die Übersicht über deine
-                Spielzeit, Shard Anzahl und vieles mehr.</p>
+            <header className="opdash-header">
+                <h1>OPDash-Mod</h1>
+                <p className="opdash-info">
+                    Mit Hilfe dieser Mod hast du eine Übersicht über deine Shard-Trades.
+                    Berechne jederzeit den Wert deiner Items in Shards und behalte den Überblick
+                    über Spielzeit, Shards und vieles mehr.
+                </p>
+            </header>
 
-            <br/>
-            <br/>
+            <section className="opdash-grid">
 
-            <h1>Shard Handelshistorie:</h1>
-            <img src={"/opdash.png"} loading={"lazy"} className={"opdash-img1"} />
+                <div className="opdash-card">
+                    <h2>Shard Calculator</h2>
+                    <img src="/opdash/opdash_2.png" loading="lazy" />
+                    <img src="/opdash/opdash_5.png" loading="lazy" />
+                </div>
 
-            <h2>Die Mod merkt sich alle Trades die du am Shard Händler betätigst, und schreibt sie in eine Datei,
-                die du auf dieser Website hochladen kannst.</h2>
+                <div className="opdash-card">
+                    <h2>Shard Overlay</h2>
+                    <img src="/opdash/opdash_3.png" loading="lazy" />
+                    <p>
+                        Übersicht deiner aktuellen Shards und potenzieller Verkaufs-
+                        oder Kaufwerte.
+                    </p>
+                </div>
 
-            <Link
-                className="opdash-link"
-                href={"/dashboard/shards"}>Zu den Shard Features</Link>
+                <div className="opdash-card">
+                    <h2>Hotkey & Werbung HUD</h2>
+                    <img src="/opdash/opdash_4.png" loading="lazy" />
+                    <p>
+                        Öffne mit einem Klick ein Menü mit nützlichen Befehlen
+                        und Schnelltexten.
+                    </p>
+                </div>
 
+                <div className="opdash-card wide">
+                    <h2>Shard Handelshistorie</h2>
+                    <img src="/opdash/opdash.png" loading="lazy" />
+                    <p>
+                        Die Mod speichert alle Trades und erstellt eine Datei,
+                        die du hier hochladen kannst.
+                    </p>
+                </div>
 
-            <br/>
-            <br/>
-            <br/>
+            </section>
 
+            <div className="opdash-buttons">
+                <Link className="opdash-link" href="/dashboard/shards">
+                    Zu den Shard Features
+                </Link>
 
-            <h2>Du hast Interesse die Mod zu Downloaden?</h2>
+                <Link
+                    className="opdash-link highlight"
+                    href="https://modrinth.com/mod/opdash"
+                    target="_blank"
+                >
+                    Mod herunterladen
+                </Link>
+            </div>
 
-            <Link
-                className="opdash-link"
-                href="https://modrinth.com/plugin/case-plugin"
-                target="_blank"
-            >
-                Mod herunterladen
-            </Link>
-        </>
+        </div>
     )
 }
