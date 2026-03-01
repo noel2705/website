@@ -54,9 +54,7 @@ export default function AuctionClient({initialAuction}: Props) {
 
     };
 
-    useEffect(() => {
-        throw Error ("Test error");
-    }, []);
+
 
 
 
