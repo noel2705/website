@@ -1,4 +1,4 @@
-'use client';
+
 import { useState, useEffect } from "react";
 import { IUser, buildUser } from "@/lib/utils/userTypes";
 
@@ -22,7 +22,7 @@ export function getSessionUser() {
             }
         }
 
-        fetchUser();
+        void fetchUser();
 
         return () => { mounted = false };
     }, []);
