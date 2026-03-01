@@ -15,6 +15,7 @@ export default function Home() {
                     <Link href="/opsucht/auction" className="status-link">Zu den Auktionen</Link>
                     <Link href="/opsucht/market" className="status-link">Zum Market</Link>
                     <Link href="/dashboard" className="status-link">Zum Dashboard</Link>
+                    <Link href="/datenschutz" className="status-link">Datenschutz</Link>
                 </div>
             </section>
         </main>

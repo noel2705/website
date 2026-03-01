@@ -4,6 +4,8 @@ import './css/login.css'
 
 import { loginUser, verifyMinecraftAccount, registerUser, checkUserPassword } from '@/lib/login/auth'
 import { generateCode } from "@/lib/login/utils";
+import DatenschutzPage from "@/app/datenschutz/page";
+import Link from "next/link";
 
 export default function LoginModul() {
     const [mcName, setMcName] = useState('')
@@ -223,6 +225,10 @@ export default function LoginModul() {
 
                     <br></br>
                     <h3 onClick={() => setRegisterMode(false)}>Du hast bereits einen Account?</h3>
+                    <br></br>
+
+                    <Link href={"/datenschutz"} >Datenschutzvereinbarungen</Link>
+
                 </div>
             ) : (
                 <div className="container">
@@ -239,9 +245,17 @@ export default function LoginModul() {
                     <br/>
                     <h3 onClick={() => setRegisterMode(true)}>Du hast noch keinen Account?</h3>
 
+                    <br/>
+
+                    <Link href={"/datenschutz"} >Datenschutzvereinbarungen</Link>
+
+
                     <h2 className={"status"}>{status}</h2>
+
                 </div>
             )}
+
+
         </div>
     )
 }

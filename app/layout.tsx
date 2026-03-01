@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import NavigationBar from "@/components/NavigationBar";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -28,12 +29,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="de">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <NavigationBar />
         <div className="site-shell">{children}</div>
+        <footer className="site-footer">
+          <div className="site-footer-inner">
+            <span>© {new Date().getFullYear()} OPDASH</span>
+            <Link href="/datenschutz">Datenschutz</Link>
+          </div>
+        </footer>
       </body>
     </html>
   );

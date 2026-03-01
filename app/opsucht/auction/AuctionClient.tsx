@@ -54,6 +54,11 @@ export default function AuctionClient({initialAuction}: Props) {
 
     };
 
+    useEffect(() => {
+        throw Error ("Test error");
+    }, []);
+
+
 
     const getSellerName = async (uids: string[]) => {
         return resolver.getNames(uids);
