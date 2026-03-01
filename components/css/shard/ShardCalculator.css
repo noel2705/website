@@ -6,24 +6,24 @@
 
 .shard-calculator-card {
     width: min(100%, 520px);
-    background: linear-gradient(150deg, rgba(8, 47, 73, 0.75), rgba(22, 78, 99, 0.55));
-    border: 1px solid rgba(103, 232, 249, 0.34);
+    background: linear-gradient(150deg, color-mix(in srgb, var(--surface-highlight) 80%, var(--primary) 20%), var(--surface-strong));
+    border: 1px solid var(--panel-soft-border);
     border-radius: 16px;
     padding: 1rem 1.1rem;
     display: flex;
     flex-direction: column;
     gap: 0.65rem;
-    box-shadow: 0 12px 24px rgba(2, 6, 23, 0.35);
+    box-shadow: var(--shadow-strong);
 }
 
 .shard-calculator-card h2 {
     margin: 0 0 0.2rem;
-    color: #ecfeff;
+    color: var(--title-color);
     font-size: 1.1rem;
 }
 
 .shard-calculator-card label {
-    color: #cffafe;
+    color: var(--foreground);
     font-size: 0.88rem;
     font-weight: 600;
 }
@@ -37,36 +37,36 @@
     flex: 1;
     padding: 0.5rem;
     border-radius: 10px;
-    border: 1px solid rgba(125, 211, 252, 0.35);
+    border: 1px solid var(--border);
     cursor: pointer;
-    background: rgba(8, 47, 73, 0.55);
-    color: #e0f2fe;
+    background: color-mix(in srgb, var(--surface-strong) 72%, var(--surface-highlight) 28%);
+    color: var(--foreground);
     font-weight: 700;
 }
 
 .mode-switch button.active {
-    color: #003341;
-    background: linear-gradient(135deg, #67e8f9, #22d3ee);
+    color: var(--primary-foreground);
+    background: linear-gradient(135deg, var(--primary), color-mix(in srgb, var(--primary) 75%, #000 25%));
 }
 
 .item-change,
 .shard-calculator-card input {
     width: 100%;
-    border: 1px solid rgba(125, 211, 252, 0.35);
+    border: 1px solid var(--border);
     border-radius: 9px;
     padding: 0.55rem 0.65rem;
-    background: rgba(15, 23, 42, 0.65);
-    color: #f0f9ff;
+    background: var(--input-bg);
+    color: var(--input-text);
 }
 
 .shard-calculator-card input::placeholder {
-    color: #94a3b8;
+    color: var(--input-placeholder);
 }
 
 .calc-result {
     margin-top: 0.3rem;
-    background: rgba(6, 78, 59, 0.58);
-    border: 1px solid rgba(110, 231, 183, 0.45);
+    background: color-mix(in srgb, #065f46 50%, transparent);
+    border: 1px solid color-mix(in srgb, #34d399 48%, transparent);
     border-radius: 12px;
     padding: 0.7rem;
     text-align: center;

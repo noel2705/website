@@ -3,10 +3,10 @@
     grid-template-columns: 280px minmax(0, 1fr);
     min-height: 100vh;
     background:
-            radial-gradient(circle at 8% 12%, rgba(20, 184, 166, 0.18), transparent 36%),
-            radial-gradient(circle at 90% 92%, rgba(45, 212, 191, 0.12), transparent 38%),
-            linear-gradient(-16deg, #9fafc3 0%, #59a9ff 48%, #002d5a 100%);
-    color: #e5edf7;
+            radial-gradient(circle at 8% 12%, var(--page-radial-1), transparent 36%),
+            radial-gradient(circle at 90% 92%, var(--page-radial-2), transparent 38%),
+            linear-gradient(-16deg, var(--page-gradient-start) 0%, var(--page-gradient-mid) 48%, var(--page-gradient-end) 100%);
+    color: var(--foreground);
     font-family: "Space Grotesk", "Manrope", "Segoe UI", sans-serif;
 }
 
@@ -17,8 +17,8 @@
     display: flex;
     flex-direction: column;
     padding: 1.25rem;
-    background: rgba(7, 14, 22, 0.8);
-    border-right: 1px solid rgba(151, 175, 197, 0.22);
+    background: var(--footer-bg);
+    border-right: 1px solid var(--footer-border);
     backdrop-filter: blur(12px);
 }
 
@@ -31,12 +31,12 @@
     letter-spacing: 0.02em;
     font-size: 1.24rem;
     font-weight: 700;
-    color: #f2f8ff;
+    color: var(--title-color);
 }
 
 .sidebar-subtitle {
     margin: 0.6rem 0 0;
-    color: #9eb4cb;
+    color: var(--muted);
     font-size: 0.86rem;
     line-height: 1.42;
 }
@@ -52,31 +52,31 @@
     padding: 0.66rem 0.78rem;
     border-radius: 10px;
     border: 1px solid transparent;
-    color: #d4e2f2;
+    color: var(--foreground);
     text-decoration: none;
     font-size: 0.94rem;
     transition: all 0.18s ease;
 }
 
 .sidebar-link:hover {
-    color: #ffffff;
-    background: rgba(45, 212, 191, 0.14);
-    border-color: rgba(94, 234, 212, 0.5);
+    color: var(--foreground);
+    background: color-mix(in srgb, var(--primary) 18%, transparent);
+    border-color: color-mix(in srgb, var(--primary) 58%, transparent);
     transform: translateX(2px);
 }
 
 .sidebar-link.active {
-    color: #042c2d;
+    color: var(--primary-foreground);
     font-weight: 700;
-    background: linear-gradient(135deg, #5eead4, #2dd4bf);
-    border-color: rgba(255, 255, 255, 0.25);
-    box-shadow: 0 8px 22px rgba(20, 184, 166, 0.28);
+    background: linear-gradient(135deg, var(--primary), color-mix(in srgb, var(--primary) 68%, #000 32%));
+    border-color: color-mix(in srgb, var(--foreground) 28%, transparent);
+    box-shadow: 0 8px 22px color-mix(in srgb, var(--primary) 30%, transparent);
 }
 
 .sidebar-footer {
     margin-top: auto;
     padding-top: 1rem;
-    border-top: 1px solid rgba(151, 175, 197, 0.2);
+    border-top: 1px solid var(--footer-border);
 }
 
 .sidebar-footer button {
@@ -101,8 +101,8 @@
 }
 
 .dashboard-hero {
-    background: linear-gradient(140deg, rgba(6, 78, 92, 0.72), rgba(6, 95, 70, 0.6));
-    border: 1px solid rgba(167, 243, 208, 0.32);
+    background: linear-gradient(140deg, color-mix(in srgb, var(--primary) 25%, var(--surface-highlight)), color-mix(in srgb, var(--primary) 18%, var(--surface-strong)));
+    border: 1px solid color-mix(in srgb, var(--primary) 38%, transparent);
     border-radius: 18px;
     padding: 1.35rem 1.45rem;
     box-shadow: 0 12px 28px rgba(1, 22, 38, 0.45);
@@ -112,20 +112,20 @@
     margin: 0;
     font-size: 1.9rem;
     font-weight: 700;
-    color: #f0fdfa;
+    color: var(--title-color);
 }
 
 .dashboard-hero h3 {
     margin: 0.7rem 0 0;
     font-size: 1rem;
     line-height: 1.5;
-    color: #ccfbf1;
+    color: var(--foreground);
     font-weight: 500;
 }
 
 .dashboard-panel {
-    background: rgba(10, 19, 29, 0.75);
-    border: 1px solid rgba(148, 163, 184, 0.28);
+    background: var(--surface-soft);
+    border: 1px solid var(--border);
     border-radius: 14px;
     padding: 1.1rem 1.2rem;
 }
@@ -137,7 +137,7 @@
 
 .dashboard-panel p {
     margin: 0.55rem 0 1rem;
-    color: #b8c7d8;
+    color: var(--muted);
 }
 
 .dashboard-stack {
@@ -147,20 +147,50 @@
 }
 
 .dashboard-simple-panel {
-    background: linear-gradient(160deg, rgba(9, 20, 34, 0.8), rgba(9, 16, 28, 0.9));
-    border: 1px solid rgba(147, 197, 253, 0.28);
+    background: var(--panel-soft-bg);
+    border: 1px solid var(--panel-soft-border);
     border-radius: 14px;
     padding: 1rem 1.1rem;
 }
 
 .dashboard-simple-panel h2 {
     margin: 0 0 0.5rem;
-    color: #f0f9ff;
+    color: var(--title-color);
 }
 
 .dashboard-note {
     margin: 0;
-    color: #b3c7da;
+    color: var(--muted);
+}
+
+.theme-setting-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.6rem;
+    margin-top: 0.7rem;
+}
+
+.theme-option {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--panel-soft-bg);
+    color: var(--foreground);
+    font-weight: 700;
+    cursor: pointer;
+    padding: 0.62rem 0.7rem;
+    transition: transform 0.15s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.theme-option:hover {
+    transform: translateY(-1px);
+    border-color: color-mix(in srgb, var(--primary) 58%, transparent);
+}
+
+.theme-option.active {
+    border-color: color-mix(in srgb, var(--primary) 64%, transparent);
+    background: linear-gradient(135deg, var(--primary), color-mix(in srgb, var(--primary) 74%, #000 26%));
+    color: var(--primary-foreground);
+    box-shadow: 0 8px 16px color-mix(in srgb, var(--primary) 30%, transparent);
 }
 
 @media (max-width: 1024px) {
@@ -182,7 +212,7 @@
         position: static;
         height: auto;
         border-right: 0;
-        border-bottom: 1px solid rgba(148, 163, 184, 0.25);
+        border-bottom: 1px solid var(--footer-border);
     }
 
     .sidebar-nav {
@@ -201,6 +231,10 @@
 
 @media (max-width: 520px) {
     .sidebar-nav {
+        grid-template-columns: 1fr;
+    }
+
+    .theme-setting-grid {
         grid-template-columns: 1fr;
     }
 }

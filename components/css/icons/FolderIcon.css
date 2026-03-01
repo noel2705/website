@@ -1,11 +1,3 @@
-:root {
-    --folder-color: #70a1ff;
-    --folder-back-color: #4785ff;
-    --paper-1: #e6e6e6;
-    --paper-2: #f2f2f2;
-    --paper-3: #ffffff;
-}
-
 .folder {
     transition: all 0.2s ease-in;
     cursor: pointer;

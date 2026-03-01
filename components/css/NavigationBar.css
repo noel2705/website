@@ -7,8 +7,8 @@
     justify-content: space-between;
     min-height: 60px;
     padding: 0.6rem 1rem;
-    background: rgba(7, 14, 22, 0.8);
-    border-bottom: 1px solid rgba(148, 163, 184, 0.26);
+    background: var(--footer-bg);
+    border-bottom: 1px solid var(--footer-border);
     backdrop-filter: blur(12px);
 }
 
@@ -22,7 +22,7 @@
 }
 
 .link {
-    color: #cfdeef;
+    color: var(--foreground);
     text-decoration: none;
     font-size: 0.94rem;
     font-weight: 600;
@@ -34,17 +34,17 @@
 }
 
 .link:hover {
-    color: #fff;
-    background: rgba(45, 212, 191, 0.16);
-    border-color: rgba(94, 234, 212, 0.45);
+    color: var(--foreground);
+    background: color-mix(in srgb, var(--primary) 18%, transparent);
+    border-color: color-mix(in srgb, var(--primary) 45%, transparent);
 }
 
 .link.active,
 .active {
-    color: #053237;
-    background: linear-gradient(135deg, #5eead4, #2dd4bf);
-    border-color: rgba(255, 255, 255, 0.2);
-    box-shadow: 0 6px 16px rgba(20, 184, 166, 0.3);
+    color: var(--primary-foreground);
+    background: linear-gradient(135deg, var(--primary), color-mix(in srgb, var(--primary) 72%, #000 28%));
+    border-color: color-mix(in srgb, var(--foreground) 24%, transparent);
+    box-shadow: 0 6px 16px color-mix(in srgb, var(--primary) 30%, transparent);
 }
 
 .right {

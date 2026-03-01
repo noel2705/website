@@ -2,13 +2,13 @@
     width: 100%;
     padding: 0.9rem;
     border-radius: 14px;
-    background: rgba(15, 23, 42, 0.45);
-    border: 1px solid rgba(125, 211, 252, 0.24);
+    background: color-mix(in srgb, var(--surface-strong) 68%, transparent);
+    border: 1px solid var(--border);
 }
 
 .shard-chart p {
     margin: 0.5rem 0;
-    color: #c7d7ea;
+    color: var(--muted);
 }
 
 .filter-buttons {
@@ -22,9 +22,9 @@
 .filter-buttons button {
     padding: 0.45rem 0.8rem;
     border-radius: 999px;
-    border: 1px solid rgba(103, 232, 249, 0.5);
-    background: rgba(14, 116, 144, 0.25);
-    color: #d9f8ff;
+    border: 1px solid color-mix(in srgb, var(--primary) 50%, transparent);
+    background: color-mix(in srgb, var(--primary) 20%, transparent);
+    color: var(--foreground);
     font-size: 0.82rem;
     font-weight: 600;
     cursor: pointer;
@@ -32,36 +32,36 @@
 }
 
 .filter-buttons button:hover {
-    border-color: rgba(165, 243, 252, 0.7);
-    background: rgba(14, 116, 144, 0.45);
+    border-color: color-mix(in srgb, var(--primary) 70%, transparent);
+    background: color-mix(in srgb, var(--primary) 34%, transparent);
 }
 
 .filter-buttons button.active {
-    color: #05354a;
-    background: linear-gradient(135deg, #67e8f9, #22d3ee);
-    border-color: rgba(186, 230, 253, 0.9);
-    box-shadow: 0 6px 14px rgba(34, 211, 238, 0.3);
+    color: var(--primary-foreground);
+    background: linear-gradient(135deg, var(--primary), color-mix(in srgb, var(--primary) 75%, #000 25%));
+    border-color: color-mix(in srgb, var(--foreground) 35%, transparent);
+    box-shadow: 0 6px 14px color-mix(in srgb, var(--primary) 32%, transparent);
 }
 
 .shard-chart > button {
     margin-top: 0.9rem;
     padding: 0.5rem 0.9rem;
     border-radius: 10px;
-    border: 1px solid rgba(125, 211, 252, 0.45);
-    background: rgba(30, 64, 175, 0.32);
-    color: #dbeafe;
+    border: 1px solid var(--panel-soft-border);
+    background: color-mix(in srgb, var(--surface-highlight) 76%, transparent);
+    color: var(--foreground);
     font-weight: 700;
     cursor: pointer;
 }
 
 .shard-chart > button:hover {
-    background: rgba(30, 64, 175, 0.5);
+    background: color-mix(in srgb, var(--surface-highlight) 100%, transparent);
 }
 
 .chart-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(2, 6, 23, 0.86);
+    background: color-mix(in srgb, var(--background) 86%, #000 14%);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -71,8 +71,8 @@
 .chart-overlay-content {
     width: min(96vw, 1320px);
     height: min(92vh, 840px);
-    background: linear-gradient(155deg, #0f172a, #0b1b2f);
-    border: 1px solid rgba(147, 197, 253, 0.35);
+    background: var(--panel-soft-bg);
+    border: 1px solid var(--panel-soft-border);
     border-radius: 16px;
     padding: 1.2rem;
     position: relative;
@@ -86,8 +86,8 @@
     height: 34px;
     border-radius: 50%;
     font-size: 1.08rem;
-    border: 1px solid rgba(147, 197, 253, 0.42);
-    background: rgba(15, 23, 42, 0.8);
-    color: #dbeafe;
+    border: 1px solid var(--panel-soft-border);
+    background: var(--surface-strong);
+    color: var(--foreground);
     cursor: pointer;
 }

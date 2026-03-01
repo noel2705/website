@@ -6,30 +6,30 @@
 }
 
 .auction-card {
-    background: linear-gradient(160deg, rgba(10, 26, 41, 0.84), rgba(8, 19, 30, 0.95));
+    background: var(--panel-soft-bg);
     padding: 0.9rem;
     border-radius: 14px;
     min-height: 390px;
-    box-shadow: 0 12px 24px rgba(2, 8, 18, 0.36);
-    color: white;
+    box-shadow: var(--shadow-strong);
+    color: var(--foreground);
     display: flex;
     flex-direction: column;
     gap: 0.66rem;
-    border: 1px solid rgba(148, 163, 184, 0.22);
+    border: 1px solid var(--border);
     transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .auction-card:hover {
     transform: translateY(-3px);
-    border-color: rgba(94, 234, 212, 0.46);
-    box-shadow: 0 18px 30px rgba(2, 8, 18, 0.44);
+    border-color: color-mix(in srgb, var(--primary) 52%, transparent);
+    box-shadow: 0 18px 30px color-mix(in srgb, var(--background) 65%, #000 35%);
 }
 
 .auction-card h2 {
     margin: 0;
     font-size: 1rem;
     font-weight: 700;
-    color: #f3fbff;
+    color: var(--title-color);
     min-height: 2.3em;
 }
 
@@ -41,8 +41,8 @@
     border-radius: 10px;
     display: grid;
     place-items: center;
-    background: rgba(12, 24, 36, 0.7);
-    border: 1px solid rgba(148, 163, 184, 0.2);
+    background: var(--surface-strong);
+    border: 1px solid var(--border);
 }
 
 .auction-item-img {
@@ -75,7 +75,7 @@
     display: flex;
     flex-direction: column;
     gap: 0.4rem;
-    color: #d8e7f8;
+    color: var(--muted);
     font-size: 0.9rem;
 }
 
@@ -101,10 +101,10 @@
 
 .auction-button {
     margin-top: auto;
-    border: 1px solid rgba(94, 234, 212, 0.45);
+    border: 1px solid color-mix(in srgb, var(--primary) 48%, transparent);
     border-radius: 10px;
-    background: linear-gradient(135deg, #5eead4, #22d3ee);
-    color: #03303b;
+    background: linear-gradient(135deg, var(--primary), color-mix(in srgb, var(--primary) 76%, #000 24%));
+    color: var(--primary-foreground);
     font-weight: 700;
     padding: 0.5rem 0.68rem;
     cursor: pointer;
@@ -123,9 +123,9 @@
     width: 120px;
     height: 100px;
     padding: 8px;
-    border: 1px solid rgba(148, 163, 184, 0.3);
-    background: linear-gradient(160deg, rgba(13, 31, 47, 0.82), rgba(10, 22, 35, 0.9));
-    color: #e9f4ff;
+    border: 1px solid var(--border);
+    background: var(--panel-soft-bg);
+    color: var(--foreground);
     cursor: pointer;
     border-radius: 10px;
     transition: transform 0.16s ease, box-shadow 0.2s ease, border-color 0.2s ease;
@@ -141,16 +141,16 @@
 .categorySwitcher button:hover,
 .raritySwitcher button:hover {
     transform: translateY(-2px);
-    box-shadow: 0 10px 18px rgba(2, 8, 18, 0.42);
-    border-color: rgba(94, 234, 212, 0.42);
+    box-shadow: var(--shadow-strong);
+    border-color: color-mix(in srgb, var(--primary) 48%, transparent);
 }
 
 .categorySwitcher button.active,
 .raritySwitcher button.active {
-    background: linear-gradient(135deg, #5eead4, #2dd4bf);
-    color: #042e35;
-    border-color: rgba(255, 255, 255, 0.25);
-    box-shadow: 0 10px 20px rgba(20, 184, 166, 0.35);
+    background: linear-gradient(135deg, var(--primary), color-mix(in srgb, var(--primary) 70%, #000 30%));
+    color: var(--primary-foreground);
+    border-color: color-mix(in srgb, var(--foreground) 24%, transparent);
+    box-shadow: 0 10px 20px color-mix(in srgb, var(--primary) 35%, transparent);
 }
 
 .red-text {
@@ -167,8 +167,8 @@
     gap: 0.6rem;
     padding: 0.85rem;
     border-radius: 14px;
-    border: 1px solid rgba(147, 197, 253, 0.27);
-    background: linear-gradient(155deg, rgba(9, 21, 35, 0.78), rgba(9, 16, 29, 0.9));
+    border: 1px solid var(--panel-soft-border);
+    background: var(--panel-soft-bg);
 }
 
 .auction-toolbar-rarity {
@@ -189,9 +189,9 @@
     min-width: 200px;
     padding: 6px 10px;
     border-radius: 10px;
-    border: 1px solid rgba(125, 211, 252, 0.32);
-    background: rgba(11, 27, 43, 0.86);
-    color: #eff8ff;
+    border: 1px solid var(--border);
+    background: var(--input-bg);
+    color: var(--input-text);
     cursor: pointer;
 }
 
@@ -199,8 +199,8 @@
     padding: 0.8rem;
     margin-bottom: 0.7rem;
     border-radius: 14px;
-    border: 1px solid rgba(147, 197, 253, 0.26);
-    background: linear-gradient(165deg, rgba(11, 25, 38, 0.82), rgba(9, 19, 31, 0.92));
+    border: 1px solid var(--panel-soft-border);
+    background: var(--panel-soft-bg);
 }
 
 .search-row input {
@@ -208,20 +208,20 @@
     height: 46px;
     padding: 0 14px;
     font-size: 0.95rem;
-    background: rgba(15, 23, 42, 0.74);
-    color: #eff9ff;
-    border: 1px solid rgba(125, 211, 252, 0.33);
+    background: var(--input-bg);
+    color: var(--input-text);
+    border: 1px solid var(--border);
     border-radius: 10px;
 }
 
 .search-row input::placeholder {
-    color: #9eb5ca;
+    color: var(--input-placeholder);
 }
 
 .search-row input:focus {
     outline: none;
-    border-color: rgba(103, 232, 249, 0.8);
-    box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.22);
+    border-color: var(--input-focus-border);
+    box-shadow: 0 0 0 3px var(--input-focus-ring);
 }
 
 @media (max-width: 740px) {

@@ -4,12 +4,12 @@
 
 .admin-panel h2 {
     margin: 0 0 0.8rem;
-    color: #f2f9ff;
+    color: var(--title-color);
 }
 
 .admin-loading {
     margin: 0.5rem 0;
-    color: #d3e6fa;
+    color: var(--muted);
 }
 
 .admin-user-grid {
@@ -19,18 +19,18 @@
 }
 
 .admin-user-card {
-    border: 1px solid rgba(148, 163, 184, 0.28);
+    border: 1px solid var(--border);
     border-radius: 14px;
     padding: 0.9rem;
-    box-shadow: 0 10px 22px rgba(2, 8, 18, 0.35);
-    background: linear-gradient(160deg, rgba(10, 28, 43, 0.82), rgba(8, 19, 30, 0.9));
+    box-shadow: var(--shadow-strong);
+    background: var(--panel-soft-bg);
     position: relative;
-    color: #d8e9fb;
+    color: var(--foreground);
 }
 
 .admin-user-card h3 {
     margin: 0 0 0.55rem;
-    color: #f2f9ff;
+    color: var(--title-color);
 }
 
 .admin-user-card p {
@@ -40,9 +40,9 @@
 
 .admin-permission-badge {
     display: inline-block;
-    background: rgba(45, 212, 191, 0.2);
-    border: 1px solid rgba(94, 234, 212, 0.35);
-    color: #b5f8ef;
+    background: color-mix(in srgb, var(--primary) 24%, transparent);
+    border: 1px solid color-mix(in srgb, var(--primary) 45%, transparent);
+    color: var(--foreground);
     padding: 4px 8px;
     border-radius: 999px;
     font-size: 12px;
@@ -52,9 +52,9 @@
     position: absolute;
     top: 10px;
     right: 10px;
-    border: 1px solid rgba(56, 189, 248, 0.45);
-    background: rgba(8, 47, 73, 0.75);
-    color: #dff7ff;
+    border: 1px solid color-mix(in srgb, var(--primary) 42%, transparent);
+    background: color-mix(in srgb, var(--surface-strong) 78%, var(--primary) 22%);
+    color: var(--foreground);
     padding: 0.28rem 0.55rem;
     border-radius: 8px;
     cursor: pointer;
@@ -63,7 +63,7 @@
 }
 
 .admin-edit-button:hover {
-    background: rgba(14, 116, 144, 0.8);
+    background: color-mix(in srgb, var(--surface-strong) 55%, var(--primary) 45%);
 }
 
 .admin-permission-list {
@@ -75,7 +75,7 @@
 
 .admin-edit-area {
     margin-top: 0.75rem;
-    border-top: 1px solid rgba(148, 163, 184, 0.24);
+    border-top: 1px solid var(--border);
     padding-top: 0.75rem;
 }
 
@@ -88,10 +88,10 @@
 
 .admin-role-button,
 .admin-save-button {
-    border: 1px solid rgba(94, 234, 212, 0.45);
+    border: 1px solid color-mix(in srgb, var(--primary) 46%, transparent);
     border-radius: 9px;
-    background: linear-gradient(135deg, #5eead4, #22d3ee);
-    color: #032c36;
+    background: linear-gradient(135deg, var(--primary), color-mix(in srgb, var(--primary) 76%, #000 24%));
+    color: var(--primary-foreground);
     padding: 0.34rem 0.66rem;
     font-weight: 700;
     cursor: pointer;
@@ -114,11 +114,11 @@
     display: flex;
     align-items: center;
     gap: 0.42rem;
-    background: rgba(15, 23, 42, 0.68);
-    border: 1px solid rgba(148, 163, 184, 0.23);
+    background: var(--surface-strong);
+    border: 1px solid var(--border);
     padding: 0.38rem 0.48rem;
     border-radius: 8px;
     font-size: 12px;
-    color: #deecfa;
+    color: var(--foreground);
     cursor: pointer;
 }
