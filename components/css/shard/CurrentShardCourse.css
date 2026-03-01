@@ -1,45 +1,51 @@
-.container {
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 20px;
+.dashboard-shards-page .container {
+    max-width: 100%;
+    margin: 0;
+    padding: 0.4rem;
 }
 
-.title {
-    font-size: 24px;
-    font-weight: bold;
-    margin-bottom: 16px;
+.dashboard-shards-page .title {
+    margin: 0 0 0.8rem;
+    font-size: 1rem;
+    color: #e2e8f0;
+    font-weight: 700;
 }
 
-.rate-list {
+.dashboard-shards-page .rate-list {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 0.6rem;
+    max-height: 320px;
+    overflow-y: auto;
+    padding-right: 0.25rem;
 }
 
-.rate-box {
+.dashboard-shards-page .rate-box {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #666;
-    padding: 16px;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    gap: 1rem;
+    background: rgba(15, 23, 42, 0.55);
+    border: 1px solid rgba(148, 163, 184, 0.24);
+    padding: 0.72rem 0.85rem;
+    border-radius: 10px;
 }
 
-.rate-name {
-    font-weight: bold;
-    font-size: 18px;
+.dashboard-shards-page .rate-name {
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: #dbeafe;
 }
 
-.rate-value {
-    font-weight: 600;
-    font-size: 16px;
+.dashboard-shards-page .rate-value {
+    font-weight: 700;
+    font-size: 0.94rem;
 }
 
-.rate-red {
-    color: #dc2626; /* Rot für niedrigen Kurs */
+.dashboard-shards-page .rate-red {
+    color: #fca5a5;
 }
 
-.rate-green {
-    color: #16a34a; /* Grün für ausreichenden Kurs */
+.dashboard-shards-page .rate-green {
+    color: #6ee7b7;
 }

@@ -1,11 +1,13 @@
 import LogOutButton from "@/components/buttons/LogOutButton";
 
-export default function (){
+export default function DashboardSettings() {
     return (
-        <div>
-            <h1>⚙️ Einstellungen</h1>
-            <p>Hier kannst du deine Einstellungen anpassen.</p>
-            <LogOutButton></LogOutButton>
+        <div className="dashboard-page">
+            <section className="dashboard-panel">
+                <h1>Einstellungen</h1>
+                <p>Hier kannst du deine Konto-Einstellungen und Session verwalten.</p>
+                <LogOutButton/>
+            </section>
         </div>
     )
 }

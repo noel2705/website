@@ -1,28 +1,28 @@
 'use client'
 
-import {useEffect, useState} from "react"
+import {useState} from "react"
 import "./shardManager.css"
 import ShardTopBar from "@/components/opsucht/shards/ShardTopBar"
 import ShardHistoryChart from "@/components/opsucht/shards/ShardHistoryChart"
 import UploadShardButton from "@/components/opsucht/shards/UploadShardButton"
 import CurrentShardCourse from "@/components/opsucht/shards/CurrentShardCourse"
-import NotLoggedIn from "@/components/icon/NotLogined";
-import {isLogin} from '@/hooks/useUserUUID';
-import {getSessionUser} from "@/hooks/useUser";
-import NoPermission from "@/components/icon/NoPermission";
-import ShardCalculator from "@/components/opsucht/shards/ShardCalculator";
+import NotLoggedIn from "@/components/icon/NotLogined"
+import {isLogin} from '@/hooks/useUserUUID'
+import {getSessionUser} from "@/hooks/useUser"
+import NoPermission from "@/components/icon/NoPermission"
+import ShardCalculator from "@/components/opsucht/shards/ShardCalculator"
 
-export default function Dashboard() {
+export default function DashboardShards() {
     const [refreshKey, setRefreshKey] = useState(0)
     const {uuid, loading} = isLogin()
-    const {user} = getSessionUser();
+    const {user} = getSessionUser()
 
     if (loading) {
-        return <p>Lädt...</p>
+        return <p className="shards-loading">Laedt Shard-Daten...</p>
     }
 
     if (!uuid) {
-        return <NotLoggedIn></NotLoggedIn>
+        return <NotLoggedIn/>
     }
 
     const hasShardAccess =
@@ -32,40 +32,36 @@ export default function Dashboard() {
     if (!hasShardAccess) {
         return (
             <NoPermission
-                title="🧪 Beta Feature"
-                message="Dieser Bereich ist aktuell noch nicht für dich freigeschaltet."
+                title="Beta Feature"
+                message="Dieser Bereich ist aktuell noch nicht fuer dich freigeschaltet."
                 backHref="/dashboard"
             />
         )
     }
+
     return (
-        <div style={{padding: "20px", display: "flex", flexDirection: "column", gap: "20px"}}>
+        <div className="dashboard-shards-page">
             <ShardTopBar refreshKey={refreshKey}/>
 
-            <div style={{
-                display: "flex",
-                gap: "20px",
-                justifyContent: "space-between",
-                alignItems: "flex-start",
-                flexWrap: "wrap"
-            }}>
-                <div style={{flex: 1, minWidth: "300px"}}>
+            <div className="shards-grid">
+                <section className="shards-card shards-card-chart">
                     <ShardHistoryChart refreshKey={refreshKey}/>
-                </div>
+                </section>
 
-                <div style={{flex: 1, minWidth: "250px"}}>
+                <section className="shards-card shards-card-upload">
                     <UploadShardButton onUploadSuccess={() => setRefreshKey(v => v + 1)}/>
-                </div>
+                </section>
 
-                <div style={{flex: 1, minWidth: "250px"}}>
+                <section className="shards-card shards-card-rates">
                     <CurrentShardCourse/>
-                </div>
+                </section>
             </div>
 
-
-            {  user?.hasPermission("view.shard.calculator") && <ShardCalculator/>}
-
-
+            {user?.hasPermission("view.shard.calculator") && (
+                <section className="shards-card shards-card-calculator">
+                    <ShardCalculator/>
+                </section>
+            )}
         </div>
     )
 }

@@ -2,59 +2,81 @@
     width: 100%;
     display: flex;
     justify-content: flex-start;
-    padding-left: 0;
 }
 
 .shard-calculator-card {
-    max-width: 4500px;
-    width: 32%;
-    background: linear-gradient(135deg, #2f2f2f, #3a3a3a);
+    width: min(100%, 520px);
+    background: linear-gradient(150deg, rgba(8, 47, 73, 0.75), rgba(22, 78, 99, 0.55));
+    border: 1px solid rgba(103, 232, 249, 0.34);
     border-radius: 16px;
-    padding: 25px 30px;
+    padding: 1rem 1.1rem;
     display: flex;
     flex-direction: column;
-    gap: 15px;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+    gap: 0.65rem;
+    box-shadow: 0 12px 24px rgba(2, 6, 23, 0.35);
 }
 
-.item-change{
-    background: #666;
+.shard-calculator-card h2 {
+    margin: 0 0 0.2rem;
+    color: #ecfeff;
+    font-size: 1.1rem;
+}
+
+.shard-calculator-card label {
+    color: #cffafe;
+    font-size: 0.88rem;
+    font-weight: 600;
 }
 
 .mode-switch {
     display: flex;
-    gap: 10px;
+    gap: 0.5rem;
 }
 
 .mode-switch button {
     flex: 1;
-    padding: 10px;
+    padding: 0.5rem;
     border-radius: 10px;
-    border: none;
+    border: 1px solid rgba(125, 211, 252, 0.35);
     cursor: pointer;
-    background: #444;
-    color: white;
+    background: rgba(8, 47, 73, 0.55);
+    color: #e0f2fe;
+    font-weight: 700;
 }
 
 .mode-switch button.active {
-    background: linear-gradient(135deg, #4bc0c0, #36a2a2);
+    color: #003341;
+    background: linear-gradient(135deg, #67e8f9, #22d3ee);
+}
+
+.item-change,
+.shard-calculator-card input {
+    width: 100%;
+    border: 1px solid rgba(125, 211, 252, 0.35);
+    border-radius: 9px;
+    padding: 0.55rem 0.65rem;
+    background: rgba(15, 23, 42, 0.65);
+    color: #f0f9ff;
+}
+
+.shard-calculator-card input::placeholder {
+    color: #94a3b8;
 }
 
 .calc-result {
-    margin-top: 10px;
-    background: linear-gradient(135deg, #4bc0c0, #195454);
-    border-radius: 14px;
-    padding: 16px;
+    margin-top: 0.3rem;
+    background: rgba(6, 78, 59, 0.58);
+    border: 1px solid rgba(110, 231, 183, 0.45);
+    border-radius: 12px;
+    padding: 0.7rem;
     text-align: center;
-    font-size: 18px;
+    font-size: 0.96rem;
+    color: #d1fae5;
 }
 
 .calc-result strong {
     display: block;
-    font-size: 28px;
-}
-
-.item-input {
-    background: #666;
-
+    margin-top: 0.2rem;
+    font-size: 1.22rem;
+    color: #f0fdf4;
 }
