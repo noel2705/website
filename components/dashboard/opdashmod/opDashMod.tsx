@@ -12,9 +12,9 @@ type ShowcaseItem = {
 
 const showcaseItems: ShowcaseItem[] = [
     {
-        title: "Shard Calculator",
+        title: "Shard Berechner",
         src: "/opdash/opdash_2.png",
-        alt: "Shard Calculator view",
+        alt: "Shard Berechner view",
         description: "Berechne die Shard Anzahl deiner Items, mit dem Aktuellem Kurs",
     },
     {
@@ -30,7 +30,7 @@ const showcaseItems: ShowcaseItem[] = [
         description: "Überblick deiner Aktuellen Shards, und was sie potenziell in Geld zum Kauf oder Verkaufen Wert wären",
     },
     {
-        title: "Quick Text",
+        title: "Schnell-Text",
         src: "/opdash/opdash_4.png",
         alt: "Quick text menu",
         description: "Du hast zu viele Hotkeys? Das ist die Lösung. Nur ein Knopfdruck und du sendest deine Werbung, oder führst einen Befehl aus",
@@ -57,9 +57,9 @@ export default function OPDashMod() {
             <header className="opdash-header">
                 <h1>OPDash-Mod</h1>
                 <p className="opdash-info">
-                    Mit Hilfe dieser Mod hast du eine Uebersicht ueber deine Shard-Trades.
-                    Berechne jederzeit den Wert deiner Items in Shards und behalte den Ueberblick
-                    ueber Spielzeit, Shards und vieles mehr.
+                    Mit Hilfe dieser Mod hast du eine Übersicht über deine Shard-Trades.
+                    Berechne jederzeit den Wert deiner Items in Shards und behalte den Überblick
+                    über Spielzeit, Shards und vieles mehr.
                 </p>
             </header>
 
