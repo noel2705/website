@@ -96,9 +96,7 @@
     overflow-y: auto;
 }
 
-.dashboard-page {
-    max-width: 1080px;
-}
+
 
 .dashboard-hero {
     background: linear-gradient(140deg, color-mix(in srgb, var(--primary) 25%, var(--surface-highlight)), color-mix(in srgb, var(--primary) 18%, var(--surface-strong)));

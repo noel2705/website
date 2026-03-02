@@ -55,8 +55,40 @@
 .shards-card-upload {
     grid-area: upload;
     display: flex;
-    align-items: center;
+    align-items: stretch;
     justify-content: center;
+}
+
+.shards-filepath-help {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+}
+
+.shards-filepath-title {
+    margin: 0.25rem 0 0;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--title-color);
+}
+
+.shards-filepath-text {
+    margin: 0;
+    font-size: 0.86rem;
+    color: var(--muted);
+}
+
+.shards-filepath-code {
+    display: block;
+    padding: 0.6rem 0.7rem;
+    border-radius: 10px;
+    border: 1px solid var(--panel-soft-border);
+    background: color-mix(in srgb, var(--surface-strong) 90%, transparent);
+    color: var(--foreground);
+    font-size: 0.8rem;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
 }
 
 .shards-card-rates {

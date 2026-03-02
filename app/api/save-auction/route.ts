@@ -1,13 +1,19 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
-const supabase = createClient(
-    process.env.SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
-
 export async function POST(req: Request) {
     try {
+        const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL
+        const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+
+        if (!supabaseUrl || !supabaseServiceRoleKey) {
+            return NextResponse.json(
+                { error: 'Missing SUPABASE_URL (or NEXT_PUBLIC_SUPABASE_URL) / SUPABASE_SERVICE_ROLE_KEY' },
+                { status: 500 }
+            )
+        }
+
+        const supabase = createClient(supabaseUrl, supabaseServiceRoleKey)
 
         const res = await fetch('https://api.opsucht.net/auctions/active')
         const auctions = await res.json()

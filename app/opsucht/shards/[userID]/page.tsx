@@ -12,7 +12,6 @@ import { isLogin } from '@/hooks/useUserUUID';
 export default function Dashboard() {
     const [refreshKey, setRefreshKey] = useState(0)
     const { uuid, loading } = isLogin()
-
     if (loading) return <p className="shards-loading">Laedt Shard-Daten...</p>
 
     if (!uuid) {
@@ -35,6 +34,7 @@ export default function Dashboard() {
                 <section className="shards-card shards-card-rates">
                     <CurrentShardCourse />
                 </section>
+
             </div>
         </div>
     )

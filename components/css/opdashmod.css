@@ -1,8 +1,18 @@
+.opdash-page-center {
+    min-height: calc(100vh - 64px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+}
+
 .opdash-container {
+    width: min(1200px, 100%);
     max-width: 1200px;
-    margin: auto;
+    margin: 0;
     padding: 1rem 0.3rem;
     color: var(--foreground);
+    text-align: center;
 }
 
 .opdash-header {
@@ -30,7 +40,7 @@
 
 .opdash-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 0.9rem;
 }
 
@@ -41,6 +51,9 @@
     border: 1px solid var(--border);
     transition: 0.2s ease;
     box-shadow: var(--shadow-strong);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .opdash-card:hover {
@@ -54,10 +67,20 @@
     font-size: 1.05rem;
 }
 
-.opdash-card img {
+.opdash-image-button {
     width: 100%;
+    padding: 0;
+    margin: 0 0 0.5rem;
+    border: 0;
+    background: transparent;
+    cursor: zoom-in;
+}
+
+.opdash-image-button img {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
     border-radius: 10px;
-    margin-bottom: 0.5rem;
     border: 1px solid var(--border);
 }
 
@@ -67,8 +90,8 @@
     color: var(--muted);
 }
 
-.opdash-card.wide {
-    grid-column: span 3;
+.opdash-card-featured {
+    grid-column: span 2;
 }
 
 .opdash-buttons {
@@ -101,8 +124,65 @@
     border-color: rgba(251, 191, 36, 0.6);
 }
 
-@media (max-width: 900px) {
-    .opdash-card.wide {
+.opdash-lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background: rgba(0, 0, 0, 0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.opdash-lightbox-card {
+    width: min(1100px, 100%);
+    background: var(--panel-soft-bg);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1rem;
+}
+
+.opdash-lightbox-close {
+    border: 1px solid var(--border);
+    background: var(--surface-soft);
+    color: var(--foreground);
+    border-radius: 8px;
+    padding: 0.45rem 0.7rem;
+    cursor: pointer;
+    margin-bottom: 0.8rem;
+}
+
+.opdash-lightbox-image {
+    width: 100%;
+    max-height: 75vh;
+    object-fit: contain;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+}
+
+.opdash-lightbox-card h3 {
+    margin: 0.8rem 0 0.4rem;
+    color: var(--title-color);
+}
+
+.opdash-lightbox-card p {
+    margin: 0;
+    color: var(--muted);
+}
+
+@media (max-width: 1000px) {
+    .opdash-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .opdash-card-featured {
         grid-column: span 1;
+    }
+}
+
+@media (max-width: 640px) {
+    .opdash-grid {
+        grid-template-columns: 1fr;
     }
 }

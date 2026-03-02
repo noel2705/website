@@ -1,10 +1,10 @@
 'use client'
 
-import { useState, useRef } from "react"
+import {useState, useRef} from "react"
 import Folder from "@/components/icon/animated/FolderIcon"
 import "../../css/shard/UploadShardButton.css"
 
-export default function UploadShardButton({ onUploadSuccess }: { onUploadSuccess: () => void }) {
+export default function UploadShardButton({onUploadSuccess}: { onUploadSuccess: () => void }) {
     const [message, setMessage] = useState("Drücke auf den Ordner, um deine Shard-Daten zu importieren")
     const [loading, setLoading] = useState(false)
     const [folderOpen, setFolderOpen] = useState(false)
@@ -16,7 +16,7 @@ export default function UploadShardButton({ onUploadSuccess }: { onUploadSuccess
     const resetFolder = (delay: number = 0) => {
         setTimeout(() => {
             setFolderOpen(false)
-            setMessage("Drücke auf den Ordner, um deine Shard-Daten zu importieren")
+            setMessage("Drücke auf den Ordner, um deine Shard-Daten zu importieren ")
             setFolderKey(prev => prev + 1)
         }, delay)
     }
@@ -80,7 +80,7 @@ export default function UploadShardButton({ onUploadSuccess }: { onUploadSuccess
 
             const res = await fetch("/api/shards/import", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {"Content-Type": "application/json"},
                 body: JSON.stringify({
                     userID: uuid,
                     tradeHistory: data.tradeHistory,
@@ -109,25 +109,27 @@ export default function UploadShardButton({ onUploadSuccess }: { onUploadSuccess
     }
 
     return (
-        <div className="upload-shard-container">
-            <div className="folder-wrapper" onClick={handleClickFolder}>
-                <Folder
-                    key={folderKey}
-                    size={0.75}
-                    isOpen={folderOpen}
-                />
-                <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept=".json"
-                    onChange={handleFileUpload}
-                    style={{ display: 'none' }}
-                    disabled={loading}
-                />
-            </div>
+        <>
+            <div className="upload-shard-container">
+                <div className="folder-wrapper" onClick={handleClickFolder}>
+                    <Folder
+                        key={folderKey}
+                        size={0.75}
+                        isOpen={folderOpen}
+                    />
+                    <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept=".json"
+                        onChange={handleFileUpload}
+                        style={{display: 'none'}}
+                        disabled={loading}
+                    />
+                </div>
 
-            {loading && <p className="upload-message">Lade Daten…</p>}
-            {message && <p className="upload-message">{message}</p>}
-        </div>
+                {loading && <p className="upload-message">Lade Daten…</p>}
+                {message && <p className="upload-message">{message}</p>}
+            </div>
+        </>
     )
 }

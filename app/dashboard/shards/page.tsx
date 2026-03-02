@@ -16,6 +16,7 @@ export default function DashboardShards() {
     const [refreshKey, setRefreshKey] = useState(0)
     const {uuid, loading} = isLogin()
     const {user} = getSessionUser()
+    const filePath = "C:\\Users\\<name>\\AppData\\Roaming\\.minecraft\\labymod-neo\\modpacks\\<modPackName>\\fabric\\1.21.4\\config"
 
     if (loading) {
         return <p className="shards-loading">Laedt Shard-Daten...</p>
@@ -49,7 +50,16 @@ export default function DashboardShards() {
                 </section>
 
                 <section className="shards-card shards-card-upload">
-                    <UploadShardButton onUploadSuccess={() => setRefreshKey(v => v + 1)}/>
+                    <div className="shards-filepath-help">
+                        <UploadShardButton onUploadSuccess={() => setRefreshKey(v => v + 1)}/>
+                        <p className="shards-filepath-title">Datei-Pfad Hilfe</p>
+                        <p className="shards-filepath-text">Du findest die Exportdatei in diesem Ordner:</p>
+                        <code className="shards-filepath-code">{filePath}</code>
+                        <p className="shards-filepath-text">
+                            Ersetze <code>&lt;name&gt;</code> und <code>&lt;modPackName&gt;</code> mit deinen echten
+                            Werten auf deinem PC, oder suche nach "opdash.json" in deinem PC
+                        </p>
+                    </div>
                 </section>
 
                 <section className="shards-card shards-card-rates">
@@ -62,6 +72,8 @@ export default function DashboardShards() {
                     <ShardCalculator/>
                 </section>
             )}
+
+
         </div>
     )
 }

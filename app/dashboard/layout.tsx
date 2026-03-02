@@ -13,7 +13,7 @@ const NAV_ITEMS = [
     {href: "/dashboard/auctions", label: "Auktionen"},
     {href: "/dashboard/shards", label: "Shards"},
     {href: "/dashboard/settings", label: "Einstellungen"},
-    {href: "/dashboard/opdash-mod", label: "OPDash-Mod"},
+    {href: "/opdash-mod", label: "OPDash-Mod"},
 ]
 
 export default function DashboardLayout({
