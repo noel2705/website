@@ -154,7 +154,6 @@ export async function verifyMinecraftAccount(mc_name: string, code: string) {
                 (a.item.displayName?.trim() || "") === code.trim()
         )
 
-        return {verified: Boolean(true)}
         return {verified: Boolean(found)}
 
     } catch (e) {
