@@ -1,46 +1,76 @@
-import { NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
+import { NextResponse } from "next/server";
+import { db } from "@/lib/utils/db";
 
-export async function POST(req: Request) {
+type Auction = {
+    uid: string;
+    endTime: string;
+    [key: string]: unknown;
+};
+
+export async function GET() {
     try {
-        const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL
-        const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+        const response = await fetch("https://api.opsucht.net/auctions/active", {
+            cache: "no-store",
+        });
 
-        if (!supabaseUrl || !supabaseServiceRoleKey) {
+        if (!response.ok) {
             return NextResponse.json(
-                { error: 'Missing SUPABASE_URL (or NEXT_PUBLIC_SUPABASE_URL) / SUPABASE_SERVICE_ROLE_KEY' },
-                { status: 500 }
-            )
+                { error: `API Fehler: ${response.status}` },
+                { status: 502 }
+            );
         }
 
-        const supabase = createClient(supabaseUrl, supabaseServiceRoleKey)
+        const auctions: Auction[] = await response.json();
 
-        const res = await fetch('https://api.opsucht.net/auctions/active')
-        const auctions = await res.json()
+        if (!Array.isArray(auctions)) {
+            return NextResponse.json(
+                { error: "Ungültige API-Antwort" },
+                { status: 502 }
+            );
+        }
+
+        const now = new Date();
 
         const expired = auctions.filter(
-            (a: any) => new Date(a.endTime).getTime() < Date.now()
-        )
+            (a) =>
+                a?.uid &&
+                a?.endTime &&
+                new Date(a.endTime).getTime() <= now.getTime()
+        );
 
-        if (expired.length === 0) {
-            return NextResponse.json({ saved: 0 })
-        }
+        const result = await db.tx(async (t) => {
+            await t.none(`
+                CREATE TABLE IF NOT EXISTS expired_auctions (
+                                                                uid TEXT PRIMARY KEY,
+                                                                end_time TIMESTAMPTZ NOT NULL,
+                                                                payload JSONB NOT NULL
+                )
+            `);
 
-        const { data, error } = await supabase
-            .from('expired_auctions')
-            .insert(expired)
+            for (const auction of expired) {
+                await t.none(
+                    `
+                        INSERT INTO expired_auctions (uid, end_time, payload)
+                        VALUES ($1, $2::timestamptz, $3::jsonb)
+                            ON CONFLICT (uid) DO NOTHING
+                    `,
+                    [
+                        auction.uid,
+                        auction.endTime,
+                        JSON.stringify(auction),
+                    ]
+                );
+            }
 
-        if (error) throw error
+            return { saved: expired.length };
+        });
 
-
-
-        // @ts-ignore
-        console.log('Gespeichert:', data.length)
-
-        // @ts-ignore
-        return NextResponse.json({ saved: data.length })
+        return NextResponse.json(result);
     } catch (err) {
-        console.error('Fehler beim Speichern abgelaufener Auktionen:', err)
-        return NextResponse.json({ error: (err as Error).message }, { status: 500 })
+        console.error("Fehler:", err);
+        return NextResponse.json(
+            { error: (err as Error).message },
+            { status: 500 }
+        );
     }
 }
