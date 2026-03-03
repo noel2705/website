@@ -17,19 +17,43 @@ export default async function MainPage({
     );
 }
 
-async function getAuctionItem(uid: string, category: string): Promise<Page[]> {
-    const url = `https://api.opsucht.net/auctions/active?category=${category}`;
-    const response = await fetch(url);
+import { db } from "@/lib/utils/db";
 
-    if (!response.ok) {
-        throw new Error(`Fehler beim Abrufen der Auktionen: ${response.status} ${response.statusText}`);
+async function getAuctionItem(uid: string, category: string): Promise<Page[]> {
+    // 1️⃣ Aktive Auktionen prüfen
+    const activeUrl = `https://api.opsucht.net/auctions/active?category=${category}`;
+    const activeResponse = await fetch(activeUrl, { cache: "no-store" });
+
+    if (!activeResponse.ok) {
+        throw new Error(
+            `Fehler beim Abrufen der aktiven Auktionen: ${activeResponse.status}`
+        );
     }
 
-    const data = await response.json();
+    const activeData = await activeResponse.json();
 
-    if (!Array.isArray(data)) {
+    if (!Array.isArray(activeData)) {
         throw new Error("API hat kein Array zurückgegeben");
     }
 
-    return data.filter((item: Page) => item.uid === uid);
+    const foundActive = activeData.filter((item: Page) => item.uid === uid);
+
+    if (foundActive.length > 0) {
+        return foundActive;
+    }
+
+    const expired = await db.oneOrNone(
+        `
+        SELECT payload
+        FROM expired_auctions
+        WHERE uid = $1
+        `,
+        [uid]
+    );
+
+    if (!expired) {
+        return [];
+    }
+
+    return [expired.payload];
 }

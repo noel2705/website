@@ -30,12 +30,14 @@ export async function GET() {
         }
 
         const now = new Date();
+        const saveThreshold = 60_000;
 
-        const expired = auctions.filter(
+
+        const toSave = auctions.filter(
             (a) =>
                 a?.uid &&
                 a?.endTime &&
-                new Date(a.endTime).getTime() <= now.getTime()
+                new Date(a.endTime).getTime() <= now.getTime() + saveThreshold
         );
 
         const result = await db.tx(async (t) => {
@@ -47,27 +49,23 @@ export async function GET() {
                 )
             `);
 
-            for (const auction of expired) {
+            for (const auction of toSave) {
                 await t.none(
                     `
                         INSERT INTO expired_auctions (uid, end_time, payload)
                         VALUES ($1, $2::timestamptz, $3::jsonb)
                             ON CONFLICT (uid) DO NOTHING
                     `,
-                    [
-                        auction.uid,
-                        auction.endTime,
-                        JSON.stringify(auction),
-                    ]
+                    [auction.uid, auction.endTime, JSON.stringify(auction)]
                 );
             }
 
-            return { saved: expired.length };
+            return { saved: toSave.length };
         });
 
         return NextResponse.json(result);
     } catch (err) {
-        console.error("Fehler:", err);
+        console.error("Fehler beim Speichern:", err);
         return NextResponse.json(
             { error: (err as Error).message },
             { status: 500 }
