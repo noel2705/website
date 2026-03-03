@@ -12,6 +12,38 @@ interface Props {
 }
 
 type AuctionMode = 'active' | 'expired';
+type ExpiredCache = {
+    updatedAt: number;
+    newestExpiredAt: string | null;
+    data: Page[];
+};
+
+const EXPIRED_CACHE_PREFIX = 'expired-auctions-cache-v1:';
+const EXPIRED_CACHE_TTL_MS = 120000;
+
+const getExpiredCacheKey = (category: string) => `${EXPIRED_CACHE_PREFIX}${category}`;
+
+const readExpiredCache = (category: string): ExpiredCache | null => {
+    try {
+        const raw = localStorage.getItem(getExpiredCacheKey(category));
+        if (!raw) return null;
+        const parsed = JSON.parse(raw) as ExpiredCache;
+        if (!Array.isArray(parsed?.data)) return null;
+        return parsed;
+    } catch {
+        return null;
+    }
+};
+
+const writeExpiredCache = (category: string, cache: ExpiredCache) => {
+    localStorage.setItem(getExpiredCacheKey(category), JSON.stringify(cache));
+};
+
+const maxIsoDate = (a: string | null, b: string | null): string | null => {
+    if (!a) return b;
+    if (!b) return a;
+    return new Date(a).getTime() >= new Date(b).getTime() ? a : b;
+};
 
 export default function AuctionClient({ initialAuction }: Props) {
     const itemsPerLoad = 18;
@@ -26,6 +58,7 @@ export default function AuctionClient({ initialAuction }: Props) {
     const [orderBy, setOrderby] = useState('moneyDesc');
     const [mode, setMode] = useState<AuctionMode>('active');
     const [loadingExpired, setLoadingExpired] = useState(false);
+    const [initialized, setInitialized] = useState(false);
 
     const getSellerName = async (uids: string[]) => {
         return resolver.getNames(uids);
@@ -53,13 +86,26 @@ export default function AuctionClient({ initialAuction }: Props) {
         await hydrateSellerNames(data);
     };
 
-    const fetchExpiredAuctions = async (cat: string) => {
+    const fetchExpiredAuctions = async (cat: string, forceRefresh = false) => {
         setLoadingExpired(true);
 
         try {
+            const now = Date.now();
+            const cache = readExpiredCache(cat);
+
+            if (cache?.data?.length) {
+                setAuction(cache.data);
+                await hydrateSellerNames(cache.data);
+            }
+
+            if (!forceRefresh && cache && now - cache.updatedAt < EXPIRED_CACHE_TTL_MS) {
+                return;
+            }
+
             const query = new URLSearchParams();
             if (cat !== '*') query.set('category', cat);
             query.set('limit', '300');
+            if (cache?.newestExpiredAt) query.set('sinceExpiredAt', cache.newestExpiredAt);
 
             const res = await fetch(`/api/expired-auctions?${query.toString()}`, {
                 cache: 'no-store',
@@ -67,9 +113,47 @@ export default function AuctionClient({ initialAuction }: Props) {
 
             if (!res.ok) throw new Error('Fehler beim Laden abgelaufener Auktionen');
 
-            const data: Page[] = await res.json();
-            setAuction(Array.isArray(data) ? data : []);
-            await hydrateSellerNames(Array.isArray(data) ? data : []);
+            const json = await res.json();
+            const responseItems: Page[] = Array.isArray(json)
+                ? json
+                : Array.isArray(json?.items)
+                    ? json.items
+                    : [];
+            const responseNewestExpiredAt: string | null =
+                typeof json?.newestExpiredAt === 'string' ? json.newestExpiredAt : null;
+
+            const expiredOnly = Array.isArray(responseItems)
+                ? responseItems.filter(a => new Date(a.endTime).getTime() <= Date.now())
+                : [];
+
+            const mergedMap = new Map<string, Page>();
+
+            if (cache?.data?.length) {
+                for (const item of cache.data) {
+                    if (item?.uid) mergedMap.set(item.uid, item);
+                }
+            }
+
+            for (const item of expiredOnly) {
+                if (item?.uid) mergedMap.set(item.uid, item);
+            }
+
+            const merged = [...mergedMap.values()].sort(
+                (a, b) => new Date(b.endTime).getTime() - new Date(a.endTime).getTime()
+            );
+            const capped = merged.slice(0, 500);
+            const newestExpiredAt = maxIsoDate(cache?.newestExpiredAt ?? null, responseNewestExpiredAt);
+
+            writeExpiredCache(cat, {
+                updatedAt: Date.now(),
+                newestExpiredAt,
+                data: capped,
+            });
+
+            setAuction(capped);
+            await hydrateSellerNames(capped);
+        } catch (err) {
+            console.error('Fehler beim Laden abgelaufener Auktionen:', err);
         } finally {
             setLoadingExpired(false);
         }
@@ -118,6 +202,7 @@ export default function AuctionClient({ initialAuction }: Props) {
         if (storedSearchBar !== searchBar) setSearchbar(storedSearchBar);
         if (storedOrderBy !== orderBy) setOrderby(storedOrderBy);
         if (storedMode !== mode) setMode(storedMode);
+        setInitialized(true);
     }, []);
 
     useEffect(() => {
@@ -135,6 +220,7 @@ export default function AuctionClient({ initialAuction }: Props) {
     }, [searchBar]);
 
     useEffect(() => {
+        if (!initialized) return;
         sessionStorage.setItem('auctionMode', mode);
 
         if (mode === 'active') {
@@ -143,7 +229,7 @@ export default function AuctionClient({ initialAuction }: Props) {
         }
 
         void fetchExpiredAuctions(category);
-    }, [mode, category]);
+    }, [mode, category, initialized]);
 
     useEffect(() => {
         sortAuctions(auction);
@@ -154,14 +240,19 @@ export default function AuctionClient({ initialAuction }: Props) {
     }, [showAuction?.length]);
 
     useEffect(() => {
-        if (mode !== 'active') return;
+        if (!initialized) return;
 
         const interval = setInterval(() => {
-            void fetchActiveAuctions(category);
+            if (mode === 'active') {
+                void fetchActiveAuctions(category);
+                return;
+            }
+
+            void fetchExpiredAuctions(category, true);
         }, 10000);
 
         return () => clearInterval(interval);
-    }, [category, mode]);
+    }, [category, mode, initialized]);
 
     useEffect(() => {
         const sentinel = document.getElementById('scroll-sentinel');
@@ -265,7 +356,7 @@ export default function AuctionClient({ initialAuction }: Props) {
                     <div className="categorySwitcher">
                         <div className="sort">
                             <select value={orderBy} onChange={(e) => setOrderby(e.target.value)}>
-                                <option value="moneyDesc">Preis: Gross -{">"} Klein</option>
+                                <option value="moneyDesc">Preis: Groß -{">"} Klein</option>
                                 <option value="moneyAsc">Preis: Klein -{">"} Gross</option>
                                 <option value="timeDesc">Endet bald</option>
                                 <option value="timeAsc">Neuste</option>

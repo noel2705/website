@@ -1,21 +1,17 @@
 'use client';
 
-import {Page} from "@/lib/utils/types";
+import { Page } from "@/lib/utils/types";
 import BackButton from "@/components/buttons/BackButton";
 import "../../css/auction/auctionItem.css";
-import {
-    formatMoney,
-    getItemIcon,
-} from "@/lib/utils/auction/auction";
+import { formatMoney, getItemIcon } from "@/lib/utils/auction/auction";
 import EndTimeCard from "@/components/opsucht/auction/EndTimeCard";
 import PriceChart from "@/components/opsucht/auction/PriceChart";
 import ReloadButton from "@/components/buttons/ReloadButton";
-import AuctionExpired from "@/components/opsucht/auction/AuctionExpired";
 import UserPageButton from "@/components/opsucht/auction/UserPageButton";
 import UserName from "@/components/opsucht/auction/UserName";
-import {getSessionUser} from "@/hooks/useUser";
-import {useEffect, useState} from "react";
-import {isAuctionMarked, setAuctionMarked, unmarkAuction} from "@/lib/utils/auction/auction.server";
+import { getSessionUser } from "@/hooks/useUser";
+import { useEffect, useState } from "react";
+import { isAuctionMarked, setAuctionMarked, unmarkAuction } from "@/lib/utils/auction/auction.server";
 import ColoredLore from "@/components/opsucht/auction/ColoredLore";
 
 export default function AuctionItemPage({
@@ -25,10 +21,8 @@ export default function AuctionItemPage({
     data: Page[];
     auctionID: string;
 }) {
-    const {user, loading} = getSessionUser();
+    const { user, loading } = getSessionUser();
     const [isMarked, setIsMarked] = useState(false);
-    const isExpired =
-        data.length > 0 && new Date(data[0].endTime) < new Date();
 
     useEffect(() => {
         async function loadMarked() {
@@ -46,81 +40,68 @@ export default function AuctionItemPage({
     return (
         <>
             {data.map((a) => {
-                const bidsSorted = Object.entries(a.bids).sort(
-                    (a, b) => b[1] - a[1]
-                );
+                const bidsSorted = Object.entries(a.bids).sort((a, b) => b[1] - a[1]);
 
-                return isExpired ? (
-                    <AuctionExpired key={a.uid}/>
-                ) : (
+                return (
                     <div key={a.uid} className="auction-container">
-                        <ReloadButton/>
+                        <ReloadButton />
 
                         <div className="info-name">
-                            <img src={getItemIcon(a.item)} alt="" className="item-icon"/>
+                            <img src={getItemIcon(a.item)} alt="" className="item-icon" />
                             <h2>{a.item.displayName ?? a.item.material}</h2>
-                            <img src={getItemIcon(a.item)} alt="" className="item-icon"/>
+                            <img src={getItemIcon(a.item)} alt="" className="item-icon" />
                         </div>
 
                         <div className="info-bar">
-                            <BackButton/>
+                            <BackButton />
                             <span>{bidsSorted.length} Gebote</span>
                             <span>Aktuell: {formatMoney(a.currentBid)}</span>
-                            <button onClick={e => {
-                                if (isMarked) {
-                                    unmarkAuction(user, auctionID).then(() => setIsMarked(false));
-                                } else {
-                                    setAuctionMarked(user, auctionID).then(() => setIsMarked(true));
-                                }
-
-                            }}>{isMarked ? "Gemerkt" : "Merken"}</button>
+                            <button
+                                onClick={() => {
+                                    if (isMarked) {
+                                        unmarkAuction(user, auctionID).then(() => setIsMarked(false));
+                                    } else {
+                                        setAuctionMarked(user, auctionID).then(() => setIsMarked(true));
+                                    }
+                                }}
+                            >
+                                {isMarked ? "Gemerkt" : "Merken"}
+                            </button>
                             <span>Start: {formatMoney(a.startBid)}</span>
                             <div className="time">
-                                <EndTimeCard endTime={a.endTime}/>
+                                <EndTimeCard endTime={a.endTime} />
                             </div>
                         </div>
 
                         <div className="lower-section">
                             <div className="price-card">
-                                <PriceChart bids={a.bids}/>
+                                <PriceChart bids={a.bids} />
                             </div>
 
                             <div className="side-wrapper">
-                                {(a.item.lore?.length ||
-                                        Object.keys(a.item.enchantments || {}).length) >
-                                    0 && (
-                                        <div className="side-panel">
-                                            {a.item.lore?.length > 0 && (
-                                                <div>
-                                                    <h3>Lore</h3>
-                                                    {a.item.lore?.length > 0 && (
-                                                        <div>
-                                                            <ColoredLore loreLines={a.item.lore}/>
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            )}
+                                {(a.item.lore?.length || Object.keys(a.item.enchantments || {}).length) > 0 && (
+                                    <div className="side-panel">
+                                        {a.item.lore?.length > 0 && (
+                                            <div>
+                                                <h3>Lore</h3>
+                                                <ColoredLore loreLines={a.item.lore} />
+                                            </div>
+                                        )}
 
-                                            {a.item.enchantments &&
-                                                Object.keys(a.item.enchantments).length > 0 && (
-                                                    <div style={{marginTop: 14}}>
-                                                        <h3>Enchantments</h3>
-                                                        <ul>
-                                                            {Object.entries(a.item.enchantments).map(
-                                                                ([key, level]) => (
-                                                                    <li key={key}>
-                                                                        {key
-                                                                            .replace("minecraft:", "")
-                                                                            .replace(/_/g, " ")}{" "}
-                                                                        {level}
-                                                                    </li>
-                                                                )
-                                                            )}
-                                                        </ul>
-                                                    </div>
-                                                )}
-                                        </div>
-                                    )}
+                                        {a.item.enchantments && Object.keys(a.item.enchantments).length > 0 && (
+                                            <div style={{ marginTop: 14 }}>
+                                                <h3>Enchantments</h3>
+                                                <ul>
+                                                    {Object.entries(a.item.enchantments).map(([key, level]) => (
+                                                        <li key={key}>
+                                                            {key.replace("minecraft:", "").replace(/_/g, " ")} {level}
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
                             </div>
                         </div>
 
@@ -131,13 +112,8 @@ export default function AuctionItemPage({
                                     {bidsSorted.map(([uuid, amount], index) => (
                                         <li key={uuid}>
                                             <span className="rank">#{index + 1}</span>
-                                            <UserPageButton
-                                                name={<UserName uuid={uuid}/>}
-                                                uuid={uuid}
-                                            />
-                                            <span className="price">
-                        {formatMoney(amount)}
-                      </span>
+                                            <UserPageButton name={<UserName uuid={uuid} />} uuid={uuid} />
+                                            <span className="price">{formatMoney(amount)}</span>
                                         </li>
                                     ))}
                                 </ul>

@@ -43,18 +43,27 @@ export async function GET() {
         const result = await db.tx(async (t) => {
             await t.none(`
                 CREATE TABLE IF NOT EXISTS expired_auctions (
-                                                                uid TEXT PRIMARY KEY,
-                                                                end_time TIMESTAMPTZ NOT NULL,
-                                                                payload JSONB NOT NULL
+                    uid TEXT PRIMARY KEY,
+                    end_time TIMESTAMPTZ NOT NULL,
+                    payload JSONB NOT NULL
                 )
+            `);
+            await t.none(`
+                ALTER TABLE expired_auctions
+                ADD COLUMN IF NOT EXISTS expired_at TIMESTAMPTZ
+            `);
+            await t.none(`
+                UPDATE expired_auctions
+                SET expired_at = end_time
+                WHERE expired_at IS NULL
             `);
 
             for (const auction of toSave) {
                 await t.none(
                     `
-                        INSERT INTO expired_auctions (uid, end_time, payload)
-                        VALUES ($1, $2::timestamptz, $3::jsonb)
-                            ON CONFLICT (uid) DO NOTHING
+                        INSERT INTO expired_auctions (uid, end_time, payload, expired_at)
+                        VALUES ($1, $2::timestamptz, $3::jsonb, NOW())
+                        ON CONFLICT (uid) DO NOTHING
                     `,
                     [auction.uid, auction.endTime, JSON.stringify(auction)]
                 );
