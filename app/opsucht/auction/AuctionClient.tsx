@@ -30,16 +30,12 @@ export default function AuctionClient({initialAuction}: Props) {
                 : `https://api.opsucht.net/auctions/active?category=${cat}`;
         const res = await fetch(url);
         data = await res.json();
+        setAuction(data);
+        const rawNames = [...new Set(data.map(e => e.seller))];
+        const resNames = await getSellerName(rawNames);
+        setSellerNames(resNames);
 
-
-
-
-    sortAuctions(data);
-    const rawNames = [...new Set(data.map(e => e.seller))];
-    const resNames = await getSellerName(rawNames);
-    setSellerNames(resNames);
-
-};
+    };
 
 
 const getSellerName = async (uids: string[]) => {
