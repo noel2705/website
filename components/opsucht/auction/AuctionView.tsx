@@ -50,6 +50,7 @@ export default async function AuctionView({userID}: { userID: string }) {
                         {eigeneAuktionen.map(a => (
                             <AuctionCard
                                 key={a.uid}
+                                mode={"active"}
                                 auction={a}
                                 auctionSellerName={<UserName uuid={a.seller}/>}
                             />
