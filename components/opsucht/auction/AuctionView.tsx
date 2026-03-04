@@ -72,6 +72,7 @@ export default async function AuctionView({userID}: { userID: string }) {
                                 <div key={a.uid} className="auction-wrapper">
                                     <AuctionCard
                                         auction={a}
+                                        mode={"active"}
                                         auctionSellerName={<UserName uuid={a.seller}/>}
                                     />
 
@@ -96,6 +97,7 @@ export default async function AuctionView({userID}: { userID: string }) {
                         {markedAuctions.map(a => (
                             <AuctionCard
                                 key={a.uid}
+                                mode={"active"}
                                 auction={a}
                                 auctionSellerName={<UserName uuid={a.seller}/>}
                             />
