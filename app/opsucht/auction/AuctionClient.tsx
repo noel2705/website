@@ -25,7 +25,7 @@ const ACTIVE_REFRESH_INTERVAL_MS = 10000;
 const EXPIRED_REFRESH_INTERVAL_MS = 120000;
 const EXPIRED_LIMIT_OPTIONS = [10, 50, 100, 250, 500, 'all'] as const;
 type ExpiredLimitOption = (typeof EXPIRED_LIMIT_OPTIONS)[number];
-const DEFAULT_EXPIRED_LIMIT = 10;
+const DEFAULT_EXPIRED_LIMIT = 100;
 
 const getExpiredCacheKey = (category: string, limit: ExpiredLimitOption, query: string) =>
     `${EXPIRED_CACHE_PREFIX}${category}:${limit}:${query}`;
@@ -442,7 +442,7 @@ export default function AuctionClient({initialAuction}: Props) {
                                     value={expiredLimit}
                                     onChange={(e) =>
                                         setExpiredLimit(
-                                            e.target.value === 'all' ? 'all' : Number(e.target.value)
+                                            e.target.value as ExpiredLimitOption
                                         )
                                     }
                                     aria-label="Anzahl abgelaufener Auktionen insgesamt"
