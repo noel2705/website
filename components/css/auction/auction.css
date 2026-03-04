@@ -224,6 +224,20 @@
     box-shadow: 0 0 0 3px var(--input-focus-ring);
 }
 
+.expired-info {
+    margin-top: 0.65rem;
+    margin-bottom: 0.25rem;
+    padding: 0.55rem 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--panel-soft-bg) 82%, transparent);
+    color: var(--muted);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem 1.2rem;
+    font-size: 0.9rem;
+}
+
 @media (max-width: 740px) {
     .auction-grid {
         grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
