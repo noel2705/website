@@ -4,7 +4,7 @@ import { useTheme } from "@/components/theme/ThemeProvider";
 import type { ThemeName } from "@/lib/theme";
 
 const THEME_LABELS: Array<{ value: ThemeName; label: string }> = [
-  { value: "opmode", label: "OPMODE (Aktuell)" },
+  { value: "opmode", label: "OPMODE" },
   { value: "dark", label: "Darkmode" },
   { value: "light", label: "Lightmode" },
 ];

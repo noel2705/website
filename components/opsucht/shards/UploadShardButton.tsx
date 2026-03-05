@@ -3,7 +3,7 @@
 import {useState, useRef} from "react"
 import Folder from "@/components/icon/animated/FolderIcon"
 import "../../css/shard/UploadShardButton.css"
-
+import { getMeCached } from "@/lib/utils/meClient";
 export default function UploadShardButton({onUploadSuccess}: { onUploadSuccess: () => void }) {
     const [message, setMessage] = useState("Drücke auf den Ordner, um deine Shard-Daten zu importieren")
     const [loading, setLoading] = useState(false)
@@ -57,9 +57,8 @@ export default function UploadShardButton({onUploadSuccess}: { onUploadSuccess: 
         setMessage("")
 
         try {
-            const resUUID = await fetch("/api/me")
-            const dataUUID = await resUUID.json()
-            const uuid = dataUUID.mc_uuid || dataUUID.uuid
+            const me = await getMeCached()
+            const uuid = me?.uuid
 
             if (!uuid) {
                 setMessage("Fehler: Benutzer nicht erkannt ❌")

@@ -7,22 +7,20 @@ import ShardHistoryChart from "@/components/opsucht/shards/ShardHistoryChart"
 import UploadShardButton from "@/components/opsucht/shards/UploadShardButton"
 import CurrentShardCourse from "@/components/opsucht/shards/CurrentShardCourse"
 import NotLoggedIn from "@/components/icon/NotLogined"
-import {isLogin} from '@/hooks/useUserUUID'
 import {getSessionUser} from "@/hooks/useUser"
 import NoPermission from "@/components/icon/NoPermission"
 import ShardCalculator from "@/components/opsucht/shards/ShardCalculator"
 
 export default function DashboardShards() {
     const [refreshKey, setRefreshKey] = useState(0)
-    const {uuid, loading} = isLogin()
-    const {user} = getSessionUser()
+    const {user, loading} = getSessionUser()
     const filePath = "C:\\Users\\<name>\\AppData\\Roaming\\.minecraft\\labymod-neo\\modpacks\\<modPackName>\\fabric\\1.21.4\\config"
 
     if (loading) {
         return <p className="shards-loading">Laedt Shard-Daten...</p>
     }
 
-    if (!uuid) {
+    if (!user) {
         return <NotLoggedIn/>
     }
 
@@ -34,7 +32,7 @@ export default function DashboardShards() {
         return (
             <NoPermission
                 title="Beta Feature"
-                message="Dieser Bereich ist aktuell noch nicht fuer dich freigeschaltet."
+                message="Dieser Bereich ist aktuell noch nicht für dich freigeschaltet."
                 backHref="/dashboard"
             />
         )

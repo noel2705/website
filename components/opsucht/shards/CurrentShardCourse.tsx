@@ -40,6 +40,7 @@ export default function CurrentShardCourse() {
     function getRateColor(source: string, rate: number) {
         if (source.includes('diamond')) return rate < 10 ? 'rate-red' : 'rate-green'
         if (source.includes('netherite')) return rate < 50 ? 'rate-red' : 'rate-green'
+        if (source.includes('Steinplatten')) return rate < 15 ? 'rate-red' : 'rate-green'
         if (source.includes('Gräbergemisch') || source.includes('Holzbündel')) return rate < 20 ? 'rate-red' : 'rate-green'
         return 'rate-green'
     }

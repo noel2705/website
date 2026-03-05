@@ -92,7 +92,7 @@ export default function OPDashMod() {
                     href="https://modrinth.com/mod/opdash"
                     target="_blank"
                 >
-                    Mod herunterladen
+                    Zur Mod
                 </Link>
             </div>
 

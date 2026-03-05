@@ -1,6 +1,7 @@
 'use client'
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import "../../css/shard/ShardCalculator.css"
+import {formatShards} from "@/lib/utils/auction/auction";
 
 type Mode = "itemsToShards" | "shardsToItems"
 
@@ -14,7 +15,6 @@ export default function ShardCalculator() {
     const [item, setItem] = useState("diamond_block")
     const [mode, setMode] = useState<Mode>("itemsToShards")
     const [value, setValue] = useState(0)
-    const [result, setResult] = useState(0)
 
     useEffect(() => {
         fetch("https://api.opsucht.net/merchant/rates")
@@ -31,16 +31,21 @@ export default function ShardCalculator() {
             "Gräbergemisch"
     };
 
-    useEffect(() => {
+    const calculatedValue = useMemo(() => {
         const rate = rates.find(r => r.source === item)
-        if (!rate || value <= 0) return setResult(0)
+        if (!rate || value <= 0) return 0
 
         if (mode === "itemsToShards") {
-            setResult(Number((value * rate.exchangeRate).toFixed(2)))
-        } else {
-            setResult(Number((value / rate.exchangeRate).toFixed(2)))
+            return Number((value * rate.exchangeRate).toFixed(2))
         }
+
+        return Number((value / rate.exchangeRate).toFixed(2))
     }, [item, mode, value, rates])
+
+    const displayValue =
+        mode === "itemsToShards"
+            ? formatShards(calculatedValue)
+            : String(calculatedValue)
 
     return (
         <div className="shard-calculator-wrapper left-align">
@@ -87,7 +92,7 @@ export default function ShardCalculator() {
                 <div className="calc-result">
                     {mode === "itemsToShards" ? "Ergibt:" : "Benötigt:"}
                     <strong>
-                        {result} {mode === "itemsToShards" ? "Shards" : "Items"}
+                        {displayValue} {mode === "itemsToShards" ? "Shards" : "Items"}
                     </strong>
                 </div>
             </div>

@@ -103,6 +103,8 @@ export default async function AuctionView({userID}: { userID: string }) {
                 </section>
             )}
 
+
+
         </div>
     );
 }

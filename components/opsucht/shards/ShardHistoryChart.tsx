@@ -13,6 +13,7 @@ import {
     Legend,
 } from "chart.js"
 import {fetchFontFile} from "next/dist/compiled/@next/font/dist/google/fetch-font-file";
+import { getMeCached } from "@/lib/utils/meClient";
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend)
 
@@ -67,9 +68,8 @@ export default function ShardHistoryChart({ refreshKey }: { refreshKey: number }
     useEffect(() => {
         const fetchUUID = async () => {
             try {
-                const resUUID = await fetch("/api/me")
-                const dataUUID = await resUUID.json()
-                const uuid = dataUUID.mc_uuid || dataUUID.uuid
+                const me = await getMeCached()
+                const uuid = me?.uuid
                 if (!uuid) return console.error("Keine UUID gefunden")
                 setUserID(uuid)
             } catch (err) {

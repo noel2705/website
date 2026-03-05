@@ -2,6 +2,41 @@ import { NextRequest, NextResponse } from "next/server";
 import { verifyJWT } from "@/lib/utils/jwt";
 import { db } from "@/lib/utils/db";
 
+function normalizePermissions(input: unknown): string[] {
+    if (Array.isArray(input)) {
+        return input
+            .map((value) => String(value).trim())
+            .filter(Boolean);
+    }
+
+    if (typeof input !== "string") return [];
+
+    const raw = input.trim();
+    if (!raw) return [];
+
+    if (raw.startsWith("[") && raw.endsWith("]")) {
+        try {
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed)) {
+                return parsed
+                    .map((value) => String(value).trim())
+                    .filter(Boolean);
+            }
+        } catch {
+            // Fall through to Postgres-array parser below.
+        }
+    }
+
+    const pgArray = raw.startsWith("{") && raw.endsWith("}")
+        ? raw.slice(1, -1)
+        : raw;
+
+    return pgArray
+        .split(",")
+        .map((value) => value.trim().replace(/^"(.*)"$/, "$1"))
+        .filter(Boolean);
+}
+
 export async function GET(req: NextRequest) {
     const token = req.cookies.get("token")?.value;
     if (!token) return NextResponse.json({ error: "Nicht eingeloggt" }, { status: 401 });
@@ -20,7 +55,7 @@ export async function GET(req: NextRequest) {
 
         return NextResponse.json({
             uuid: user.mc_uuid,
-            permissions: user.permissions || []
+            permissions: normalizePermissions(user.permissions)
         });
     } catch {
         return NextResponse.json({ error: "Ungültiger Token" }, { status: 401 });

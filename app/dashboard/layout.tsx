@@ -3,7 +3,6 @@
 import "./dashboard.css"
 import Link from "next/link"
 import LogOutButton from "@/components/buttons/LogOutButton"
-import {isLogin} from "@/hooks/useUserUUID"
 import NotLoggedIn from "@/components/icon/NotLogined"
 import Loading from "@/app/loading"
 import {usePathname} from "next/navigation"
@@ -21,14 +20,14 @@ export default function DashboardLayout({
 }: {
     children: React.ReactNode
 }) {
-    const {uuid, loading} = isLogin()
+    const {user, loading} = getSessionUser()
     const pathname = usePathname()
 
-    const isAdmin = getSessionUser().user?.hasPermission("dashboard.view.admin")
+    const isAdmin = user?.hasPermission("dashboard.view.admin")
 
     if (loading) return <Loading/>
 
-    if (!uuid) {
+    if (!user) {
         return <NotLoggedIn/>
     }
 
@@ -65,7 +64,6 @@ export default function DashboardLayout({
                 </nav>
 
                 <div className="sidebar-footer">
-                    <LogOutButton/>
                 </div>
             </aside>
 

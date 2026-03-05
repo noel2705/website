@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from "react"
+import { getMeCached } from "@/lib/utils/meClient"
 
 export function isLogin() {
     const [uuid, setUuid] = useState<string | null>(null)
@@ -8,16 +9,9 @@ export function isLogin() {
 
     useEffect(() => {
         async function fetchUuid() {
-            try {
-                const res = await fetch("/api/me")
-                if (!res.ok) throw new Error("Nicht eingeloggt")
-                const data = await res.json()
-                setUuid(data.uuid)
-            } catch {
-                setUuid(null)
-            } finally {
-                setLoading(false)
-            }
+            const data = await getMeCached()
+            setUuid(data?.uuid ?? null)
+            setLoading(false)
         }
 
         fetchUuid()

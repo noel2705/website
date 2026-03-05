@@ -92,12 +92,34 @@ export async function unmarkAuction(
     return data;
 }
 
+async function getExpiredAuctionsByIDs(auctionIDs: string[]): Promise<Page[]> {
+    if (auctionIDs.length === 0) return [];
+
+    const sql = `
+        SELECT payload
+        FROM expired_auctions
+        WHERE uid = ANY($1::text[])
+    `;
+
+    const rows = await db?.any(sql, [auctionIDs]);
+    return (rows ?? []).map((row: { payload: Page }) => row.payload);
+}
+
 
 export async function getMarkedAuctions(userID: string): Promise<Page[]> {
     const markedIDs = await getMarkedAuctionIDs(userID);
-    const allAuctions = await getAllActiveAuctions();
+    if (markedIDs.length === 0) return [];
 
-    const markedAuctions = allAuctions.filter(auction => markedIDs.includes(auction.uid));
+    const allAuctions = await getAllActiveAuctions();
+    const activeByID = new Map(allAuctions.map((auction) => [auction.uid, auction]));
+
+    const missingIDs = markedIDs.filter((id) => !activeByID.has(id));
+    const expiredAuctions = await getExpiredAuctionsByIDs(missingIDs);
+    const expiredByID = new Map(expiredAuctions.map((auction) => [auction.uid, auction]));
+
+    const markedAuctions = markedIDs
+        .map((id) => activeByID.get(id) ?? expiredByID.get(id))
+        .filter((auction): auction is Page => Boolean(auction));
 
     return markedAuctions;
 }

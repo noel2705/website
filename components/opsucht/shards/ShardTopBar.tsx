@@ -2,6 +2,7 @@
 import "@/app/dashboard/shards/shardManager.css"
 import { useEffect, useState } from "react"
 import {formatMoney} from "@/lib/utils/auction/auction";
+import { getMeCached } from "@/lib/utils/meClient";
 
 export default function ShardTopBar({ refreshKey }: { refreshKey: number }) {
     const [currentShards, setCurrentShards] = useState<number | null>(null)
@@ -9,9 +10,8 @@ export default function ShardTopBar({ refreshKey }: { refreshKey: number }) {
 
     const fetchData = async () => {
         try {
-            const resUUID = await fetch("/api/me")
-            const dataUUID = await resUUID.json()
-            const uuid = dataUUID.mc_uuid || dataUUID.uuid
+            const me = await getMeCached()
+            const uuid = me?.uuid
             if (!uuid) return console.error("Keine UUID gefunden")
 
             const resShards = await fetch(`/api/shards/${uuid}`)

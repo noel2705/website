@@ -2,29 +2,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
 import "./css/NavigationBar.css";
 import UserIcon from "./icon/UserIcon";
-import {getSessionUser} from "@/hooks/useUser";
 
 export default function NavigationBar() {
     const pathname = usePathname();
-    const [uuid, setUuid] = useState<string | null>(null);
-
-    useEffect(() => {
-        async function fetchUuid() {
-            try {
-                const res = await fetch("/api/me");
-                if (!res.ok) return setUuid(null);
-                const data = await res.json();
-                setUuid(data.uuid);
-            } catch (err) {
-                console.error(err);
-            }
-        }
-
-        fetchUuid();
-    }, []);
 
     return (
         <nav className="navbar">

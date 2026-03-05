@@ -20,6 +20,26 @@ export function formatMoney(money: number) {
     }) + "Bio";
 }
 
+export function formatShards(money: number) {
+    if (money < 1000) return money.toLocaleString('en-us', {minimumFractionDigits: 2, maximumFractionDigits: 2}) ;
+    if (money < 1000000) return (money / 1000).toLocaleString('en-us', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    }) + "K";
+    if (money < 1000000000) return (money / 1000000).toLocaleString('en-us', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    }) + "M";
+    if (money < 1000000000000) return (money / 1000000000).toLocaleString('en-us', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    }) + "Mrd";
+    return (money / 1000000000000).toLocaleString('en-us', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    }) + "Bio";
+}
+
 export function getAmountBids(bids: Record<string, number>) {
     return Object.keys(bids).length;
 }
