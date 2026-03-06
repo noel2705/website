@@ -1,12 +1,17 @@
 'use client';
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+import type { ReactNode } from "react";
 import "./css/NavigationBar.css";
 import UserIcon from "./icon/UserIcon";
 
 export default function NavigationBar() {
-    const pathname = usePathname();
+    const [pathname, setPathname] = useState("");
+
+    useEffect(() => {
+        setPathname(window.location.pathname);
+    }, []);
 
     return (
         <nav className="navbar">
@@ -23,8 +28,7 @@ export default function NavigationBar() {
     );
 }
 
-// @ts-ignore
-function NavLink({ href, pathname, children }) {
+function NavLink({ href, pathname, children }: { href: string; pathname: string; children: ReactNode }) {
     return (
         <Link
             href={href}

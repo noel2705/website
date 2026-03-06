@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
-import NavigationBar from "@/components/NavigationBar";
 import { Geist, Geist_Mono } from "next/font/google";
-import ThemeProvider from "@/components/theme/ThemeProvider";
 import { DEFAULT_THEME, THEME_STORAGE_KEY } from "@/lib/theme";
 import "./globals.css";
 
@@ -48,11 +46,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ThemeProvider>
-          <NavigationBar />
-          {children}
-        </ThemeProvider>
-
+        {children}
       </body>
     </html>
   );
