@@ -1,8 +1,10 @@
+"use client";
+
 import { useState, useEffect } from "react";
 import { IUser, buildUser } from "@/lib/utils/userTypes";
 import { getMeCached } from "@/lib/utils/meClient";
 
-export function getSessionUser() {
+export function useSessionUser() {
     const [user, setUser] = useState<IUser | null>(null);
     const [loading, setLoading] = useState(true);
 
@@ -29,3 +31,5 @@ export function getSessionUser() {
 
     return { user, loading };
 }
+
+export const getSessionUser = useSessionUser;
