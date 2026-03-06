@@ -491,9 +491,9 @@ export default function AuctionClient({ initialAuction }: Props) {
                     <div className="categorySwitcher">
                         <div className="sort">
                             <select value={orderBy} onChange={(e) => setOrderby(e.target.value)}>
-                                <option value="moneyDesc">Preis: Gross -&gt; Klein</option>
-                                <option value="moneyAsc">Preis: Klein -&gt; Gross</option>
-                                <option value="timeDesc">{mode === 'active' ? 'Endet bald' : 'Aelteste'}</option>
+                                <option value="moneyDesc">Preis: Groß -&gt; Klein</option>
+                                <option value="moneyAsc">Preis: Klein -&gt; Groß</option>
+                                <option value="timeDesc">{mode === 'active' ? 'Endet bald' : 'Älteste'}</option>
                                 <option value="timeAsc">Neueste</option>
                                 <option value="bitAmountDesc">Meiste Gebote</option>
                                 <option value="bitAmountAsc">Wenigste Gebote</option>

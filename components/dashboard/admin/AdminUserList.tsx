@@ -33,7 +33,7 @@ export default function AdminUserList() {
             })
     }, [])
 
-    if (loading) return <p className="admin-loading">Laedt Benutzer...</p>
+    if (loading) return <p className="admin-loading">Lädt Benutzer...</p>
 
     const togglePermission = (perm: Permission) => {
         setSelectedPermissions(prev =>
