@@ -1,4 +1,5 @@
 import { Permission } from "../permissions";
+import { permissionsList } from "../permissions";
 
 export interface IUser {
     uuid: string;
@@ -10,11 +11,16 @@ export interface IUser {
 
 export function buildUser(data: {
     uuid: string;
-    permissions: Permission[];
+    permissions: string[];
 }): IUser {
+    const validPermissions = new Set<string>(permissionsList);
+    const normalizedPermissions = data.permissions.filter(
+        (permission): permission is Permission => validPermissions.has(permission)
+    );
+
     return {
         uuid: data.uuid,
-        permissions: data.permissions,
+        permissions: normalizedPermissions,
         hasPermission(permission) {
             const hasPermission = this.permissions.includes(permission);
             if(hasPermission) return true;
