@@ -1,5 +1,5 @@
 import {Item, Page} from "@/lib/utils/types";
-import {IUser} from "@/lib/utils/userTypes";
+import { normalizeAuctions } from "@/lib/utils/auction/normalize";
 export function formatMoney(money: number) {
     if (money < 1000) return money.toLocaleString('en-us', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + "$";
     if (money < 1000000) return (money / 1000).toLocaleString('en-us', {
@@ -41,7 +41,7 @@ export function formatShards(money: number) {
 }
 
 export function getAmountBids(bids: Record<string, number>) {
-    return Object.keys(bids).length;
+    return Object.keys(bids || {}).length;
 }
 
 export function getItemIcon(item: Item) {
@@ -60,10 +60,10 @@ export function isDesired(auction: Page) {
 
 
 export function getAmountUniqueBidders(bids: Record<string, number>) {
-    return Object.keys(bids).length;
+    return Object.keys(bids || {}).length;
 }
 
-export function formatEndTime(endTime: string, currentTime: Date) {
+export function formatEndTime(endTime: string) {
 
 
     const now = Date.now();
@@ -88,21 +88,24 @@ export async function getActiveAuction(userUID: string) {
 
     const res = await fetch(url)
 
-    const data: Page[] = await res.json();
+    const data = normalizeAuctions(await res.json());
 
-    return data.filter(value => userUID === value.seller || Object.keys(value.bids).some(bid => bid === userUID));
+    return data.filter(value => userUID === value.seller || Object.keys(value.bids || {}).some(bid => bid === userUID));
 }
 
 
 export const getItemImage = (auction: Page) => {
-    return auction.item.icon ?? getItemIcon(auction.item);
+    return getItemIcon(auction.item);
 }
 
 
-export async function isHighestBidder(auction: any, userID: string): Promise<boolean> {
-    if (!auction.bids) return false;
+export async function isHighestBidder(
+    auction: { bids?: Record<string, number> } | null | undefined,
+    userID: string
+): Promise<boolean> {
+    if (!auction?.bids) return false;
 
-    const bids = Object.values(auction.bids) as number[];
+    const bids = Object.values(auction.bids);
     const highestBid = Math.max(...bids);
     return auction.bids[userID] === highestBid;
 }

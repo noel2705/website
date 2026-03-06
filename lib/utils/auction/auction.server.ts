@@ -3,6 +3,7 @@
 import { IUser } from "@/lib/utils/userTypes";
 import { db } from "@/lib/utils/db";
 import {Page} from "@/lib/utils/types";
+import { normalizeAuction, normalizeAuctions } from "@/lib/utils/auction/normalize";
 
 
 export async function isAuctionMarked(
@@ -88,8 +89,7 @@ export async function unmarkAuction(
     const res = await fetch(url);
     if (!res.ok) throw new Error("Failed to fetch auctions");
 
-    const data: Page[] = await res.json();
-    return data;
+    return normalizeAuctions(await res.json());
 }
 
 async function getExpiredAuctionsByIDs(auctionIDs: string[]): Promise<Page[]> {
@@ -97,12 +97,12 @@ async function getExpiredAuctionsByIDs(auctionIDs: string[]): Promise<Page[]> {
 
     const sql = `
         SELECT payload
-        FROM expired_auctions
+        FROM expired_auctions_v2
         WHERE uid = ANY($1::text[])
     `;
 
     const rows = await db?.any(sql, [auctionIDs]);
-    return (rows ?? []).map((row: { payload: Page }) => row.payload);
+    return (rows ?? []).map((row: { payload: unknown }) => normalizeAuction(row.payload));
 }
 
 

@@ -1,11 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/utils/db";
-
-type Auction = {
-    uid: string;
-    endTime: string;
-    [key: string]: unknown;
-};
+import { normalizeAuction, normalizeAuctions } from "@/lib/utils/auction/normalize";
+import { ensureExpiredAuctionsV2Table } from "@/lib/utils/auction/db";
 
 export async function GET() {
     try {
@@ -20,52 +16,69 @@ export async function GET() {
             );
         }
 
-        const auctions: Auction[] = await response.json();
-
-        if (!Array.isArray(auctions)) {
-            return NextResponse.json(
-                { error: "Ungültige API-Antwort" },
-                { status: 502 }
-            );
-        }
-
+        const auctions = normalizeAuctions(await response.json());
         const now = new Date();
         const saveThreshold = 60_000;
 
-
         const toSave = auctions.filter(
             (a) =>
-                a?.uid &&
-                a?.endTime &&
+                a.uid &&
+                a.endTime &&
                 new Date(a.endTime).getTime() <= now.getTime() + saveThreshold
         );
 
         const result = await db.tx(async (t) => {
-            await t.none(`
-                CREATE TABLE IF NOT EXISTS expired_auctions (
-                    uid TEXT PRIMARY KEY,
-                    end_time TIMESTAMPTZ NOT NULL,
-                    payload JSONB NOT NULL
-                )
-            `);
-            await t.none(`
-                ALTER TABLE expired_auctions
-                ADD COLUMN IF NOT EXISTS expired_at TIMESTAMPTZ
-            `);
-            await t.none(`
-                UPDATE expired_auctions
-                SET expired_at = end_time
-                WHERE expired_at IS NULL
-            `);
+            await ensureExpiredAuctionsV2Table(t);
 
-            for (const auction of toSave) {
+            for (const rawAuction of toSave) {
+                const auction = normalizeAuction(rawAuction);
                 await t.none(
                     `
-                        INSERT INTO expired_auctions (uid, end_time, payload, expired_at)
-                        VALUES ($1, $2::timestamptz, $3::jsonb, NOW())
-                        ON CONFLICT (uid) DO NOTHING
+                        INSERT INTO expired_auctions_v2 (
+                            uid, seller, category, material, icon, amount, display_name,
+                            lore, enchantments, start_bid, current_bid, highest_bidder,
+                            bids, start_time, end_time, expired_at, payload
+                        )
+                        VALUES (
+                            $1, $2, $3, $4, $5, $6, $7,
+                            $8::jsonb, $9::jsonb, $10, $11, $12,
+                            $13::jsonb, $14::timestamptz, $15::timestamptz, NOW(), $16::jsonb
+                        )
+                        ON CONFLICT (uid) DO UPDATE SET
+                            seller = EXCLUDED.seller,
+                            category = EXCLUDED.category,
+                            material = EXCLUDED.material,
+                            icon = EXCLUDED.icon,
+                            amount = EXCLUDED.amount,
+                            display_name = EXCLUDED.display_name,
+                            lore = EXCLUDED.lore,
+                            enchantments = EXCLUDED.enchantments,
+                            start_bid = EXCLUDED.start_bid,
+                            current_bid = EXCLUDED.current_bid,
+                            highest_bidder = EXCLUDED.highest_bidder,
+                            bids = EXCLUDED.bids,
+                            start_time = EXCLUDED.start_time,
+                            end_time = EXCLUDED.end_time,
+                            payload = EXCLUDED.payload
                     `,
-                    [auction.uid, auction.endTime, JSON.stringify(auction)]
+                    [
+                        auction.uid,
+                        auction.seller,
+                        auction.category,
+                        auction.item.material,
+                        auction.item.icon,
+                        auction.item.amount,
+                        auction.item.displayName ?? auction.item.material,
+                        JSON.stringify(auction.item.lore ?? []),
+                        JSON.stringify(auction.item.enchantments ?? {}),
+                        auction.startBid,
+                        auction.currentBid,
+                        auction.highestBidder,
+                        JSON.stringify(auction.bids ?? {}),
+                        auction.startTime,
+                        auction.endTime,
+                        JSON.stringify(auction),
+                    ]
                 );
             }
 

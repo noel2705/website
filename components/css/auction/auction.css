@@ -238,6 +238,88 @@
     font-size: 0.9rem;
 }
 
+.category-tree {
+    display: grid;
+    gap: 0.55rem;
+}
+
+.category-root-btn,
+.category-parent-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    width: 100%;
+    min-height: 52px;
+    padding: 0.6rem 0.8rem;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--panel-soft-bg);
+    color: var(--foreground);
+    cursor: pointer;
+    text-align: left;
+    transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.category-root-btn img,
+.category-parent-btn img,
+.category-child-btn img {
+    width: 26px;
+    height: 26px;
+    object-fit: contain;
+    flex: 0 0 26px;
+}
+
+.category-root-btn:hover,
+.category-parent-btn:hover,
+.category-child-btn:hover {
+    transform: translateY(-1px);
+    border-color: color-mix(in srgb, var(--primary) 48%, transparent);
+    box-shadow: var(--shadow-strong);
+}
+
+.category-root-btn.active,
+.category-parent-btn.active,
+.category-child-btn.active {
+    background: linear-gradient(135deg, var(--primary), color-mix(in srgb, var(--primary) 70%, #000 30%));
+    color: var(--primary-foreground);
+    border-color: color-mix(in srgb, var(--foreground) 24%, transparent);
+}
+
+.category-group {
+    display: grid;
+    gap: 0.35rem;
+}
+
+.category-chevron {
+    margin-left: auto;
+    transition: transform 0.2s ease;
+}
+
+.category-chevron.open {
+    transform: rotate(180deg);
+}
+
+.category-children {
+    display: grid;
+    gap: 0.35rem;
+    padding-left: 0.95rem;
+}
+
+.category-child-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    width: 100%;
+    min-height: 46px;
+    padding: 0.48rem 0.62rem;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    background: color-mix(in srgb, var(--panel-soft-bg) 86%, transparent);
+    color: var(--foreground);
+    cursor: pointer;
+    text-align: left;
+}
+
 @media (max-width: 740px) {
     .auction-grid {
         grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -249,5 +331,11 @@
         width: 106px;
         height: 92px;
         font-size: 0.82rem;
+    }
+
+    .category-root-btn,
+    .category-parent-btn,
+    .category-child-btn {
+        min-height: 44px;
     }
 }

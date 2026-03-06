@@ -1,11 +1,11 @@
 import AuctionClient from "./AuctionClient";
-// @ts-ignore
 import { Page } from "../../../lib/utils/types";
+import { normalizeAuctions } from "@/lib/utils/auction/normalize";
 
 
 export default async function Page() {
     const res = await fetch("https://api.opsucht.net/auctions/active");
-    const data: Page[] = await res.json();
+    const data: Page[] = normalizeAuctions(await res.json());
 
 
     return (

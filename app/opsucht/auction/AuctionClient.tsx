@@ -1,11 +1,12 @@
 'use client';
 
-import React, {useState, useEffect, useRef} from 'react';
-import {Page} from '../../../lib/utils/types';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { Page } from '../../../lib/utils/types';
 import '../../../components/css/auction/auction.css';
-import {getAmountBids} from '@/lib/utils/auction/auction';
+import { getAmountBids } from '@/lib/utils/auction/auction';
 import AuctionCard from '@/components/opsucht/auction/AuctionCard';
 import MinecraftNameResolver from '@/lib/utils/minecraftNameResolver';
+import { AuctionCategory, normalizeAuctions, normalizeCategoryDefinitions } from '@/lib/utils/auction/normalize';
 
 interface Props {
     initialAuction: Page[];
@@ -57,12 +58,15 @@ const maxIsoDate = (a: string | null, b: string | null): string | null => {
     return new Date(a).getTime() >= new Date(b).getTime() ? a : b;
 };
 
-export default function AuctionClient({initialAuction}: Props) {
+const isParent = (name: string) => name.startsWith('parent_');
+const toApiCategory = (category: string) => (category === '*' || isParent(category) ? '*' : category);
+
+export default function AuctionClient({ initialAuction }: Props) {
     const itemsPerLoad = 25;
     const resolver = new MinecraftNameResolver();
 
     const [renderCount, setRenderCount] = useState(itemsPerLoad);
-    const [auction, setAuction] = useState<Page[]>(initialAuction);
+    const [auction, setAuction] = useState<Page[]>(normalizeAuctions(initialAuction));
     const [showAuction, setShowAuction] = useState<Page[]>([]);
     const [expiredLimit, setExpiredLimit] = useState<ExpiredLimitOption>(DEFAULT_EXPIRED_LIMIT);
     const [expiredTotalCount, setExpiredTotalCount] = useState<number | null>(null);
@@ -74,12 +78,39 @@ export default function AuctionClient({initialAuction}: Props) {
     const [loadingExpired, setLoadingExpired] = useState(false);
     const [initialized, setInitialized] = useState(false);
     const [debouncedSearchBar, setDebouncedSearchBar] = useState('');
+    const [categories, setCategories] = useState<AuctionCategory[]>([]);
+    const [expandedParents, setExpandedParents] = useState<Set<string>>(new Set());
+
     const prevExpiredLimitRef = useRef(expiredLimit);
     const prevExpiredSearchRef = useRef('');
 
-    const getSellerName = async (uids: string[]) => {
-        return resolver.getNames(uids);
-    };
+    const parentCategories = useMemo(
+        () => categories.filter((entry) => !entry.parentCategory),
+        [categories]
+    );
+
+    const childrenByParent = useMemo(() => {
+        const map = new Map<string, AuctionCategory[]>();
+        for (const entry of categories) {
+            if (!entry.parentCategory) continue;
+            if (!map.has(entry.parentCategory)) {
+                map.set(entry.parentCategory, []);
+            }
+            map.get(entry.parentCategory)?.push(entry);
+        }
+        return map;
+    }, [categories]);
+
+    const activeCategorySet = useMemo(() => {
+        if (category === '*') return null;
+        if (isParent(category)) {
+            const children = childrenByParent.get(category) ?? [];
+            return new Set<string>([category, ...children.map((child) => child.name)]);
+        }
+        return new Set<string>([category]);
+    }, [category, childrenByParent]);
+
+    const getSellerName = async (uids: string[]) => resolver.getNames(uids);
 
     const hydrateSellerNames = async (data: Page[]) => {
         const rawNames = [...new Set(data.map((e) => e.seller).filter(Boolean))];
@@ -92,20 +123,28 @@ export default function AuctionClient({initialAuction}: Props) {
         setSellerNames(resNames);
     };
 
-    const fetchActiveAuctions = async (cat: string) => {
-        const url = cat === '*'
-            ? 'https://api.opsucht.net/auctions/active'
-            : `https://api.opsucht.net/auctions/active?category=${cat}`;
+    const fetchCategoryDefs = async () => {
+        const response = await fetch('https://api.opsucht.net/auctions/categories', { cache: 'no-store' });
+        if (!response.ok) throw new Error('Kategorien konnten nicht geladen werden');
+        const parsed = normalizeCategoryDefinitions(await response.json());
+        setCategories(parsed);
+    };
 
-        const res = await fetch(url);
-        const data: Page[] = await res.json();
+    const fetchActiveAuctions = async (selectedCategory: string) => {
+        const apiCategory = toApiCategory(selectedCategory);
+        const url = apiCategory === '*'
+            ? 'https://api.opsucht.net/auctions/active'
+            : `https://api.opsucht.net/auctions/active?category=${apiCategory}`;
+
+        const res = await fetch(url, { cache: 'no-store' });
+        const data = normalizeAuctions(await res.json());
         setAuction(data);
         setExpiredTotalCount(null);
         await hydrateSellerNames(data);
     };
 
     const fetchExpiredAuctions = async (
-        cat: string,
+        selectedCategory: string,
         forceRefresh = false,
         queryValue = ''
     ) => {
@@ -115,7 +154,7 @@ export default function AuctionClient({initialAuction}: Props) {
             const normalizedQuery = queryValue.trim().toLowerCase();
             const isSearchMode = normalizedQuery.length > 0;
             const now = Date.now();
-            const cache = isSearchMode ? null : readExpiredCache(cat, expiredLimit, normalizedQuery);
+            const cache = isSearchMode ? null : readExpiredCache(selectedCategory, expiredLimit, normalizedQuery);
 
             if (cache?.data?.length) {
                 setAuction(cache.data);
@@ -128,7 +167,8 @@ export default function AuctionClient({initialAuction}: Props) {
             }
 
             const query = new URLSearchParams();
-            if (cat !== '*') query.set('category', cat);
+            const apiCategory = toApiCategory(selectedCategory);
+            if (apiCategory !== '*') query.set('category', apiCategory);
             query.set('limit', expiredLimit === 'all' ? 'all' : String(expiredLimit));
             if (normalizedQuery) query.set('q', normalizedQuery);
             if (!isSearchMode && cache?.newestExpiredAt) query.set('sinceExpiredAt', cache.newestExpiredAt);
@@ -140,19 +180,13 @@ export default function AuctionClient({initialAuction}: Props) {
             if (!res.ok) throw new Error('Fehler beim Laden abgelaufener Auktionen');
 
             const json = await res.json();
-            const responseItems: Page[] = Array.isArray(json)
-                ? json
-                : Array.isArray(json?.items)
-                    ? json.items
-                    : [];
+            const responseItems = normalizeAuctions(Array.isArray(json) ? json : json?.items);
             const responseNewestExpiredAt: string | null =
                 typeof json?.newestExpiredAt === 'string' ? json.newestExpiredAt : null;
             const responseTotalCount: number | null =
                 typeof json?.totalCount === 'number' ? json.totalCount : null;
 
-            const expiredOnly = Array.isArray(responseItems)
-                ? responseItems.filter(a => new Date(a.endTime).getTime() <= Date.now())
-                : [];
+            const expiredOnly = responseItems.filter((a) => new Date(a.endTime).getTime() <= Date.now());
 
             const mergedMap = new Map<string, Page>();
             if (!isSearchMode && cache?.data?.length) {
@@ -171,7 +205,7 @@ export default function AuctionClient({initialAuction}: Props) {
             const newestExpiredAt = maxIsoDate(cache?.newestExpiredAt ?? null, responseNewestExpiredAt);
 
             if (!isSearchMode) {
-                writeExpiredCache(cat, expiredLimit, normalizedQuery, {
+                writeExpiredCache(selectedCategory, expiredLimit, normalizedQuery, {
                     updatedAt: Date.now(),
                     newestExpiredAt,
                     data: capped,
@@ -191,6 +225,10 @@ export default function AuctionClient({initialAuction}: Props) {
 
     const sortAuctions = (auctionData: Page[]) => {
         let filtered: Page[] = Array.isArray(auctionData) ? auctionData : [];
+
+        if (activeCategorySet) {
+            filtered = filtered.filter((entry) => activeCategorySet.has(entry.category));
+        }
 
         if (mode === 'active' && searchBar.trim() !== '') {
             filtered = filtered.filter((a) =>
@@ -222,6 +260,26 @@ export default function AuctionClient({initialAuction}: Props) {
         setShowAuction(sorted);
     };
 
+    const onParentClick = (parentName: string) => {
+        setCategory(parentName);
+        const hasChildren = (childrenByParent.get(parentName) ?? []).length > 0;
+        if (!hasChildren) return;
+
+        setExpandedParents((prev) => {
+            const next = new Set(prev);
+            if (next.has(parentName) && category === parentName) {
+                next.delete(parentName);
+            } else {
+                next.add(parentName);
+            }
+            return next;
+        });
+    };
+
+    useEffect(() => {
+        void fetchCategoryDefs();
+    }, []);
+
     useEffect(() => {
         const storedCategory = sessionStorage.getItem('category') || '*';
         const storedSearchBar = sessionStorage.getItem('searchBar') || '';
@@ -245,6 +303,18 @@ export default function AuctionClient({initialAuction}: Props) {
         if (normalizedExpiredLimit !== expiredLimit) setExpiredLimit(normalizedExpiredLimit);
         setInitialized(true);
     }, []);
+
+    useEffect(() => {
+        if (!category.startsWith('sub_')) return;
+        const found = categories.find((entry) => entry.name === category);
+        if (!found?.parentCategory) return;
+
+        setExpandedParents((prev) => {
+            const next = new Set(prev);
+            next.add(found.parentCategory as string);
+            return next;
+        });
+    }, [category, categories]);
 
     useEffect(() => {
         sessionStorage.setItem('category', category);
@@ -302,7 +372,7 @@ export default function AuctionClient({initialAuction}: Props) {
 
     useEffect(() => {
         sortAuctions(auction);
-    }, [auction, orderBy, searchBar, mode]);
+    }, [auction, orderBy, searchBar, mode, activeCategorySet]);
 
     useEffect(() => {
         setRenderCount(itemsPerLoad);
@@ -374,64 +444,58 @@ export default function AuctionClient({initialAuction}: Props) {
                     </button>
                 </div>
 
-                <div className="categorySwitcher">
+                <div className="category-tree">
                     <button
                         onClick={() => setCategory('*')}
-                        className={category === '*' ? 'active' : ''}
+                        className={`category-root-btn ${category === '*' ? 'active' : ''}`}
                     >
-                        <img src="https://img.mc-api.io/nether_star.png"/>
+                        <img src="https://img.mc-api.io/nether_star.png" alt="Alles" />
                         Alles
                     </button>
 
-                    <button
-                        onClick={() => setCategory('custom_items')}
-                        className={category === 'custom_items' ? 'active' : ''}
-                    >
-                        <img src="https://img.mc-api.io/netherite_ingot.png"/>
-                        Custom Items
-                    </button>
+                    {parentCategories.map((parent) => {
+                        const children = childrenByParent.get(parent.name) ?? [];
+                        const expanded = expandedParents.has(parent.name);
+                        return (
+                            <div key={parent.name} className="category-group">
+                                <button
+                                    onClick={() => onParentClick(parent.name)}
+                                    className={`category-parent-btn ${category === parent.name ? 'active' : ''}`}
+                                >
+                                    <img src={parent.icon} alt={parent.displayName} />
+                                    <span>{parent.displayName}</span>
+                                    {children.length > 0 && (
+                                        <span className={`category-chevron ${expanded ? 'open' : ''}`}>?</span>
+                                    )}
+                                </button>
 
-                    <button
-                        onClick={() => setCategory('tools_armor')}
-                        className={category === 'tools_armor' ? 'active' : ''}
-                    >
-                        <img src="https://img.mc-api.io/iron_sword.png"/>
-                        Werkzeuge & Ruestung
-                    </button>
-
-                    <button
-                        onClick={() => setCategory('op_items')}
-                        className={category === 'op_items' ? 'active' : ''}
-                    >
-                        <img src="https://img.mc-api.io/beacon.png"/>
-                        OP Items
-                    </button>
-
-                    <button
-                        onClick={() => setCategory('spawn_eggs')}
-                        className={category === 'spawn_eggs' ? 'active' : ''}
-                    >
-                        <img src="https://img.mc-api.io/blaze_spawn_egg.png"/>
-                        Spawn Eggs
-                    </button>
-
-                    <button
-                        onClick={() => setCategory('other')}
-                        className={category === 'other' ? 'active' : ''}
-                    >
-                        <img src="https://img.mc-api.io/ender_chest.png"/>
-                        Sonstiges
-                    </button>
+                                {children.length > 0 && expanded && (
+                                    <div className="category-children">
+                                        {children.map((child) => (
+                                            <button
+                                                key={child.name}
+                                                onClick={() => setCategory(child.name)}
+                                                className={`category-child-btn ${category === child.name ? 'active' : ''}`}
+                                            >
+                                                <img src={child.icon} alt={child.displayName} />
+                                                <span>{child.displayName}</span>
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        );
+                    })}
                 </div>
 
                 <div className="auction-toolbar-rarity">
                     <div className="categorySwitcher">
                         <div className="sort">
                             <select value={orderBy} onChange={(e) => setOrderby(e.target.value)}>
-                                <option value="moneyDesc">Preis: Groß -{">"} Klein</option>
-                                <option value="moneyAsc">Preis: Klein -{">"} Groß</option>
-                                <option value="timeDesc">{mode == "active" ? "Endet bald" : "Älteste"}</option>
-                                <option value="timeAsc">Neuste</option>
+                                <option value="moneyDesc">Preis: Gross -&gt; Klein</option>
+                                <option value="moneyAsc">Preis: Klein -&gt; Gross</option>
+                                <option value="timeDesc">{mode === 'active' ? 'Endet bald' : 'Aelteste'}</option>
+                                <option value="timeAsc">Neueste</option>
                                 <option value="bitAmountDesc">Meiste Gebote</option>
                                 <option value="bitAmountAsc">Wenigste Gebote</option>
                             </select>
@@ -462,7 +526,7 @@ export default function AuctionClient({initialAuction}: Props) {
 
             {mode === 'expired' && (
                 <div className="expired-info">
-                    <span>Geladen: {auction.length}</span>
+                    <span>Geladen: {showAuction.length}</span>
                     <span>
                         Insgesamt gefunden: {expiredTotalCount === null ? 'unbekannt' : expiredTotalCount}
                     </span>

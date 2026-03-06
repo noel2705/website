@@ -1,9 +1,11 @@
 import { Page } from "@/lib/utils/types";
 import AuctionItemPage from "@/components/opsucht/auction/AuctionItemPage";
+import { db } from "@/lib/utils/db";
+import { normalizeAuction, normalizeAuctions } from "@/lib/utils/auction/normalize";
 
 export default async function MainPage({
-                                           params,
-                                       }: {
+    params,
+}: {
     params: { auctionID: string; category: string };
 }) {
     const { auctionID, category } = await params;
@@ -17,11 +19,9 @@ export default async function MainPage({
     );
 }
 
-import { db } from "@/lib/utils/db";
-
 async function getAuctionItem(uid: string, category: string): Promise<Page[]> {
-    // 1️⃣ Aktive Auktionen prüfen
-    const activeUrl = `https://api.opsucht.net/auctions/active?category=${category}`;
+    const useCategory = category.startsWith("parent_") ? "" : `?category=${encodeURIComponent(category)}`;
+    const activeUrl = `https://api.opsucht.net/auctions/active${useCategory}`;
     const activeResponse = await fetch(activeUrl, { cache: "no-store" });
 
     if (!activeResponse.ok) {
@@ -30,12 +30,7 @@ async function getAuctionItem(uid: string, category: string): Promise<Page[]> {
         );
     }
 
-    const activeData = await activeResponse.json();
-
-    if (!Array.isArray(activeData)) {
-        throw new Error("API hat kein Array zurückgegeben");
-    }
-
+    const activeData = normalizeAuctions(await activeResponse.json());
     const foundActive = activeData.filter((item: Page) => item.uid === uid);
 
     if (foundActive.length > 0) {
@@ -45,7 +40,7 @@ async function getAuctionItem(uid: string, category: string): Promise<Page[]> {
     const expired = await db.oneOrNone(
         `
         SELECT payload
-        FROM expired_auctions
+        FROM expired_auctions_v2
         WHERE uid = $1
         `,
         [uid]
@@ -55,5 +50,5 @@ async function getAuctionItem(uid: string, category: string): Promise<Page[]> {
         return [];
     }
 
-    return [expired.payload];
+    return [normalizeAuction(expired.payload)];
 }
