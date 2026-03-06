@@ -1,5 +1,4 @@
-// @ts-ignore
-import express, { type Request, type Response } from "express";
+import express from "express";
 import { db } from "./db.js";
 import { ensureExpiredAuctionsV2Table } from "./auction-db.js";
 import { normalizeAuction, normalizeAuctions } from "./normalize.js";
@@ -14,10 +13,7 @@ const allowedOrigins = (process.env.ALLOWED_ORIGINS ?? "")
 
 app.use(express.json({ limit: "1mb" }));
 
-app.use((req: { headers: { origin: any; }; method: string; }, res: {
-    header: (arg0: string, arg1: string) => void;
-    status: (arg0: number) => { (): any; new(): any; end: { (): void; new(): any; }; };
-}, next: () => void) => {
+app.use((req: any, res: any, next: any) => {
   const origin = req.headers.origin;
   if (allowedOrigins.length === 0) {
     res.header("Access-Control-Allow-Origin", "*");
@@ -37,7 +33,7 @@ app.use((req: { headers: { origin: any; }; method: string; }, res: {
   next();
 });
 
-const getQueryString = (req: Request, key: string): string | null => {
+const getQueryString = (req: any, key: string): string | null => {
   const raw = req.query[key];
   if (typeof raw === "string") return raw;
   if (Array.isArray(raw) && typeof raw[0] === "string") return raw[0];
@@ -51,11 +47,11 @@ const toIsoOrNull = (value: string | null): string | null => {
   return parsed.toISOString();
 };
 
-app.get("/health", (_req: any, res: { json: (arg0: { ok: boolean; }) => void; }) => {
+app.get("/health", (_req: any, res: any) => {
   res.json({ ok: true });
 });
 
-app.get("/api/auctions/init-db", async (_req: any, res: { json: (arg0: { ok: boolean; }) => void; status: (arg0: number) => { (): any; new(): any; json: { (arg0: { ok: boolean; error: string; }): void; new(): any; }; }; }) => {
+app.get("/api/auctions/init-db", async (_req: any, res: any) => {
   try {
     await ensureExpiredAuctionsV2Table(db);
     res.json({ ok: true });
@@ -64,7 +60,7 @@ app.get("/api/auctions/init-db", async (_req: any, res: { json: (arg0: { ok: boo
   }
 });
 
-app.post("/api/auctions/init-db", async (_req: any, res: { json: (arg0: { ok: boolean; }) => void; status: (arg0: number) => { (): any; new(): any; json: { (arg0: { ok: boolean; error: string; }): void; new(): any; }; }; }) => {
+app.post("/api/auctions/init-db", async (_req: any, res: any) => {
   try {
     await ensureExpiredAuctionsV2Table(db);
     res.json({ ok: true });
@@ -73,7 +69,7 @@ app.post("/api/auctions/init-db", async (_req: any, res: { json: (arg0: { ok: bo
   }
 });
 
-app.get("/api/save-auction", async (_req: any, res: { status: (arg0: number) => { (): any; new(): any; json: { (arg0: { error: string; }): void; new(): any; }; }; json: (arg0: { saved: number; }) => void; }) => {
+app.get("/api/save-auction", async (_req: any, res: any) => {
   try {
     const response = await fetch("https://api.opsucht.net/auctions/active", {
       cache: "no-store",
@@ -93,7 +89,7 @@ app.get("/api/save-auction", async (_req: any, res: { status: (arg0: number) => 
       return new Date(entry.endTime).getTime() <= now + saveThresholdMs;
     });
 
-    const result = await db.tx(async (t) => {
+    const result = await db.tx(async (t: any) => {
       await ensureExpiredAuctionsV2Table(t);
 
       for (const rawAuction of toSave) {
@@ -158,7 +154,7 @@ app.get("/api/save-auction", async (_req: any, res: { status: (arg0: number) => 
   }
 });
 
-app.get("/api/expired-auctions", async (req: Request, res: Response<any>) => {
+app.get("/api/expired-auctions", async (req: any, res: any) => {
   try {
     await ensureExpiredAuctionsV2Table(db);
 
