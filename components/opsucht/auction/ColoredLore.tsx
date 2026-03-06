@@ -35,6 +35,8 @@ const colorMapping = new Map<string, string>([
     ["Mega", "#ff0000"],
     ["Jackpot", "#ff0000"],
     ["Legendär", "#ff6e6e"],
+    [";;;", "#ffbb00"],
+    ["OPDrop", "#ffbb00"],
     ["Episch", "#d900ff"],
     ["✯✯✯", "#ffeb00"],
     ["✯✯✩", "#ffeb00"],
