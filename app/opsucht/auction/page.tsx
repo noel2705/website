@@ -1,5 +1,5 @@
 import AuctionClient from "./AuctionClient";
-import { Page } from "../../../lib/utils/types";
+import type { Page } from "../../../lib/utils/types";
 import { normalizeAuctions } from "@/lib/utils/auction/normalize";
 
 

@@ -94,14 +94,16 @@ export const normalizeCategoryDefinitions = (value: unknown): AuctionCategory[] 
             if (!name) return null;
 
             const displayMaterial = toString(source.displayMaterial, "CHEST");
-            return {
+            const category: AuctionCategory = {
                 name,
                 displayName: toString(source.displayName, name),
                 displayMaterial,
                 icon: toString(source.icon, `https://img.mc-api.io/${displayMaterial.toLowerCase()}.png`),
                 parentCategory: toString(source.parentCategory) || undefined,
                 matchTypes: toStringArray(source.matchTypes),
-            } satisfies AuctionCategory;
+            };
+
+            return category;
         })
         .filter((entry): entry is AuctionCategory => Boolean(entry));
 };
