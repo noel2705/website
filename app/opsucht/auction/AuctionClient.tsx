@@ -153,7 +153,6 @@ export default function AuctionClient({ initialAuction }: Props) {
         try {
             const normalizedQuery = queryValue.trim().toLowerCase();
             const isSearchMode = normalizedQuery.length > 0;
-            const now = Date.now();
             const cache = isSearchMode ? null : readExpiredCache(selectedCategory, expiredLimit, normalizedQuery);
 
             if (cache?.data?.length) {
@@ -162,16 +161,16 @@ export default function AuctionClient({ initialAuction }: Props) {
                 setExpiredTotalCount(cache.totalCount ?? cache.data.length);
             }
 
-            if (!forceRefresh && cache && now - cache.updatedAt < EXPIRED_CACHE_TTL_MS) {
-                return;
-            }
+            const useIncrementalSync = !forceRefresh && Boolean(cache);
 
             const query = new URLSearchParams();
             const apiCategory = toApiCategory(selectedCategory);
             if (apiCategory !== '*') query.set('category', apiCategory);
             query.set('limit', expiredLimit === 'all' ? 'all' : String(expiredLimit));
             if (normalizedQuery) query.set('q', normalizedQuery);
-            if (!isSearchMode && cache?.newestExpiredAt) query.set('sinceExpiredAt', cache.newestExpiredAt);
+            if (!isSearchMode && useIncrementalSync && cache?.newestExpiredAt) {
+                query.set('sinceExpiredAt', cache.newestExpiredAt);
+            }
 
             const res = await fetch(`/api/expired-auctions?${query.toString()}`, {
                 cache: 'no-store',
