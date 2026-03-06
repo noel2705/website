@@ -1,0 +1,21 @@
+{
+  "name": "auction-backend",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "pg-promise": "^12.6.1"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.23",
+    "@types/node": "^20.19.17",
+    "tsx": "^4.20.5",
+    "typescript": "^5.9.2"
+  }
+}

@@ -27,6 +27,7 @@ const EXPIRED_REFRESH_INTERVAL_MS = 120000;
 const EXPIRED_LIMIT_OPTIONS = [10, 50, 100, 250, 500, 'all'] as const;
 type ExpiredLimitOption = (typeof EXPIRED_LIMIT_OPTIONS)[number];
 const DEFAULT_EXPIRED_LIMIT = 100;
+const EXPIRED_AUCTIONS_API_BASE = process.env.NEXT_PUBLIC_AUCTION_BACKEND_URL?.replace(/\/$/, '') ?? '';
 
 const getExpiredCacheKey = (category: string, limit: ExpiredLimitOption, query: string) =>
     `${EXPIRED_CACHE_PREFIX}${category}:${limit}:${query}`;
@@ -172,7 +173,11 @@ export default function AuctionClient({ initialAuction }: Props) {
                 query.set('sinceExpiredAt', cache.newestExpiredAt);
             }
 
-            const res = await fetch(`/api/expired-auctions?${query.toString()}`, {
+            const endpoint = EXPIRED_AUCTIONS_API_BASE
+                ? `${EXPIRED_AUCTIONS_API_BASE}/api/expired-auctions?${query.toString()}`
+                : `/api/expired-auctions?${query.toString()}`;
+
+            const res = await fetch(endpoint, {
                 cache: 'no-store',
             });
 

@@ -1,0 +1,322 @@
+import express, { type Request } from "express";
+import { db } from "./db.js";
+import { ensureExpiredAuctionsV2Table } from "./auction-db.js";
+import { normalizeAuction, normalizeAuctions } from "./normalize.js";
+import { Page } from "./types.js";
+
+const app = express();
+const port = Number(process.env.PORT ?? "3001");
+
+const allowedOrigins = (process.env.ALLOWED_ORIGINS ?? "")
+    .split(",")
+    .map((entry) => entry.trim())
+    .filter(Boolean);
+
+app.use(express.json({limit: "1mb"}));
+
+app.use((req: { headers: { origin: any; }; method: string; }, res: {
+    header: (arg0: string, arg1: string) => void;
+    status: (arg0: number) => { (): any; new(): any; end: { (): void; new(): any; }; };
+}, next: () => void) => {
+    const origin = req.headers.origin;
+    if (allowedOrigins.length === 0) {
+        res.header("Access-Control-Allow-Origin", "*");
+    } else if (origin && allowedOrigins.includes(origin)) {
+        res.header("Access-Control-Allow-Origin", origin);
+        res.header("Vary", "Origin");
+    }
+
+    res.header("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
+    res.header("Access-Control-Allow-Headers", "Content-Type,Authorization");
+
+    if (req.method === "OPTIONS") {
+        res.status(204).end();
+        return;
+    }
+
+    next();
+});
+
+const getQueryString = (req: Request, key: string): string | null => {
+    const raw = req.query[key];
+    if (typeof raw === "string") return raw;
+    if (Array.isArray(raw) && typeof raw[0] === "string") return raw[0];
+    return null;
+};
+
+const toIsoOrNull = (value: string | null): string | null => {
+    if (!value) return null;
+    const parsed = new Date(value);
+    if (Number.isNaN(parsed.getTime())) return null;
+    return parsed.toISOString();
+};
+
+app.get("/health", (_req: any, res: { json: (arg0: { ok: boolean; }) => void; }) => {
+    res.json({ok: true});
+});
+
+app.get("/api/auctions/init-db", async (_req: any, res: {
+    json: (arg0: { ok: boolean; }) => void;
+    status: (arg0: number) => {
+        (): any;
+        new(): any;
+        json: { (arg0: { ok: boolean; error: string; }): void; new(): any; };
+    };
+}) => {
+    try {
+        await ensureExpiredAuctionsV2Table(db);
+        res.json({ok: true});
+    } catch (err) {
+        res.status(500).json({ok: false, error: (err as Error).message});
+    }
+});
+
+app.post("/api/auctions/init-db", async (_req: any, res: {
+    json: (arg0: { ok: boolean; }) => void;
+    status: (arg0: number) => {
+        (): any;
+        new(): any;
+        json: { (arg0: { ok: boolean; error: string; }): void; new(): any; };
+    };
+}) => {
+    try {
+        await ensureExpiredAuctionsV2Table(db);
+        res.json({ok: true});
+    } catch (err) {
+        res.status(500).json({ok: false, error: (err as Error).message});
+    }
+});
+
+app.get("/api/save-auction", async (_req: any, res: {
+    status: (arg0: number) => { (): any; new(): any; json: { (arg0: { error: string; }): void; new(): any; }; };
+    json: (arg0: { saved: number; }) => void;
+}) => {
+    try {
+        const response = await fetch("https://api.opsucht.net/auctions/active", {
+            cache: "no-store",
+        });
+
+        if (!response.ok) {
+            res.status(502).json({error: `API Fehler: ${response.status}`});
+            return;
+        }
+
+        const auctions = normalizeAuctions(await response.json());
+        const now = Date.now();
+        const saveThresholdMs = 60_000;
+
+        const toSave = auctions.filter((entry) => {
+            if (!entry.uid || !entry.endTime) return false;
+            return new Date(entry.endTime).getTime() <= now + saveThresholdMs;
+        });
+
+        const result = await db.tx(async (t) => {
+            await ensureExpiredAuctionsV2Table(t);
+
+            for (const rawAuction of toSave) {
+                const auction = normalizeAuction(rawAuction);
+                await t.none(
+                    `
+                        INSERT INTO expired_auctions_v2 (uid, seller, category, material, icon, amount, display_name,
+                                                         lore, enchantments, start_bid, current_bid, highest_bidder,
+                                                         bids, start_time, end_time, expired_at, payload)
+                        VALUES ($1, $2, $3, $4, $5, $6, $7,
+                                $8::jsonb, $9::jsonb, $10, $11, $12,
+                                $13::jsonb, $14::timestamptz, $15::timestamptz, NOW(), $16::jsonb) ON CONFLICT (uid) DO
+                        UPDATE SET
+                            seller = EXCLUDED.seller,
+                            category = EXCLUDED.category,
+                            material = EXCLUDED.material,
+                            icon = EXCLUDED.icon,
+                            amount = EXCLUDED.amount,
+                            display_name = EXCLUDED.display_name,
+                            lore = EXCLUDED.lore,
+                            enchantments = EXCLUDED.enchantments,
+                            start_bid = EXCLUDED.start_bid,
+                            current_bid = EXCLUDED.current_bid,
+                            highest_bidder = EXCLUDED.highest_bidder,
+                            bids = EXCLUDED.bids,
+                            start_time = EXCLUDED.start_time,
+                            end_time = EXCLUDED.end_time,
+                            payload = EXCLUDED.payload
+                    `,
+                    [
+                        auction.uid,
+                        auction.seller,
+                        auction.category,
+                        auction.item.material,
+                        auction.item.icon,
+                        auction.item.amount,
+                        auction.item.displayName ?? auction.item.material,
+                        JSON.stringify(auction.item.lore ?? []),
+                        JSON.stringify(auction.item.enchantments ?? {}),
+                        auction.startBid,
+                        auction.currentBid,
+                        auction.highestBidder,
+                        JSON.stringify(auction.bids ?? {}),
+                        auction.startTime,
+                        auction.endTime,
+                        JSON.stringify(auction),
+                    ],
+                );
+            }
+
+            return {saved: toSave.length};
+        });
+
+        res.json(result);
+    } catch (err) {
+        console.error("Fehler beim Speichern:", err);
+        res.status(500).json({error: (err as Error).message});
+    }
+});
+
+app.get("/api/expired-auctions", async (req: any, res: { json: (arg0: Page | null) => void; status: (arg0: number) => { (): any; new(): any; json: { (arg0: { error: string; }): void; new(): any; }; }; }) => {
+  try {
+    await ensureExpiredAuctionsV2Table(db);
+
+    const uid = getQueryString(req, "uid");
+    const category = getQueryString(req, "category");
+    const q = getQueryString(req, "q")?.trim().toLowerCase() ?? "";
+    const searchQuery = q.length > 0 ? q : null;
+    const limitRaw = getQueryString(req, "limit");
+    const sinceExpiredAt = toIsoOrNull(getQueryString(req, "sinceExpiredAt"));
+
+    const isAllLimit = (limitRaw ?? "").toLowerCase() === "all";
+    const limitNum = Number(limitRaw ?? "350");
+    const limit = isAllLimit ? null : Number.isFinite(limitNum) ? Math.max(1, Math.min(500, limitNum)) : 200;
+
+    if (uid) {
+      const row = await db.oneOrNone<{ payload: unknown }>(
+        `
+          SELECT payload
+          FROM expired_auctions_v2
+          WHERE uid = $1
+        `,
+        [uid],
+      );
+
+      if (!row) {
+        res.json(null);
+        return;
+      }
+
+      res.json(normalizeAuction(row.payload));
+      return;
+    }
+
+    const rows =
+      category && category !== "*"
+        ? limit === null
+          ? await db.any<{ payload: unknown; cursor_time: string | Date }>(
+              `
+                SELECT payload, expired_at AS cursor_time
+                FROM expired_auctions_v2
+                WHERE category = $1
+                  AND ($2::timestamptz IS NULL OR expired_at >= $2::timestamptz)
+                  AND (
+                    $3::text IS NULL
+                    OR LOWER(display_name) LIKE '%' || $3 || '%'
+                    OR LOWER(material) LIKE '%' || $3 || '%'
+                  )
+                ORDER BY expired_at DESC
+              `,
+              [category, sinceExpiredAt, searchQuery],
+            )
+          : await db.any<{ payload: unknown; cursor_time: string | Date }>(
+              `
+                SELECT payload, expired_at AS cursor_time
+                FROM expired_auctions_v2
+                WHERE category = $1
+                  AND ($2::timestamptz IS NULL OR expired_at >= $2::timestamptz)
+                  AND (
+                    $3::text IS NULL
+                    OR LOWER(display_name) LIKE '%' || $3 || '%'
+                    OR LOWER(material) LIKE '%' || $3 || '%'
+                  )
+                ORDER BY expired_at DESC
+                LIMIT $4
+              `,
+              [category, sinceExpiredAt, searchQuery, limit],
+            )
+        : limit === null
+          ? await db.any<{ payload: unknown; cursor_time: string | Date }>(
+              `
+                SELECT payload, expired_at AS cursor_time
+                FROM expired_auctions_v2
+                WHERE ($1::timestamptz IS NULL OR expired_at >= $1::timestamptz)
+                  AND (
+                    $2::text IS NULL
+                    OR LOWER(display_name) LIKE '%' || $2 || '%'
+                    OR LOWER(material) LIKE '%' || $2 || '%'
+                  )
+                ORDER BY expired_at DESC
+              `,
+              [sinceExpiredAt, searchQuery],
+            )
+          : await db.any<{ payload: unknown; cursor_time: string | Date }>(
+              `
+                SELECT payload, expired_at AS cursor_time
+                FROM expired_auctions_v2
+                WHERE ($1::timestamptz IS NULL OR expired_at >= $1::timestamptz)
+                  AND (
+                    $2::text IS NULL
+                    OR LOWER(display_name) LIKE '%' || $2 || '%'
+                    OR LOWER(material) LIKE '%' || $2 || '%'
+                  )
+                ORDER BY expired_at DESC
+                LIMIT $3
+              `,
+              [sinceExpiredAt, searchQuery, limit],
+            );
+
+    const totalCountRow =
+      category && category !== "*"
+        ? await db.one<{ count: string }>(
+            `
+              SELECT COUNT(*)::text AS count
+              FROM expired_auctions_v2
+              WHERE category = $1
+                AND (
+                  $2::text IS NULL
+                  OR LOWER(display_name) LIKE '%' || $2 || '%'
+                  OR LOWER(material) LIKE '%' || $2 || '%'
+                )
+            `,
+            [category, searchQuery],
+          )
+        : await db.one<{ count: string }>(
+            `
+              SELECT COUNT(*)::text AS count
+              FROM expired_auctions_v2
+              WHERE (
+                $1::text IS NULL
+                OR LOWER(display_name) LIKE '%' || $1 || '%'
+                OR LOWER(material) LIKE '%' || $1 || '%'
+              )
+            `,
+            [searchQuery],
+          );
+
+    const totalCount = Number(totalCountRow.count);
+
+    res.json({
+      items: rows.map((row) => normalizeAuction(row.payload)),
+      newestExpiredAt:
+        rows.length > 0
+          ? rows[0].cursor_time instanceof Date
+            ? rows[0].cursor_time.toISOString()
+            : new Date(rows[0].cursor_time).toISOString()
+          : null,
+      totalCount: Number.isFinite(totalCount) ? totalCount : null,
+    });
+  } catch (err) {
+    console.error("Fehler beim Laden abgelaufener Auktionen:", err);
+    res.status(500).json({ error: (err as Error).message });
+  }
+});
+
+app.listen(port, () => {
+  console.log(`Auction backend laeuft auf Port ${port}`);
+});
+
