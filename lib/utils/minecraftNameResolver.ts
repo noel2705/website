@@ -30,8 +30,8 @@ export default class MinecraftNameResolver {
     private async fetchBedrockName(uuid: string): Promise<string> {
         const profile = await getPlayerProfile(uuid);
         this.cache[uuid] =  profile.name;
-        if (typeof sessionStorage !== 'undefined') {
-            sessionStorage.setItem(`mcname-${uuid}`, profile.name);
+        if (typeof localStorage !== 'undefined') {
+            localStorage.setItem(`mcname-${uuid}`, profile.name);
         }
         return  profile.name;
     }
@@ -41,7 +41,7 @@ export default class MinecraftNameResolver {
         await new Promise(r => setTimeout(r, 150));
 
         try {
-            const res = await fetch(`https://api.ashcon.app/mojang/v2/user/${cleanUuid}`);
+            const res = await fetch(`https://api.minetools.eu/uuid/${uuid}`);
 
             if (res.status === 429 && retry > 0) {
                 await new Promise(r => setTimeout(r, 800));
@@ -51,10 +51,10 @@ export default class MinecraftNameResolver {
             if (!res.ok) throw new Error(`Java-API Fehler ${res.status}`);
 
             const data = await res.json();
-            const name = data.username || 'Fehler';
+            const name = data.name || 'Fehler';
 
             this.cache[uuid] = name;
-            sessionStorage?.setItem(`mcname-${uuid}`, name);
+            localStorage?.setItem(`mcname-${uuid}`, name);
 
             return name;
         } catch {
@@ -68,8 +68,8 @@ export default class MinecraftNameResolver {
     public async getName(uuid: string): Promise<string> {
         if (this.cache[uuid]) return this.cache[uuid];
 
-        if (typeof sessionStorage !== 'undefined') {
-            const stored = sessionStorage.getItem(`mcname-${uuid}`);
+        if (typeof localStorage !== 'undefined') {
+            const stored = localStorage.getItem(`mcname-${uuid}`);
             if (stored) {
                 this.cache[uuid] = stored;
                 return stored;
