@@ -16,8 +16,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "OPDASH",
-  description: "Created by nospighost, Fabian260108",
+  title: "OPHUB",
+  description: "Du brauchst Informationen über aktuelle Auktionen oder Marktpreise?" +
+      " Oder du möchtest deine Shards immer im Überblick haben? Dann ist diese Seite Perfekt für dich",
     icons: {
         icon: "/ghost.png",
     },

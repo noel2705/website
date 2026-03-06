@@ -6,7 +6,7 @@ import './globals.css'
 export default function Home() {
     return (
         <main>
-            <section className="app-panel" style={{ padding: "1.2rem" }}>
+            <section className="app-panel-soft" style={{ padding: "1.2rem" }}>
                 <h1 className="app-title">OPDash Plattform</h1>
                 <p className="app-muted">
                     Auktionsmarkt, Shard-Tools und Dashboard-Funktionen in einem einheitlichen Theme.

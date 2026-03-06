@@ -20,7 +20,7 @@ export default async function Dashboard() {
             <section className="dashboard-hero">
                 <h1>Willkommen, <UserName uuid={uuid}/>!</h1>
                 <h3>
-                    Nutze die Navigation links, um Auktionen, Shards und deine Einstellungen schnell zu verwalten.
+                    Nutze die Navigation, um Auktionen, Shards und deine Einstellungen schnell zu verwalten.
                 </h3>
             </section>
         </div>

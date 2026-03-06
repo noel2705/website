@@ -21,7 +21,6 @@ export default function Dashboard() {
     return (
         <div className="dashboard-shards-page">
             <ShardTopBar refreshKey={refreshKey} />
-
             <div className="shards-grid">
                 <section className="shards-card shards-card-chart">
                     <ShardHistoryChart refreshKey={refreshKey} />
