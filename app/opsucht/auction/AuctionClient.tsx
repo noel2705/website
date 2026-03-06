@@ -79,7 +79,7 @@ export default function AuctionClient({ initialAuction }: Props) {
     const [initialized, setInitialized] = useState(false);
     const [debouncedSearchBar, setDebouncedSearchBar] = useState('');
     const [categories, setCategories] = useState<AuctionCategory[]>([]);
-    const [expandedParents, setExpandedParents] = useState<Set<string>>(new Set());
+    const [expandedParent, setExpandedParent] = useState<string | null>(null);
 
     const prevExpiredLimitRef = useRef(expiredLimit);
     const prevExpiredSearchRef = useRef('');
@@ -264,15 +264,12 @@ export default function AuctionClient({ initialAuction }: Props) {
         const hasChildren = (childrenByParent.get(parentName) ?? []).length > 0;
         if (!hasChildren) return;
 
-        setExpandedParents((prev) => {
-            const next = new Set(prev);
-            if (next.has(parentName) && category === parentName) {
-                next.delete(parentName);
-            } else {
-                next.add(parentName);
-            }
-            return next;
-        });
+        setExpandedParent((prev) => (prev === parentName && category === parentName ? null : parentName));
+    };
+
+    const onChildClick = (parentName: string, childName: string) => {
+        setExpandedParent(parentName);
+        setCategory(childName);
     };
 
     useEffect(() => {
@@ -308,11 +305,7 @@ export default function AuctionClient({ initialAuction }: Props) {
         const found = categories.find((entry) => entry.name === category);
         if (!found?.parentCategory) return;
 
-        setExpandedParents((prev) => {
-            const next = new Set(prev);
-            next.add(found.parentCategory as string);
-            return next;
-        });
+        setExpandedParent(found.parentCategory as string);
     }, [category, categories]);
 
     useEffect(() => {
@@ -445,7 +438,10 @@ export default function AuctionClient({ initialAuction }: Props) {
 
                 <div className="category-tree">
                     <button
-                        onClick={() => setCategory('*')}
+                        onClick={() => {
+                            setExpandedParent(null);
+                            setCategory('*');
+                        }}
                         className={`category-root-btn ${category === '*' ? 'active' : ''}`}
                     >
                         <img src="https://img.mc-api.io/nether_star.png" alt="Alles" />
@@ -454,7 +450,7 @@ export default function AuctionClient({ initialAuction }: Props) {
 
                     {parentCategories.map((parent) => {
                         const children = childrenByParent.get(parent.name) ?? [];
-                        const expanded = expandedParents.has(parent.name);
+                        const expanded = expandedParent === parent.name;
                         return (
                             <div key={parent.name} className="category-group">
                                 <button
@@ -464,7 +460,7 @@ export default function AuctionClient({ initialAuction }: Props) {
                                     <img src={parent.icon} alt={parent.displayName} />
                                     <span>{parent.displayName}</span>
                                     {children.length > 0 && (
-                                        <span className={`category-chevron ${expanded ? 'open' : ''}`}>?</span>
+                                        <span className={`category-chevron ${expanded ? 'open' : ''}`}>v</span>
                                     )}
                                 </button>
 
@@ -473,7 +469,7 @@ export default function AuctionClient({ initialAuction }: Props) {
                                         {children.map((child) => (
                                             <button
                                                 key={child.name}
-                                                onClick={() => setCategory(child.name)}
+                                                onClick={() => onChildClick(parent.name, child.name)}
                                                 className={`category-child-btn ${category === child.name ? 'active' : ''}`}
                                             >
                                                 <img src={child.icon} alt={child.displayName} />

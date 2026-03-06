@@ -147,10 +147,10 @@
 
 .categorySwitcher button.active,
 .raritySwitcher button.active {
-    background: linear-gradient(135deg, var(--primary), color-mix(in srgb, var(--primary) 70%, #000 30%));
-    color: var(--primary-foreground);
-    border-color: color-mix(in srgb, var(--foreground) 24%, transparent);
-    box-shadow: 0 10px 20px color-mix(in srgb, var(--primary) 35%, transparent);
+    background: var(--panel-soft-bg);
+    color: var(--foreground);
+    border-color: color-mix(in srgb, var(--primary) 55%, transparent);
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--primary) 45%, transparent);
 }
 
 .red-text {
@@ -280,9 +280,10 @@
 .category-root-btn.active,
 .category-parent-btn.active,
 .category-child-btn.active {
-    background: linear-gradient(135deg, var(--primary), color-mix(in srgb, var(--primary) 70%, #000 30%));
-    color: var(--primary-foreground);
-    border-color: color-mix(in srgb, var(--foreground) 24%, transparent);
+    background: var(--panel-soft-bg);
+    color: var(--foreground);
+    border-color: color-mix(in srgb, var(--primary) 55%, transparent);
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--primary) 45%, transparent);
 }
 
 .category-group {
