@@ -227,7 +227,9 @@ export default function LoginModul() {
                     <h3 onClick={() => setRegisterMode(false)}>Du hast bereits einen Account?</h3>
                     <br></br>
 
-                    <Link href={"/datenschutz"} >Datenschutzvereinbarungen</Link>
+                    <Link
+                        prefetch={false}
+                        href={"/datenschutz"} >Datenschutzvereinbarungen</Link>
 
                 </div>
             ) : (
@@ -247,7 +249,9 @@ export default function LoginModul() {
 
                     <br/>
 
-                    <Link href={"/datenschutz"} >Datenschutzvereinbarungen</Link>
+                    <Link
+                        prefetch={false}
+                        href={"/datenschutz"} >Datenschutzvereinbarungen</Link>
 
 
                     <h2 className={"status"}>{status}</h2>

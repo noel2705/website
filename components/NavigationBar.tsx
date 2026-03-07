@@ -16,7 +16,8 @@ export default function NavigationBar() {
     return (
         <nav className="navbar">
             <ul className="list">
-                <li><NavLink href="/opsucht/auction" pathname={pathname}>Auktionen</NavLink></li>
+                <li><NavLink
+                    href="/opsucht/auction" pathname={pathname}>Auktionen</NavLink></li>
                 <li><NavLink href="/opsucht/market" pathname={pathname}>Market</NavLink></li>
                     <li><NavLink href={`/opdash-mod`} pathname={pathname}>OPDASH-MOD</NavLink></li>
             </ul>
