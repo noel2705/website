@@ -32,6 +32,7 @@ function NavLink({ href, pathname, children }: { href: string; pathname: string;
     return (
         <Link
             href={href}
+            prefetch={false}
             className={`link ${pathname.startsWith(href) ? "active" : ""}`}
         >
             {children}

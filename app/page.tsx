@@ -12,10 +12,10 @@ export default function Home() {
                     Auktionsmarkt, Shard-Tools und Dashboard-Funktionen in einem einheitlichen Theme.
                 </p>
                 <div className="status-actions" style={{ marginTop: "0.9rem", justifyContent: "flex-start" }}>
-                    <Link href="/opsucht/auction" className="status-link">Zu den Auktionen</Link>
-                    <Link href="/opsucht/market" className="status-link">Zum Market</Link>
-                    <Link href="/dashboard" className="status-link">Zum Dashboard</Link>
-                    <Link href="/datenschutz" className="status-link">Datenschutz</Link>
+                    <Link href="/opsucht/auction" prefetch={false} className="status-link">Zu den Auktionen</Link>
+                    <Link href="/opsucht/market" prefetch={false} className="status-link">Zum Market</Link>
+                    <Link href="/dashboard" prefetch={false} className="status-link">Zum Dashboard</Link>
+                    <Link href="/datenschutz" prefetch={false} className="status-link">Datenschutz</Link>
                 </div>
             </section>
         </main>
