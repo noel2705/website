@@ -55,7 +55,7 @@ export default function OPDashMod() {
     return (
         <div className="opdash-container">
             <header className="opdash-header">
-                <h1>OPDash-Mod</h1>
+                <h1>OPHub-Mod</h1>
                 <p className="opdash-info">
                     Mit Hilfe dieser Mod hast du eine Übersicht über deine Shard-Trades.
                     Berechne jederzeit den Wert deiner Items in Shards und behalte den Überblick
@@ -89,7 +89,7 @@ export default function OPDashMod() {
 
                 <Link
                     className="opdash-link highlight"
-                    href="https://modrinth.com/mod/opdash"
+                    href="https://modrinth.com/mod/ophub"
                     target="_blank"
                 >
                     Zur Mod
