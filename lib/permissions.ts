@@ -5,6 +5,7 @@ export const permissionsList = [
     "admin.role",
     "view.opdash.mod",
     "beta.access",
+    "auctions.expired.limit.all",
     "view.shard.calculator"
 ] as const
 

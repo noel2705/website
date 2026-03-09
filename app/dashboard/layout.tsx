@@ -2,7 +2,6 @@
 
 import "./dashboard.css"
 import Link from "next/link"
-import LogOutButton from "@/components/buttons/LogOutButton"
 import NotLoggedIn from "@/components/icon/NotLogined"
 import Loading from "@/app/loading"
 import {usePathname} from "next/navigation"

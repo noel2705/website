@@ -64,7 +64,7 @@ export async function deleteUserAccount(uuid: string) {
         }
     } catch (err) {
         console.error(err)
-        return {error: "Fehler beim Löschen des Accounts: " + err}
+        return {error: "Fehler beim Löschen des Accounts melde dich bitte im Discord!"}
     }
 
 

@@ -1,12 +1,13 @@
 'use client';
 
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Page } from '../../../lib/utils/types';
+import React, {useEffect, useMemo, useRef, useState} from 'react';
+import {Page} from '../../../lib/utils/types';
 import '../../../components/css/auction/auction.css';
-import { getAmountBids } from '@/lib/utils/auction/auction';
+import {getAmountBids} from '@/lib/utils/auction/auction';
 import AuctionCard from '@/components/opsucht/auction/AuctionCard';
 import MinecraftNameResolver from '@/lib/utils/minecraftNameResolver';
-import { AuctionCategory, normalizeAuctions, normalizeCategoryDefinitions } from '@/lib/utils/auction/normalize';
+import {AuctionCategory, normalizeAuctions, normalizeCategoryDefinitions} from '@/lib/utils/auction/normalize';
+import { useSessionUser } from '@/hooks/useUser';
 
 interface Props {
     initialAuction: Page[];
@@ -62,9 +63,10 @@ const maxIsoDate = (a: string | null, b: string | null): string | null => {
 const isParent = (name: string) => name.startsWith('parent_');
 const toApiCategory = (category: string) => (category === '*' || isParent(category) ? '*' : category);
 
-export default function AuctionClient({ initialAuction }: Props) {
+export default function AuctionClient({initialAuction}: Props) {
     const itemsPerLoad = 25;
     const resolver = new MinecraftNameResolver();
+    const { user } = useSessionUser();
 
     const [renderCount, setRenderCount] = useState(itemsPerLoad);
     const [auction, setAuction] = useState<Page[]>(normalizeAuctions(initialAuction));
@@ -111,6 +113,7 @@ export default function AuctionClient({ initialAuction }: Props) {
         return new Set<string>([category]);
     }, [category, childrenByParent]);
 
+    const canSelectExpiredAll = user?.hasPermission('auctions.expired.limit.all') ?? false;
     const getSellerName = async (uids: string[]) => resolver.getNames(uids);
 
     const hydrateSellerNames = async (data: Page[]) => {
@@ -125,7 +128,7 @@ export default function AuctionClient({ initialAuction }: Props) {
     };
 
     const fetchCategoryDefs = async () => {
-        const response = await fetch('https://api.opsucht.net/auctions/categories', { cache: 'no-store' });
+        const response = await fetch('https://api.opsucht.net/auctions/categories', {cache: 'no-store'});
         if (!response.ok) throw new Error('Kategorien konnten nicht geladen werden');
         const parsed = normalizeCategoryDefinitions(await response.json());
         setCategories(parsed);
@@ -137,7 +140,7 @@ export default function AuctionClient({ initialAuction }: Props) {
             ? 'https://api.opsucht.net/auctions/active'
             : `https://api.opsucht.net/auctions/active?category=${apiCategory}`;
 
-        const res = await fetch(url, { cache: 'no-store' });
+        const res = await fetch(url, {cache: 'no-store'});
         const data = normalizeAuctions(await res.json());
         setAuction(data);
         setExpiredTotalCount(null);
@@ -368,6 +371,12 @@ export default function AuctionClient({ initialAuction }: Props) {
     }, [debouncedSearchBar, initialized, mode, category]);
 
     useEffect(() => {
+        if (canSelectExpiredAll) return;
+        if (expiredLimit !== 'all') return;
+        setExpiredLimit(DEFAULT_EXPIRED_LIMIT);
+    }, [canSelectExpiredAll, expiredLimit]);
+
+    useEffect(() => {
         sortAuctions(auction);
     }, [auction, orderBy, searchBar, mode, activeCategorySet]);
 
@@ -449,7 +458,7 @@ export default function AuctionClient({ initialAuction }: Props) {
                         }}
                         className={`category-root-btn ${category === '*' ? 'active' : ''}`}
                     >
-                        <img src="https://img.mc-api.io/nether_star.png" alt="Alles" />
+                        <img src="https://img.mc-api.io/nether_star.png" alt="Alles"/>
                         Alles
                     </button>
 
@@ -462,7 +471,7 @@ export default function AuctionClient({ initialAuction }: Props) {
                                     onClick={() => onParentClick(parent.name)}
                                     className={`category-parent-btn ${category === parent.name ? 'active' : ''}`}
                                 >
-                                    <img src={parent.icon} alt={parent.displayName} />
+                                    <img src={parent.icon} alt={parent.displayName}/>
                                     <span>{parent.displayName}</span>
                                     {children.length > 0 && (
                                         <span className={`category-chevron ${expanded ? 'open' : ''}`}>v</span>
@@ -477,7 +486,7 @@ export default function AuctionClient({ initialAuction }: Props) {
                                                 onClick={() => onChildClick(parent.name, child.name)}
                                                 className={`category-child-btn ${category === child.name ? 'active' : ''}`}
                                             >
-                                                <img src={child.icon} alt={child.displayName} />
+                                                <img src={child.icon} alt={child.displayName}/>
                                                 <span>{child.displayName}</span>
                                             </button>
                                         ))}
@@ -504,22 +513,31 @@ export default function AuctionClient({ initialAuction }: Props) {
                             <div className="sort">
                                 <select
                                     value={expiredLimit}
-                                    onChange={(e) =>
-                                        setExpiredLimit(
-                                            e.target.value as ExpiredLimitOption
-                                        )
-                                    }
+                                    onChange={(e) => {
+                                        const selected = e.target.value as ExpiredLimitOption;
+                                        if (selected === 'all' && !canSelectExpiredAll) {
+                                            setExpiredLimit(DEFAULT_EXPIRED_LIMIT);
+                                            return;
+                                        }
+                                        setExpiredLimit(selected);
+                                    }}
                                     aria-label="Anzahl abgelaufener Auktionen insgesamt"
                                     title="Wie viele abgelaufene Auktionen insgesamt angezeigt und geladen werden"
                                 >
                                     {EXPIRED_LIMIT_OPTIONS.map((limit) => (
-                                        <option key={limit} value={limit}>
-                                            Insgesamt anzeigen: {limit === 'all' ? 'Alle' : limit}
+                                        <option
+                                            key={limit}
+                                            value={limit}
+                                            disabled={limit === 'all' && !canSelectExpiredAll}
+                                        >
+                                            Insgesamt anzeigen: {limit === 'all'
+                                            ? (canSelectExpiredAll ? 'Alle' : 'Alle (Nicht freigeschaltet)')
+                                            : limit}
                                         </option>
                                     ))}
-                                </select>
+                            </select>
                             </div>
-                        )}
+                            )}
                     </div>
                 </div>
             </div>

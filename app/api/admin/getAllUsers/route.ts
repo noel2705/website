@@ -1,8 +1,28 @@
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 import { db } from "@/lib/utils/db"
+import {
+    forbiddenResponse,
+    getAuthUserFromRequest,
+    hasPermission,
+    unauthorizedResponse
+} from "@/lib/api/security";
 
-export async function GET() {
+type DbUserRow = {
+    mc_uuid: string;
+    mc_name: string;
+    verified: boolean;
+    created_at: string;
+    permissions: string | null;
+    visit_count: number | null;
+    login_streak: number | null;
+};
+
+export async function GET(req: NextRequest) {
     try {
+        const authUser = await getAuthUserFromRequest(req);
+        if (!authUser) return unauthorizedResponse();
+        if (!hasPermission(authUser, "view.admin.panel")) return forbiddenResponse();
+
         const result = await db.query(`
             SELECT
                 u.mc_uuid,
@@ -17,10 +37,14 @@ export async function GET() {
             ORDER BY u.created_at DESC
         `)
 
-        const data = (result as any).rows ?? result
+        const rowsFromQuery = (result as { rows?: unknown }).rows;
+        const data: DbUserRow[] = Array.isArray(rowsFromQuery)
+            ? (rowsFromQuery as DbUserRow[])
+            : Array.isArray(result)
+                ? (result as DbUserRow[])
+                : [];
 
-        const users = Array.isArray(data)
-            ? data.map(u => ({
+        const users = data.map(u => ({
                 mc_uuid: u.mc_uuid,
                 mc_name: u.mc_name,
                 verified: u.verified,
@@ -37,7 +61,6 @@ export async function GET() {
                     }
                     : null
             }))
-            : []
 
         return NextResponse.json(users)
 

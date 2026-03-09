@@ -24,5 +24,7 @@ if (process.env.NODE_ENV !== 'production') {
 export const tables = [
     "users",
     "shards",
+    "trading",
+    "user_data",
     "auctions"
 ];

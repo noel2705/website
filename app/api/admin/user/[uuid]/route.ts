@@ -1,8 +1,18 @@
 // app/api/admin/users/[uuid]/route.ts
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 import { db } from "@/lib/utils/db"
+import {
+    forbiddenResponse,
+    getAuthUserFromRequest,
+    hasPermission,
+    unauthorizedResponse
+} from "@/lib/api/security";
 
-export async function PATCH(req: Request, context: { params: Promise<{ uuid: string }> }) {
+export async function PATCH(req: NextRequest, context: { params: Promise<{ uuid: string }> }) {
+    const authUser = await getAuthUserFromRequest(req);
+    if (!authUser) return unauthorizedResponse();
+    if (!hasPermission(authUser, "view.admin.panel")) return forbiddenResponse();
+
     const { uuid } = await context.params;
     const body = await req.json();
 

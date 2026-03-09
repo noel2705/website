@@ -25,6 +25,8 @@ export const metadata: Metadata = {
 
 };
 
+
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -40,6 +42,7 @@ export default function RootLayout({
     document.documentElement.classList.toggle("dark", theme === "dark");
     document.body.setAttribute("data-theme", theme);
   })();`;
+
 
   return (
     <html lang="de" suppressHydrationWarning>

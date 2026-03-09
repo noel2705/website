@@ -12,7 +12,6 @@ import {
     Tooltip,
     Legend,
 } from "chart.js"
-import {fetchFontFile} from "next/dist/compiled/@next/font/dist/google/fetch-font-file";
 import { getMeCached } from "@/lib/utils/meClient";
 import LockedSection from "@/components/icon/LockedSection";
 
@@ -26,8 +25,9 @@ interface TradeHistory {
 }
 
 
-function FilterButtons({ filter, setFilter }: {
+function FilterButtons({ filter, setFilter, userID }: {
     filter: string,
+    userID: string,
     setFilter: (f: any) => void
 }) {
     return (
@@ -35,7 +35,12 @@ function FilterButtons({ filter, setFilter }: {
             {["2h", "24h", "7d", "14d", "all"].map(f => (
                 <button
                     key={f}
-                    onClick={() => setFilter(f)}
+                    onClick={() => {
+                        if (userID === null){
+                            return
+                        }
+                        setFilter(f)
+                    }}
                     className={filter === f ? "active" : ""}
                 >
                     {{
@@ -172,7 +177,7 @@ export default function ShardHistoryChart({ refreshKey }: { refreshKey: number }
 
     return (
         <div className="shard-chart">
-            <FilterButtons filter={filter} setFilter={setFilter} />
+            <FilterButtons filter={filter} setFilter={setFilter} userID={userID ?? ""} />
 
             {filteredHistory.length > 0 ? (
                 <Line data={chartData} options={options} />
@@ -186,7 +191,7 @@ export default function ShardHistoryChart({ refreshKey }: { refreshKey: number }
                         <div className="chart-overlay-content">
                             <button className="close-btn" onClick={() => setFullscreen(false)}>✕</button>
 
-                            <FilterButtons filter={filter} setFilter={setFilter} />
+                            <FilterButtons filter={filter} setFilter={setFilter} userID={userID ?? ""} />
 
                             <Line data={chartData} options={options} />
                         </div>

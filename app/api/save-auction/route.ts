@@ -1,10 +1,13 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/utils/db";
 import { normalizeAuction, normalizeAuctions } from "@/lib/utils/auction/normalize";
 import { ensureExpiredAuctionsV2Table } from "@/lib/utils/auction/db";
+import { assertInternalApiKey } from "@/lib/api/security";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
     try {
+
+
         const response = await fetch("https://api.opsucht.net/auctions/active", {
             cache: "no-store",
         });

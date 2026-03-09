@@ -1,8 +1,16 @@
 import { NextRequest, NextResponse } from "next/server"
 import { db } from "@/lib/utils/db"
+import {
+    forbiddenResponse,
+    getAuthUserFromRequest,
+    unauthorizedResponse
+} from "@/lib/api/security";
 
 export async function POST(req: NextRequest) {
     try {
+        const authUser = await getAuthUserFromRequest(req);
+        if (!authUser) return unauthorizedResponse();
+
         const body = await req.json()
         const {
             tradeHistory = [],
@@ -18,6 +26,10 @@ export async function POST(req: NextRequest) {
             )
         }
 
+        if (userID !== authUser.uuid && !authUser.permissions.includes("admin.role")) {
+            return forbiddenResponse("Du darfst nur deine eigenen Shard-Daten importieren");
+        }
+
         await db.none(
             `
                 INSERT INTO shards (mc_uuid, "totalShards", "shardsGoal", "tradeHistory")
@@ -31,10 +43,11 @@ export async function POST(req: NextRequest) {
             [userID, totalShards, shardsGoal, JSON.stringify(tradeHistory)]
         )
         return NextResponse.json({ success: true })
-    } catch (err: any) {
-        console.error("Fehler beim Speichern der Shards:", err.message || err)
+    } catch (err: unknown) {
+        const errorMessage = err instanceof Error ? err.message : "Unbekannter Fehler";
+        console.error("Fehler beim Speichern der Shards:", errorMessage)
         return NextResponse.json(
-            { success: false, error: err.message || "Unbekannter Fehler" },
+            { success: false, error: errorMessage },
             { status: 500 }
         )
     }

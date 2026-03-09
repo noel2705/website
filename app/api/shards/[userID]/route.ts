@@ -1,11 +1,22 @@
 import { db } from "@/lib/utils/db"
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
+import {
+    forbiddenResponse,
+    getAuthUserFromRequest,
+    unauthorizedResponse
+} from "@/lib/api/security";
 
 export async function GET(
-    request: Request,
+    request: NextRequest,
     context: { params: Promise<{ userID: string }> }
 ) {
     const { userID } = await context.params
+    const authUser = await getAuthUserFromRequest(request);
+    if (!authUser) return unauthorizedResponse();
+
+    if (authUser.uuid !== userID && !authUser.permissions.includes("admin.role")) {
+        return forbiddenResponse("Kein Zugriff auf fremde Shard-Daten");
+    }
 
     try {
         const userData = await db.oneOrNone(
@@ -18,7 +29,8 @@ export async function GET(
         }
 
         return NextResponse.json({ user: userData })
-    } catch (err: any) {
-        return NextResponse.json({ error: err.message }, { status: 500 })
+    } catch (err: unknown) {
+        const errorMessage = err instanceof Error ? err.message : "Unbekannter Fehler";
+        return NextResponse.json({ error: errorMessage }, { status: 500 })
     }
 }

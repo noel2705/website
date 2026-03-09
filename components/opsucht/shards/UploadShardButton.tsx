@@ -1,10 +1,11 @@
 'use client'
 
-import {useState, useRef} from "react"
+import { useState, useRef } from "react"
 import Folder from "@/components/icon/animated/FolderIcon"
 import "../../css/shard/UploadShardButton.css"
-import { getMeCached } from "@/lib/utils/meClient";
-export default function UploadShardButton({onUploadSuccess}: { onUploadSuccess: () => void }) {
+import { getMeCached } from "@/lib/utils/meClient"
+
+export default function UploadShardButton({ onUploadSuccess }: { onUploadSuccess: () => void }) {
     const [message, setMessage] = useState("Drücke auf den Ordner, um deine Shard-Daten zu importieren")
     const [loading, setLoading] = useState(false)
     const [folderOpen, setFolderOpen] = useState(false)
@@ -23,7 +24,6 @@ export default function UploadShardButton({onUploadSuccess}: { onUploadSuccess: 
 
     const handleFocusBack = () => {
         if (!fileDialogOpen.current) return
-
         fileDialogOpen.current = false
         window.removeEventListener("focus", handleFocusBack)
 
@@ -33,7 +33,13 @@ export default function UploadShardButton({onUploadSuccess}: { onUploadSuccess: 
         }
     }
 
-    const handleClickFolder = () => {
+    const handleClickFolder = async () => {
+        const me = await getMeCached()
+        if (!me?.uuid) {
+            setMessage("Bitte zuerst einloggen ❌")
+            return
+        }
+
         if (!fileInputRef.current) return
 
         fileInputRef.current.value = ""
@@ -61,7 +67,7 @@ export default function UploadShardButton({onUploadSuccess}: { onUploadSuccess: 
             const uuid = me?.uuid
 
             if (!uuid) {
-                setMessage("Fehler: Benutzer nicht erkannt ❌")
+                setMessage("Bitte zuerst einloggen ❌")
                 resetFolder(2000)
                 setLoading(false)
                 return
@@ -71,7 +77,7 @@ export default function UploadShardButton({onUploadSuccess}: { onUploadSuccess: 
             const data = JSON.parse(text)
 
             if (!data.tradeHistory || data.totalShards === undefined || data.shardsGoal === undefined) {
-                setMessage("Ungültige Datei. Hast du die richtige ausgewählt? ❌")
+                setMessage("Ungültige Datei ❌")
                 resetFolder(2000)
                 setLoading(false)
                 return
@@ -79,7 +85,7 @@ export default function UploadShardButton({onUploadSuccess}: { onUploadSuccess: 
 
             const res = await fetch("/api/shards/import", {
                 method: "POST",
-                headers: {"Content-Type": "application/json"},
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     userID: uuid,
                     tradeHistory: data.tradeHistory,
@@ -108,27 +114,25 @@ export default function UploadShardButton({onUploadSuccess}: { onUploadSuccess: 
     }
 
     return (
-        <>
-            <div className="upload-shard-container">
-                <div className="folder-wrapper" onClick={handleClickFolder}>
-                    <Folder
-                        key={folderKey}
-                        size={0.75}
-                        isOpen={folderOpen}
-                    />
-                    <input
-                        ref={fileInputRef}
-                        type="file"
-                        accept=".json"
-                        onChange={handleFileUpload}
-                        style={{display: 'none'}}
-                        disabled={loading}
-                    />
-                </div>
-
-                {loading && <p className="upload-message">Lade Daten…</p>}
-                {message && <p className="upload-message">{message}</p>}
+        <div className="upload-shard-container">
+            <div className="folder-wrapper" onClick={handleClickFolder}>
+                <Folder
+                    key={folderKey}
+                    size={0.75}
+                    isOpen={folderOpen}
+                />
+                <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept=".json"
+                    onChange={handleFileUpload}
+                    style={{ display: 'none' }}
+                    disabled={loading}
+                />
             </div>
-        </>
+
+            {loading && <p className="upload-message">Lade Daten…</p>}
+            {message && <p className="upload-message">{message}</p>}
+        </div>
     )
 }
