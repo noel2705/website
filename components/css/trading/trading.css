@@ -1,0 +1,76 @@
+.add-container-overlay {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+}
+
+.add-container {
+    width: min(100%, 480px);
+    padding: 1.5rem;
+    border-radius: 14px;
+    background-color: rgb(78, 78, 78);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    box-shadow: 0 14px 40px rgba(0, 0, 0, 0.35);
+}
+
+.add-container-title {
+    margin: 0;
+    font-size: 1.25rem;
+    color: #ffffff;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.input-label {
+    font-size: 0.9rem;
+    color: #eaeaea;
+}
+
+.item-name,
+.item-price {
+    width: 100%;
+    padding: 0.7rem 0.85rem;
+    border: 1px solid #909090;
+    border-radius: 8px;
+    background: #f9f9f9;
+    color: #1f1f1f;
+    box-sizing: border-box;
+}
+
+.button-row {
+    display: flex;
+    gap: 0.8rem;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    margin-top: 0.25rem;
+}
+
+.primary-button,
+.secondary-button {
+    padding: 0.5rem 0.8rem;
+    border-radius: 8px;
+    border: 0;
+    cursor: pointer;
+}
+
+.primary-button {
+    background: #2f8f4e;
+    color: #ffffff;
+}
+
+.secondary-button {
+    background: #d9d9d9;
+    color: #202020;
+}

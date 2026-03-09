@@ -1,27 +1,34 @@
-import {redirect} from "next/navigation";
-import {cookies} from "next/headers";
+'use client';
+
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import "./dashboard.css";
 import UserName from "@/components/opsucht/auction/UserName";
-import {getUUID} from "@/hooks/useServerUUID";
+import { getSessionUser } from "@/hooks/useUser";
 
-export default async function Dashboard() {
-    const cookieStore = await cookies();
-    const cookie = cookieStore.get("token");
+export default function Dashboard() {
+    const router = useRouter();
+    const { user, loading } = getSessionUser();
 
-    if (!cookie || !cookie.value) {
-        redirect("/login");
-    }
+    useEffect(() => {
+        if (!loading && !user) {
+            router.replace("/login");
+        }
+    }, [loading, user, router]);
 
-    const uuid = await getUUID();
-    if (!uuid) redirect("/login");
+    if (loading) return <div>Lade...</div>;
+    if (!user?.uuid) return null;
 
     return (
         <div className="dashboard-page">
             <section className="dashboard-hero">
-                <h1>Willkommen, <UserName uuid={uuid}/>!</h1>
+                <h1>Willkommen, <UserName uuid={user.uuid} />!</h1>
                 <h3>
                     Nutze die Navigation, um Auktionen, Shards und deine Einstellungen schnell zu verwalten.
                 </h3>
+
+                <h3>Deine Login Streak: {user.loginStreak}</h3>
+                <h3>Beste Login Streak: {user.bestLoginStreak}</h3>
             </section>
         </div>
     );

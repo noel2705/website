@@ -19,6 +19,7 @@ export default function NavigationBar() {
                 <li><NavLink
                     href="/opsucht/auction" pathname={pathname}>Auktionen</NavLink></li>
                 <li><NavLink href="/opsucht/market" pathname={pathname}>Market</NavLink></li>
+                <li><NavLink href="/opsucht/shards" pathname={pathname}>Shards</NavLink></li>
                     <li><NavLink href={`/opdash-mod`} pathname={pathname}>OPHub-MOD</NavLink></li>
             </ul>
 

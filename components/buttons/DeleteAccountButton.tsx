@@ -7,7 +7,7 @@ import {useState} from "react";
 export default function DeleteAccountButton() {
     const {user, loading} = getSessionUser()
     const [status, setStatus] = useState("Drücke noch 3 mal, um den Account zu löschen.")
-    const [pressCount, setPressCount] = useState(0);
+    const [pressCount, setPressCount] = useState(1);
     if (loading) {
         return <button disabled className="app-button app-button-danger">Lädt...</button>
     }

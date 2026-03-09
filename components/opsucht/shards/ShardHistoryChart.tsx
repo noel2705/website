@@ -14,6 +14,7 @@ import {
 } from "chart.js"
 import {fetchFontFile} from "next/dist/compiled/@next/font/dist/google/fetch-font-file";
 import { getMeCached } from "@/lib/utils/meClient";
+import LockedSection from "@/components/icon/LockedSection";
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend)
 
@@ -70,7 +71,8 @@ export default function ShardHistoryChart({ refreshKey }: { refreshKey: number }
             try {
                 const me = await getMeCached()
                 const uuid = me?.uuid
-                if (!uuid) return console.error("Keine UUID gefunden")
+                if (!uuid) return <LockedSection locked={false} message="Nur für verifizierte Nutzer"
+                                                 children={undefined} />
                 setUserID(uuid)
             } catch (err) {
                 console.error("Fehler beim Abrufen der UUID:", err)
@@ -102,6 +104,9 @@ export default function ShardHistoryChart({ refreshKey }: { refreshKey: number }
 
                 setHistory(parsed)
             } catch (err) {
+                if(userID === undefined){
+                    return    <LockedSection locked={false} message="Nur für verifizierte Nutzer" children={undefined}/>
+                }
                 console.error("Fehler beim Laden der Shard-Historie:", err)
             }
         }

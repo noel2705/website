@@ -10,7 +10,14 @@ type User = {
     verified: boolean
     created_at: string
     permissions: Permission[]
+    user_data: UserData | null
 }
+
+type UserData = {
+    visit_count: number
+    login_streak: number
+}
+
 
 export default function AdminUserList() {
     const [users, setUsers] = useState<User[]>([])
@@ -84,7 +91,16 @@ export default function AdminUserList() {
 
                         <h3>{u.mc_name}</h3>
                         <p>UUID: {u.mc_uuid}</p>
-                        <p>Verifiziert: {u.verified ? "Ja" : "Nein"}</p>
+
+                        {u.user_data && (
+                            <div className="admin-user-stats">
+                                <p>Besuche: {u.user_data.visit_count}</p>
+                                <p>Login Streak: {u.user_data.login_streak}</p>
+                            </div>
+                        )}
+
+                        <br/>
+
 
                         <div className="admin-permission-list">
                             {u.permissions.map(p => (

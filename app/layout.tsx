@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   description: "Du brauchst Informationen über aktuelle Auktionen oder Marktpreise?" +
       " Oder du möchtest deine Shards immer im Überblick haben? Dann ist diese Seite Perfekt für dich",
     icons: {
-        icon: "/ghost.png",
+        icon: "/opdash/ophub_logo.jpg",
     },
 
 };

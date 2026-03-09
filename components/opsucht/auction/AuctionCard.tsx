@@ -5,6 +5,7 @@ import {ReactNode, useEffect, useMemo, useState} from "react";
 import {useRouter} from "next/navigation";
 import "@/components/css/auction/auction.css";
 import UserPageButton from "@/components/opsucht/auction/UserPageButton";
+
 type AuctionMode = "active" | "expired";
 
 function AuctionCard({
@@ -33,7 +34,7 @@ function AuctionCard({
         return () => clearInterval(interval);
     }, []);
 
-    const { endText, isExpired, endedAtText } = useMemo(() => {
+    const {endText, isExpired, endedAtText} = useMemo(() => {
         const milliToEnd = new Date(endDate).getTime() - now;
         const endedAt = new Date(endDate);
         const formattedEndedAt = new Intl.DateTimeFormat("de-DE", {
@@ -46,19 +47,31 @@ function AuctionCard({
 
         if (milliToEnd <= 0) {
             return {
-                endText: "Beendet" ,
+                endText: "Beendet",
                 isExpired: true,
                 endedAtText: formattedEndedAt,
             };
         }
 
         const secToEnd = Math.floor(milliToEnd / 1000);
+
         const seconds = secToEnd % 60;
         const minutes = Math.floor(secToEnd / 60) % 60;
-        const hours = Math.floor(secToEnd / 3600);
+        const hours = Math.floor(secToEnd / 3600) % 24;
+        const days = Math.floor(secToEnd / 86400);
+
+        let endText: string;
+
+        if (days > 0) {
+            endText = `${days}d ${hours}h`;
+        } else if (hours > 0) {
+            endText = `${hours}h ${minutes}m`;
+        } else {
+            endText = `${minutes}m ${seconds}s`;
+        }
 
         return {
-            endText: `${hours}h ${minutes}m ${seconds}s`,
+            endText,
             isExpired: false,
             endedAtText: formattedEndedAt,
         };
@@ -92,7 +105,7 @@ function AuctionCard({
             <div className="auction-details">
 
                 <p className="auction-seller">
-                    Verkäufer: <UserPageButton name={auctionSellerName} uuid={auction.seller} />
+                    Verkäufer: <UserPageButton name={auctionSellerName} uuid={auction.seller}/>
                 </p>
                 <div className="price-row">
                     <p>Preis: {formatMoney(currentPrice) ?? "N/A"}</p>

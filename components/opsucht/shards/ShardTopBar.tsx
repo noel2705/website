@@ -1,38 +1,52 @@
 'use client'
-import "@/app/dashboard/shards/shardManager.css"
+import "@/app/opsucht/shards/shardManager.css"
 import { useEffect, useState } from "react"
-import {formatMoney} from "@/lib/utils/auction/auction";
-import { getMeCached } from "@/lib/utils/meClient";
+import { formatMoney } from "@/lib/utils/auction/auction"
 
-export default function ShardTopBar({ refreshKey }: { refreshKey: number }) {
+export default function ShardTopBar({
+                                        refreshKey,
+                                        user
+                                    }: {
+    refreshKey: number
+    user: any
+}) {
+
     const [currentShards, setCurrentShards] = useState<number | null>(null)
     const [targetShards, setTargetShards] = useState<number | null>(null)
 
     const fetchData = async () => {
+        if (!user) return
+
         try {
-            const me = await getMeCached()
-            const uuid = me?.uuid
-            if (!uuid) return console.error("Keine UUID gefunden")
+            const uuid = user.uuid
+            if (!uuid) return
 
             const resShards = await fetch(`/api/shards/${uuid}`)
             const dataShards = await resShards.json()
 
-            const user = dataShards.user
-            if (!user) return console.error("Kein user-Objekt in API")
+            const apiUser = dataShards.user
+            if (!apiUser) return
 
-            const total = Number(user.totalShards)
-            const goal = Number(user.shardsGoal)
+            const total = Number(apiUser.totalShards)
+            const goal = Number(apiUser.shardsGoal)
 
             setCurrentShards(isNaN(total) ? 0 : total)
             setTargetShards(isNaN(goal) ? 0 : goal)
+
         } catch (err) {
             console.error("Fehler beim Abrufen der Shard-Daten:", err)
         }
     }
 
     useEffect(() => {
-        fetchData()
-    }, [refreshKey])
+        if (user) {
+            fetchData()
+        }
+    }, [refreshKey, user])
+
+    if (!user) {
+        return <div className="top-bar">ㅤ</div>
+    }
 
     if (currentShards === null || targetShards === null) {
         return <div className="top-bar">Lade Shard-Daten…</div>
