@@ -70,9 +70,9 @@ export default function DashboardLayout({
                 </div>
             </aside>
 
-            <main className="dashboard-content">
+            <div className="dashboard-content">
                 {children}
-            </main>
+            </div>
         </div>
     )
 }

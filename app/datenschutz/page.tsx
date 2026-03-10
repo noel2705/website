@@ -1,6 +1,5 @@
 export default function DatenschutzPage() {
   return (
-      <main>
         <section className="app-panel legal-panel">
           <h1 className="app-title">Datenschutzerklärung</h1>
           <p className="app-muted">Stand: 09.03.2026</p>
@@ -8,8 +7,8 @@ export default function DatenschutzPage() {
           <h2>1. Verantwortlicher</h2>
           <p>
             Betreiber dieser Website:<br />
-            nospighost, Fabian260108<br />
-            Kontakt: nospighost oder Fabian260108 auf Discord
+            nospighost<br />
+            Kontakt: nospighost auf Discord
           </p>
 
           <h2>2. Welche Daten werden verarbeitet?</h2>
@@ -26,7 +25,7 @@ export default function DatenschutzPage() {
             Zusätzlich werden Cookies und Browser-Speicher verwendet:
           </p>
           <ul>
-            <li>Login-Cookie: <code>token</code> (httpOnly, 7 Tage)</li>
+            <li>Login-Cookie: <code>token</code> (httpOnly, 14 Tage)</li>
             <li>Browser-Storage: Theme, Auktionsfilter/-cache, UUID→Name Cache</li>
           </ul>
 
@@ -60,6 +59,5 @@ export default function DatenschutzPage() {
             <a href="/">Zur Startseite</a>
           </p>
         </section>
-      </main>
   );
 }

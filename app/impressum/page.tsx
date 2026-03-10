@@ -1,7 +1,7 @@
 import "./impressum.css"
 export default function Page() {
     return (
-        <main className="legal-container">
+        <div className="legal-container">
             <div className="legal-card">
                 <h1>Impressum</h1>
 
@@ -35,6 +35,6 @@ export default function Page() {
                     </p>
                 </section>
             </div>
-        </main>
+        </div>
     );
 }

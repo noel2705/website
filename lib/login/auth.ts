@@ -81,7 +81,7 @@ export async function loginUser(mc_name: string, password: string) {
                 secure: process.env.NODE_ENV === "production",
                 sameSite: "strict",
                 path: "/",
-                maxAge: 60 * 60 * 24 * 7,
+                maxAge: 60 * 60 * 24 * 14,
             });
         } catch {
             return {error: "Session konnte nicht erstellt werden"};

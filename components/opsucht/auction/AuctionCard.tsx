@@ -113,7 +113,7 @@ function AuctionCard({
                 </div>
 
                 {mode === "expired" && isExpired ? (
-                    <p>Beendet am: {endedAtText}</p>
+                    <p className="yellow-text">Beendet am: {endedAtText}</p>
                 ) : isExpired ? (
                     <p className="red-text">Beendet</p>
                 ) : (

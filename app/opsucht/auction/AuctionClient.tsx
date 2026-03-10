@@ -77,6 +77,7 @@ export default function AuctionClient({initialAuction}: Props) {
     const [category, setCategory] = useState('*');
     const [searchBar, setSearchbar] = useState('');
     const [orderBy, setOrderby] = useState('moneyDesc');
+    const [viewMode, setViewMode] = useState('*');
     const [mode, setMode] = useState<AuctionMode>('active');
     const [loadingExpired, setLoadingExpired] = useState(false);
     const [initialized, setInitialized] = useState(false);
@@ -423,6 +424,13 @@ export default function AuctionClient({initialAuction}: Props) {
         return () => observer.disconnect();
     }, [showAuction]);
 
+    const filteredAuctions = showAuction?.filter((a) => {
+        if (viewMode === "bids") {
+            return Object.keys(a.bids).length > 0
+        }
+        return true
+    }) ?? []
+
     return (
         <>
             <div className="search-row">
@@ -538,32 +546,41 @@ export default function AuctionClient({initialAuction}: Props) {
                             </select>
                             </div>
                             )}
+
+                        <div className="sort">
+                            <select value={viewMode} onChange={(e) => setViewMode(e.target.value)}>
+                                <option value="*">Alle Auktionen</option>
+                                <option value="bids">Auktionen mit Geboten</option>
+                            </select>
+                        </div>
+
                     </div>
                 </div>
             </div>
 
             {mode === 'expired' && (
                 <div className="expired-info">
-                    <span>Geladen: {showAuction.length}</span>
+                    <span>Geladen: {filteredAuctions.length}</span>
                     <span>
-                        Insgesamt gefunden: {expiredTotalCount === null ? 'unbekannt' : expiredTotalCount}
-                    </span>
+            Insgesamt gefunden: {expiredTotalCount === null ? 'unbekannt' : expiredTotalCount}
+        </span>
                 </div>
             )}
 
             {loadingExpired && mode === 'expired' && <p>Lade abgelaufene Auktionen...</p>}
 
             <div className="auction-grid">
-                {showAuction?.slice(0, renderCount).map((a) => (
-                    <AuctionCard
-                        key={a.uid}
-                        auction={a}
-                        auctionSellerName={sellerNames[a.seller]}
-                        mode={mode}
-                    />
-                ))}
+                {filteredAuctions
+                    .slice(0, renderCount)
+                    .map((a) => (
+                        <AuctionCard
+                            key={a.uid}
+                            auction={a}
+                            auctionSellerName={sellerNames[a.seller]}
+                            mode={mode}
+                        />
+                    ))}
             </div>
-
             <div id="scroll-sentinel" style={{height: 1}}/>
         </>
     );

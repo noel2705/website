@@ -83,7 +83,7 @@ export default function OPDashMod() {
             </section>
 
             <div className="opdash-buttons">
-                <Link className="opdash-link" href="/dashboard/shards">
+                <Link className="opdash-link" href="/opsucht/shards">
                     Zu den Shard Features
                 </Link>
 

@@ -16,7 +16,17 @@ export default async function AuctionView({userID}: { userID: string }) {
     const eigeneAuktionen = userAuctions.filter(a => a.seller === userID);
     const gebote = userAuctions.filter(a => a.bids && userID in a.bids);
     const markedAuctions: Page[] = await getMarkedAuctions(userID);
+    const activeMarkedAuctions = markedAuctions.filter(a => {
+        const end = Date.parse(a.endTime);
+        const now = Date.now();
+        return end > now;
+    });
 
+    const markedExpiredAuctions = markedAuctions.filter(a => {
+        const end = Date.parse(a.endTime);
+        const now = Date.now();
+        return end <= now;
+    });
 
     return (
         <div className="user-auctions-container">
@@ -89,15 +99,32 @@ export default async function AuctionView({userID}: { userID: string }) {
             )}
 
 
-            {markedAuctions.length > 0 && (
+            {activeMarkedAuctions.length > 0 && (
                 <section>
-                    <h2 className="own-auction">Makierte Auktionen</h2>
+                    <h2 className="own-auction">Aktive Makierte Auktionen</h2>
 
                     <div className="auction-grid">
-                        {markedAuctions.map(a => (
+                        {activeMarkedAuctions.map(a => (
                             <AuctionCard
                                 key={a.uid}
                                 mode={"active"}
+                                auction={a}
+                                auctionSellerName={<UserName uuid={a.seller}/>}
+                            />
+                        ))}
+                    </div>
+                </section>
+            )}
+
+            {markedExpiredAuctions.length > 0 && (
+                <section>
+                    <h2 className="own-auction">Abgelaufene Makierte Auktionen</h2>
+
+                    <div className="auction-grid">
+                        {markedExpiredAuctions.map(a => (
+                            <AuctionCard
+                                key={a.uid}
+                                mode={"expired"}
                                 auction={a}
                                 auctionSellerName={<UserName uuid={a.seller}/>}
                             />
