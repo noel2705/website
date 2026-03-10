@@ -199,6 +199,7 @@ body[data-theme="light"] {
   body {
     min-height: 100%;
     margin: 0;
+    overflow-x: hidden;
   }
 
   body {
@@ -209,12 +210,16 @@ body[data-theme="light"] {
     color: var(--foreground);
     font-family: var(--font-geist-sans), "Space Grotesk", "Manrope", "Segoe UI", sans-serif;
     line-height: 1.45;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
   }
 
   main {
     width: min(1380px, 100%);
     margin: 0 auto;
     padding: 1.4rem 1.1rem 1.8rem;
+    flex: 1;
   }
 
   a {
@@ -223,7 +228,7 @@ body[data-theme="light"] {
 }
 
 .site-shell {
-  min-height: calc(100vh - 60px);
+  flex: 1;
 }
 
 .site-footer {
@@ -443,4 +448,17 @@ body[data-theme="light"] {
   .app-shell {
     padding: 1rem 0.72rem 1.2rem;
   }
+
+  .site-footer-inner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
+
+
+.footer-links {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+

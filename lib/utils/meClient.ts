@@ -4,6 +4,7 @@ type MeData = {
     uuid: string
     permissions: string[]
     visitCount: number
+    password: string
     loginStreak: number
     bestLoginStreak: number
 }
@@ -69,6 +70,7 @@ export async function getMeCached(): Promise<MeData | null> {
             meCache = {
                 uuid,
                 bestLoginStreak: data.bestLoginStreak,
+                password: data.password,
                 visitCount: data.visitCount,
                 loginStreak: data.loginStreak,
                 permissions: normalizePermissions(data?.permissions)

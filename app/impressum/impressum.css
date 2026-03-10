@@ -1,0 +1,32 @@
+
+.legal-container {
+    display: flex;
+    justify-content: center;
+    padding: 60px 20px;
+}
+
+.legal-card {
+    max-width: 800px;
+    width: 100%;
+    background: rgba(20,20,20,0.7);
+    backdrop-filter: blur(10px);
+    border-radius: 14px;
+    padding: 40px;
+    border: 1px solid rgba(255,255,255,0.08);
+}
+
+.legal-card h1 {
+    font-size: 32px;
+    margin-bottom: 20px;
+}
+
+.legal-card h2 {
+    font-size: 20px;
+    margin-top: 25px;
+    margin-bottom: 8px;
+}
+
+.legal-card p {
+    line-height: 1.6;
+    opacity: 0.9;
+}

@@ -4,6 +4,7 @@ import { permissionsList } from "../permissions";
 export interface IUser {
     uuid: string;
     permissions: Permission[];
+    password: string;
     visitCount: number;
     loginStreak: number;
     bestLoginStreak: number;
@@ -16,6 +17,7 @@ export function buildUser(data: {
     visitCount: number;
     loginStreak: number;
     bestLoginStreak: number;
+    password: string;
     permissions: string[];
 }): IUser {
     const validPermissions = new Set<string>(permissionsList);
@@ -25,6 +27,7 @@ export function buildUser(data: {
 
     return {
         uuid: data.uuid,
+        password: data.password,
         loginStreak: data.loginStreak,
         bestLoginStreak: data.bestLoginStreak,
         visitCount: data.visitCount,

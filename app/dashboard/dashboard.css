@@ -1,6 +1,12 @@
 .dashboard-layout {
     display: grid;
     grid-template-columns: 280px minmax(0, 1fr);
+    width: 100vw;
+    max-width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+    margin-top: -1.4rem;
+    margin-bottom: -1.8rem;
     min-height: 100vh;
     background:
             radial-gradient(circle at 8% 12%, var(--page-radial-1), transparent 36%),
@@ -224,6 +230,13 @@
 
     .dashboard-hero h1 {
         font-size: 1.52rem;
+    }
+}
+
+@media (max-width: 720px) {
+    .dashboard-layout {
+        margin-top: -1rem;
+        margin-bottom: -1.2rem;
     }
 }
 

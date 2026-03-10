@@ -86,7 +86,6 @@ async function ensureUserDataSchema(): Promise<void> {
         userDataSchemaReady = true;
     })()
         .catch(() => {
-            // Keep /api/me functional even if schema changes are blocked.
         })
         .finally(() => {
             userDataSchemaPromise = null;
@@ -139,7 +138,6 @@ async function updateDailyUserStats(mcUUID: string): Promise<{
             bestLoginStreak: toNumber(stats.best_login_streak),
         };
     } catch {
-        // If user_data migration is not applied yet, do not break /api/me.
         return null;
     }
 }
@@ -152,7 +150,7 @@ export async function GET(req: NextRequest) {
         const payload = verifyJWT(token) as { sub: string };
 
         const user = await db.oneOrNone(
-            "SELECT mc_uuid, permissions FROM users WHERE mc_uuid = $1",
+            "SELECT mc_uuid, permissions, password FROM users WHERE mc_uuid = $1",
             [payload.sub]
         );
 
@@ -166,6 +164,7 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({
             uuid: user.mc_uuid,
             permissions: normalizePermissions(user.permissions),
+            password: user.password,
             visitCount: stats?.visitCount ?? null,
             loginStreak: stats?.loginStreak ?? null,
             bestLoginStreak: stats?.bestLoginStreak ?? null

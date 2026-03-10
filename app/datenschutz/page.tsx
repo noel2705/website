@@ -48,7 +48,7 @@ export default function DatenschutzPage() {
           <h2>5. Speicherdauer</h2>
           <p>
             Daten wie UUID, Minecraft-Name, Nutzungsstatistiken, Shard-Daten, markierte Auktionen und Cookies werden gespeichert, solange das Nutzerkonto aktiv ist oder gesetzliche Vorgaben es erfordern.
-            Logfiles werden regelmäßig gelöscht.
+            Logfiles (Per Discord) werden regelmäßig gelöscht.
           </p>
 
           <h2>6. Rechte der Nutzer</h2>

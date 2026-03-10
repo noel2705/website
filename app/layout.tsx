@@ -6,33 +6,30 @@ import ThemeProvider from "@/components/theme/ThemeProvider";
 import NavigationBar from "@/components/NavigationBar";
 
 const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+    variable: "--font-geist-sans",
+    subsets: ["latin"],
 });
 
 const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+    variable: "--font-geist-mono",
+    subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-  title: "OPHUB",
-  description: "Du brauchst Informationen über aktuelle Auktionen oder Marktpreise?" +
-      " Oder du möchtest deine Shards immer im Überblick haben? Dann ist diese Seite Perfekt für dich",
+    title: "OPHUB",
+    description:
+        "Du brauchst Informationen über aktuelle Auktionen oder Marktpreise? Oder du möchtest deine Shards immer im Überblick haben? Dann ist diese Seite perfekt für dich",
     icons: {
         icon: "/opdash/ophub_logo.jpg",
     },
-
 };
 
-
-
 export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
+                                       children,
+                                   }: Readonly<{
+    children: React.ReactNode;
 }>) {
-  const themeInitScript = `(() => {
+    const themeInitScript = `(() => {
     const key = "${THEME_STORAGE_KEY}";
     const fallback = "${DEFAULT_THEME}";
     const allowed = ["opmode", "dark", "light"];
@@ -43,20 +40,33 @@ export default function RootLayout({
     document.body.setAttribute("data-theme", theme);
   })();`;
 
+    return (
+        <html lang="de" suppressHydrationWarning>
+        <head>
+            <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+        </head>
 
-  return (
-    <html lang="de" suppressHydrationWarning>
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
-      </head>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-      <ThemeProvider>
-          <NavigationBar />
-          {children}
-      </ThemeProvider>
-      </body>
-    </html>
-  );
+        <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <ThemeProvider>
+            <NavigationBar />
+
+            <div className="site-shell">
+                <main>{children}</main>
+            </div>
+
+            <footer className="site-footer">
+                <div className="site-footer-inner">
+                    <p>© {new Date().getFullYear()} OPHUB</p>
+                    <div className="footer-links">
+                        <a href="/impressum">Impressum</a>
+                        <a href="/datenschutz">Datenschutz</a>
+                    </div>
+                </div>
+            </footer>
+
+        </ThemeProvider>
+        </body>
+        </html>
+    );
 }
+

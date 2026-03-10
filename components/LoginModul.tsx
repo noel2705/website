@@ -101,6 +101,7 @@ export default function LoginModul() {
         const loginRes =  await loginUser(mcName, password)
         if(loginRes.error){
             setStatus(`Fehler beim Login ${loginRes.error}`)
+            return
         }
 
         setStatus("Erfolgreich Eingeloggt!")

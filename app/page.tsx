@@ -15,7 +15,6 @@ export default function Home() {
                     <Link href="/opsucht/auction" prefetch={false} className="status-link">Zu den Auktionen</Link>
                     <Link href="/opsucht/market" prefetch={false} className="status-link">Zum Market</Link>
                     <Link href="/dashboard" prefetch={false} className="status-link">Zum Dashboard</Link>
-                    <Link href="/datenschutz" prefetch={false} className="status-link">Datenschutz</Link>
                 </div>
             </section>
         </main>

@@ -4,7 +4,7 @@ import "./dashboard.css"
 import Link from "next/link"
 import NotLoggedIn from "@/components/icon/NotLogined"
 import Loading from "@/app/loading"
-import {usePathname} from "next/navigation"
+import {usePathname, useRouter} from "next/navigation"
 import {getSessionUser} from "@/hooks/useUser"
 
 const NAV_ITEMS = [
@@ -20,19 +20,25 @@ export default function DashboardLayout({
     const {user, loading} = getSessionUser()
     const pathname = usePathname()
 
-    const isAdmin = user?.hasPermission("dashboard.view.admin")
+    const router = useRouter()
 
+    const isAdmin = user?.hasPermission("dashboard.view.admin")
     if (loading) return <Loading/>
 
     if (!user) {
         return <NotLoggedIn/>
+
+
     }
 
     return (
         <div className="dashboard-layout">
             <aside className="sidebar">
                 <div className="sidebar-head">
-                    <h2 className="sidebar-title">Dashboard</h2>
+                    <h2  onClick={e => {
+                        e.preventDefault();
+                        router.push("/dashboard")
+                    }} className="sidebar-title">Dashboard</h2>
                     <p className="sidebar-subtitle">Hier ist dein persönliches Dashboard.</p>
                 </div>
 
