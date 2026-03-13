@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import MinecraftNameResolver from "@/lib/utils/minecraftNameResolver";
 
-const resolver = new MinecraftNameResolver();
+const resolver = new MinecraftNameResolver({storageProvider: localStorage});
 
 export default function UserName({ uuid }: { uuid: string }) {
     const [name, setName] = useState<string | null>(null);

@@ -26,9 +26,10 @@ export default function DeleteAccountButton() {
             if (deleteResponse?.error) {
                 console.error("Fehler beim Löschen des Accounts:", deleteResponse?.error)
             } else {
-                console.log("Account erfolgreich gelöscht")
                 window.location.href = "/login"
             }
+
+
         } catch (error) {
             console.error("Fehler beim Logout:", error)
         }

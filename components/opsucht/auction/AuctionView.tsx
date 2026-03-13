@@ -7,6 +7,7 @@ import {getMarkedAuctions} from "@/lib/utils/auction/auction.server";
 import {EventEmitter} from 'events';
 import {Page} from "@/lib/utils/types";
 import BackButton from "@/components/buttons/BackButton";
+import AuctionCard from "@/components/opsucht/auction/AuctionCard";
 
 export default async function AuctionView({userID}: { userID: string }) {
     const emitter = new EventEmitter();
@@ -31,11 +32,10 @@ export default async function AuctionView({userID}: { userID: string }) {
         let money: number = 0;
 
         gebote.forEach(a => {
-            if (a.bids && Object.keys(a.bids).length > 0) {
-                money += Object.values(a.bids).reduce((sum, bid) => sum + bid, 0);
+            if (a.bids && a.bids[userID]) {
+                money += a.bids[userID];
             }
         });
-
 
 
         return money;
@@ -67,12 +67,53 @@ export default async function AuctionView({userID}: { userID: string }) {
             <div className={"user-container"}>
 
 
-                <h3>Aktive Auktionen: {userAuctions.length} </h3>
-                <h3>Abgelaufene Makierte Auktionen: {markedExpiredAuctions.length} </h3>
+                <h3>Aktive Auktionen: {eigeneAuktionen.length} </h3>
                 <h3>Ausgegebenes Geld {formatMoney(moneySpent())}</h3>
 
 
+
             </div>
+
+
+
+
+
+
+
+                <section>
+                    <h2 className="own-auction">Eigene Auktionen</h2>
+
+                    <div className="auction-grid">
+                        {eigeneAuktionen.map(a => (
+                            <AuctionCard
+                                key={a.uid}
+                                mode={"active"}
+                                auction={a}
+                                auctionSellerName={<UserName uuid={a.seller}/>}
+                            />
+                        ))}
+                    </div>
+                </section>
+
+
+
+
+                <section>
+                    <h2 className="own-auction">Gebote</h2>
+
+                    <div className="auction-grid">
+                        {gebote.map(a => (
+                            <AuctionCard
+                                key={a.uid}
+                                mode={"active"}
+                                auction={a}
+                                auctionSellerName={<UserName uuid={a.seller}/>}
+                            />
+                        ))}
+                    </div>
+                </section>
+
+
 
 
         </div>

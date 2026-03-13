@@ -7,6 +7,7 @@ import {createJWT} from "@/lib/utils/jwt";
 import {cookies} from "next/headers";
 import {db} from "@/lib/utils/db";
 import {normalizeUUID} from "@/lib/utils/auction/auction";
+import { normalizeAuctions } from "@/lib/utils/auction/normalize";
 import {defaultPermissions} from "@/lib/permissions";
 import { sendDiscordWebhook } from "@/lib/utils/discordWebhook";
 
@@ -28,9 +29,9 @@ export async function loginUser(mc_name: string, password: string) {
     try {
         let mc_uuid: string | null = null;
         try {
-            mc_uuid = await new MinecraftNameResolver().getUUID(mc_name);
-        } catch {
-            return {error: "Minecraft-API beim Login nicht erreichbar"};
+            mc_uuid = await new MinecraftNameResolver({}).getUUID(mc_name);
+        } catch(e){
+            return {error: "Minecraft-API beim Login nicht erreichbar ||  =>  " + e};
         }
 
         if (!mc_uuid) {
@@ -115,7 +116,7 @@ export async function registerUser(mc_name: string, password: string) {
             return {error: "Passwort zu kurz (mind. 6 Zeichen)"}
         }
 
-        const resolver = new MinecraftNameResolver()
+        const resolver = new MinecraftNameResolver({})
         const mc_uuid = await resolver.getUUID(mc_name)
 
         if (!mc_uuid) {
@@ -199,6 +200,9 @@ export async function verifyMinecraftAccount(mc_name: string, code: string) {
             return {error: "Fehlende Daten"}
         }
 
+        const stripMinecraftFormatting = (value: string) =>
+            value.replace(/\u00a7[0-9A-FK-ORa-fk-or]/g, "");
+
         const resUuid = await fetch(
             `https://api.mojang.com/users/profiles/minecraft/${mc_name}`
         )
@@ -212,19 +216,23 @@ export async function verifyMinecraftAccount(mc_name: string, code: string) {
 
         const resAH = await fetch("https://api.opsucht.net/auctions/active")
 
-        const auctions = await resAH.json()
+        if (!resAH.ok) {
+            return { error: "Auktionshaus API nicht erreichbar" };
+        }
+
+        const auctions = normalizeAuctions(await resAH.json());
 
         const found = auctions.find(
             (a: any) =>
                 normalizeUUID(a.seller) === normalizeUUID(uuid) &&
-                (a.item.displayName?.trim() || "") === code.trim()
+                stripMinecraftFormatting(a.item.displayName?.trim() || "").trim() === stripMinecraftFormatting(code).trim()
         )
 
         return {verified: Boolean(found)}
 
     } catch (e) {
         console.error(e)
-        return {error: "Serverfehler bei der Verifizierung"}
+        return {error: "Serverfehler bei der Verifizierung () => " + e}
     }
 }
 
@@ -256,4 +264,3 @@ export async function setUserPassword(mc_uuid: string, password: string) {
         return {error: "Serverfehler beim Passwort setzen"}
     }
 }
-

@@ -24,12 +24,12 @@ ChartJS.register(
     Legend
 );
 
-const resolver = new MinecraftNameResolver();
 
 interface PriceChartProps {
-    bids: Record<string, number>; // { uuid: amount }
+    bids: Record<string, number>;
 }
 
+const resolver = new MinecraftNameResolver({storageProvider: localStorage});
 export default function PriceChart({ bids }: PriceChartProps) {
     const [names, setNames] = useState<Record<string, string>>({});
 

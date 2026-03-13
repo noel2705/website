@@ -6,6 +6,7 @@ export interface IUser {
     permissions: Permission[];
     password: string;
     visitCount: number;
+    name: string;
     loginStreak: number;
     bestLoginStreak: number;
     hasPermission: (permission: Permission) => boolean;
@@ -15,6 +16,7 @@ export interface IUser {
 export function buildUser(data: {
     uuid: string;
     visitCount: number;
+    name: string;
     loginStreak: number;
     bestLoginStreak: number;
     password: string;
@@ -27,6 +29,7 @@ export function buildUser(data: {
 
     return {
         uuid: data.uuid,
+        name: data.name,
         password: data.password,
         loginStreak: data.loginStreak,
         bestLoginStreak: data.bestLoginStreak,

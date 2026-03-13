@@ -150,7 +150,7 @@ export async function GET(req: NextRequest) {
         const payload = verifyJWT(token) as { sub: string };
 
         const user = await db.oneOrNone(
-            "SELECT mc_uuid, permissions, password FROM users WHERE mc_uuid = $1",
+            "SELECT mc_uuid, permissions, mc_name,  password FROM users WHERE mc_uuid = $1",
             [payload.sub]
         );
 
@@ -163,6 +163,7 @@ export async function GET(req: NextRequest) {
 
         return NextResponse.json({
             uuid: user.mc_uuid,
+            name: user.mc_name,
             permissions: normalizePermissions(user.permissions),
             password: user.password,
             visitCount: stats?.visitCount ?? null,

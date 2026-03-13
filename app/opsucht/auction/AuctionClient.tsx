@@ -5,7 +5,7 @@ import {Page} from '../../../lib/utils/types';
 import '../../../components/css/auction/auction.css';
 import {getAmountBids} from '@/lib/utils/auction/auction';
 import AuctionCard from '@/components/opsucht/auction/AuctionCard';
-import MinecraftNameResolver from '@/lib/utils/minecraftNameResolver';
+import MinecraftNameResolver, {NameStorage} from '@/lib/utils/minecraftNameResolver';
 import {AuctionCategory, normalizeAuctions, normalizeCategoryDefinitions} from '@/lib/utils/auction/normalize';
 import { useSessionUser } from '@/hooks/useUser';
 
@@ -14,45 +14,12 @@ interface Props {
 }
 
 type AuctionMode = 'active' | 'expired';
-type ExpiredCache = {
-    updatedAt: number;
-    newestExpiredAt: string | null;
-    data: Page[];
-    totalCount: number | null;
-};
-
-const EXPIRED_CACHE_PREFIX = 'expired-auctions-cache-v1:';
-const EXPIRED_CACHE_TTL_MS = 120000;
 const ACTIVE_REFRESH_INTERVAL_MS = 10000;
 const EXPIRED_REFRESH_INTERVAL_MS = 120000;
 const EXPIRED_LIMIT_OPTIONS = [10, 50, 100, 250, 500, 'all'] as const;
 type ExpiredLimitOption = (typeof EXPIRED_LIMIT_OPTIONS)[number];
 const DEFAULT_EXPIRED_LIMIT = 100;
 const EXPIRED_AUCTIONS_API_BASE = process.env.NEXT_PUBLIC_AUCTION_BACKEND_URL?.replace(/\/$/, '') ?? '';
-
-const getExpiredCacheKey = (category: string, limit: ExpiredLimitOption, query: string) =>
-    `${EXPIRED_CACHE_PREFIX}${category}:${limit}:${query}`;
-
-const readExpiredCache = (category: string, limit: ExpiredLimitOption, query: string): ExpiredCache | null => {
-    try {
-        const raw = localStorage.getItem(getExpiredCacheKey(category, limit, query));
-        if (!raw) return null;
-        const parsed = JSON.parse(raw) as ExpiredCache;
-        if (!Array.isArray(parsed?.data)) return null;
-        return parsed;
-    } catch {
-        return null;
-    }
-};
-
-const writeExpiredCache = (
-    category: string,
-    limit: ExpiredLimitOption,
-    query: string,
-    cache: ExpiredCache
-) => {
-    localStorage.setItem(getExpiredCacheKey(category, limit, query), JSON.stringify(cache));
-};
 
 const maxIsoDate = (a: string | null, b: string | null): string | null => {
     if (!a) return b;
@@ -65,7 +32,7 @@ const toApiCategory = (category: string) => (category === '*' || isParent(catego
 
 export default function AuctionClient({initialAuction}: Props) {
     const itemsPerLoad = 25;
-    const resolver = new MinecraftNameResolver();
+    const resolver = new MinecraftNameResolver({storageProvider: localStorage});
     const { user } = useSessionUser();
 
     const [renderCount, setRenderCount] = useState(itemsPerLoad);
@@ -156,26 +123,10 @@ export default function AuctionClient({initialAuction}: Props) {
         setLoadingExpired(true);
 
         try {
-            const normalizedQuery = queryValue.trim().toLowerCase();
-            const isSearchMode = normalizedQuery.length > 0;
-            const cache = isSearchMode ? null : readExpiredCache(selectedCategory, expiredLimit, normalizedQuery);
-
-            if (cache?.data?.length) {
-                setAuction(cache.data);
-                await hydrateSellerNames(cache.data);
-                setExpiredTotalCount(cache.totalCount ?? cache.data.length);
-            }
-
-            const useIncrementalSync = !forceRefresh && Boolean(cache);
-
             const query = new URLSearchParams();
             const apiCategory = toApiCategory(selectedCategory);
             if (apiCategory !== '*') query.set('category', apiCategory);
             query.set('limit', expiredLimit === 'all' ? 'all' : String(expiredLimit));
-            if (normalizedQuery) query.set('q', normalizedQuery);
-            if (!isSearchMode && useIncrementalSync && cache?.newestExpiredAt) {
-                query.set('sinceExpiredAt', cache.newestExpiredAt);
-            }
 
             const endpoint = EXPIRED_AUCTIONS_API_BASE
                 ? `${EXPIRED_AUCTIONS_API_BASE}/api/expired-auctions?${query.toString()}`
@@ -189,41 +140,12 @@ export default function AuctionClient({initialAuction}: Props) {
 
             const json = await res.json();
             const responseItems = normalizeAuctions(Array.isArray(json) ? json : json?.items);
-            const responseNewestExpiredAt: string | null =
-                typeof json?.newestExpiredAt === 'string' ? json.newestExpiredAt : null;
             const responseTotalCount: number | null =
                 typeof json?.totalCount === 'number' ? json.totalCount : null;
 
-            const expiredOnly = responseItems.filter((a) => new Date(a.endTime).getTime() <= Date.now());
-
-            const mergedMap = new Map<string, Page>();
-            if (!isSearchMode && cache?.data?.length) {
-                for (const item of cache.data) {
-                    if (item?.uid) mergedMap.set(item.uid, item);
-                }
-            }
-            for (const item of expiredOnly) {
-                if (item?.uid) mergedMap.set(item.uid, item);
-            }
-
-            const merged = [...mergedMap.values()].sort(
-                (a, b) => new Date(b.endTime).getTime() - new Date(a.endTime).getTime()
-            );
-            const capped = expiredLimit === 'all' ? merged : merged.slice(0, expiredLimit);
-            const newestExpiredAt = maxIsoDate(cache?.newestExpiredAt ?? null, responseNewestExpiredAt);
-
-            if (!isSearchMode) {
-                writeExpiredCache(selectedCategory, expiredLimit, normalizedQuery, {
-                    updatedAt: Date.now(),
-                    newestExpiredAt,
-                    data: capped,
-                    totalCount: responseTotalCount,
-                });
-            }
-
-            setAuction(capped);
+            setAuction(responseItems);
             setExpiredTotalCount(responseTotalCount);
-            await hydrateSellerNames(capped);
+            await hydrateSellerNames(responseItems);
         } catch (err) {
             console.error('Fehler beim Laden abgelaufener Auktionen:', err);
         } finally {

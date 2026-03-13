@@ -5,13 +5,12 @@ import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import "./css/NavigationBar.css";
 import UserIcon from "./icon/UserIcon";
+import {usePathname} from "next/navigation";
 
 export default function NavigationBar() {
-    const [pathname, setPathname] = useState("");
+    const pathname = usePathname()
 
-    useEffect(() => {
-        setPathname(window.location.pathname);
-    }, []);
+
 
     return (
         <nav className="navbar">

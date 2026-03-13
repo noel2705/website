@@ -21,7 +21,10 @@ function trimFieldValue(value: string): string {
 
 export async function sendDiscordWebhook(payload: DiscordWebhookPayload): Promise<void> {
     const webhookUrl = process.env.DISCORD_WEBHOOK_URL?.trim();
-    if (!webhookUrl) return;
+    if (!webhookUrl) {
+        console.error("Fehler beim Senden des Discord Logs")
+        return;
+    };
 
     try {
         const response = await fetch(webhookUrl, {
