@@ -1,6 +1,5 @@
 import React from 'react';
-import {getActiveAuction, isHighestBidder} from "@/lib/utils/auction/auction";
-import AuctionCard from "@/components/opsucht/auction/AuctionCard";
+import {formatMoney, getActiveAuction} from "@/lib/utils/auction/auction";
 import UserName from "@/components/opsucht/auction/UserName";
 import "../../css/auction/userAuctions.css";
 import StarBorder from "@/components/icon/animated/StartBorder";
@@ -28,12 +27,25 @@ export default async function AuctionView({userID}: { userID: string }) {
         return end <= now;
     });
 
+    const moneySpent = () => {
+        let money: number = 0;
+
+        gebote.forEach(a => {
+            if (a.bids && Object.keys(a.bids).length > 0) {
+                money += Object.values(a.bids).reduce((sum, bid) => sum + bid, 0);
+            }
+        });
+
+
+
+        return money;
+    };
     return (
         <div className="user-auctions-container">
 
 
-            <div className="header-container" style={{ position: "relative" }}>
-                <BackButton />
+            <div className="header-container" style={{position: "relative"}}>
+                <BackButton/>
                 <StarBorder
                     as="h1"
                     className="star-title-center"
@@ -52,87 +64,15 @@ export default async function AuctionView({userID}: { userID: string }) {
             )}
 
 
-            {eigeneAuktionen.length > 0 && (
-                <section>
-                    <h2 className="own-auction">Eigene Auktionen</h2>
-
-                    <div className="auction-grid">
-                        {eigeneAuktionen.map(a => (
-                            <AuctionCard
-                                key={a.uid}
-                                mode={"active"}
-                                auction={a}
-                                auctionSellerName={<UserName uuid={a.seller}/>}
-                            />
-                        ))}
-                    </div>
-                </section>
-            )}
+            <div className={"user-container"}>
 
 
-            {gebote.length > 0 && (
-                <section>
-                    <h2 className="bid-auction">Gebote</h2>
-
-                    <div className="auction-grid">
-                        {gebote.map(async a => {
-                            const highest = await isHighestBidder(a, userID);
-
-                            return (
-                                <div key={a.uid} className="auction-wrapper">
-                                    <AuctionCard
-                                        auction={a}
-                                        mode={"active"}
-                                        auctionSellerName={<UserName uuid={a.seller}/>}
-                                    />
-
-                                    <div className="bid-status">
-                                        <span className={highest ? "highest" : "outbid"}>
-                                            {highest ? "Höchstbietender" : "Überboten"}
-                                        </span>
-                                    </div>
-                                </div>
-                            );
-                        })}
-                    </div>
-                </section>
-            )}
+                <h3>Aktive Auktionen: {userAuctions.length} </h3>
+                <h3>Abgelaufene Makierte Auktionen: {markedExpiredAuctions.length} </h3>
+                <h3>Ausgegebenes Geld {formatMoney(moneySpent())}</h3>
 
 
-            {activeMarkedAuctions.length > 0 && (
-                <section>
-                    <h2 className="own-auction">Aktive Makierte Auktionen</h2>
-
-                    <div className="auction-grid">
-                        {activeMarkedAuctions.map(a => (
-                            <AuctionCard
-                                key={a.uid}
-                                mode={"active"}
-                                auction={a}
-                                auctionSellerName={<UserName uuid={a.seller}/>}
-                            />
-                        ))}
-                    </div>
-                </section>
-            )}
-
-            {markedExpiredAuctions.length > 0 && (
-                <section>
-                    <h2 className="own-auction">Abgelaufene Makierte Auktionen</h2>
-
-                    <div className="auction-grid">
-                        {markedExpiredAuctions.map(a => (
-                            <AuctionCard
-                                key={a.uid}
-                                mode={"expired"}
-                                auction={a}
-                                auctionSellerName={<UserName uuid={a.seller}/>}
-                            />
-                        ))}
-                    </div>
-                </section>
-            )}
-
+            </div>
 
 
         </div>

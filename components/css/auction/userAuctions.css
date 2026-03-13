@@ -17,6 +17,12 @@
     margin-bottom: 1.5rem;
 }
 
+
+.user-container{
+    background-color: #5e5e5e;
+    width: 100%;
+}
+
 .own-auction,
 .bid-auction {
     font-size: 1.18rem;
