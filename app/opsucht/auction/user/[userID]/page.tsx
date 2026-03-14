@@ -8,7 +8,7 @@ export default async function AuctionPage({
     const { userID } = await params;
     return (
         <div className="app-shell">
-            <AuctionView userID={userID} />
+            <AuctionView userID={userID} isDashBoardView={false} />
         </div>
     );
 }

@@ -9,7 +9,12 @@ import {Page} from "@/lib/utils/types";
 import BackButton from "@/components/buttons/BackButton";
 import AuctionCard from "@/components/opsucht/auction/AuctionCard";
 
-export default async function AuctionView({userID}: { userID: string }) {
+export default async function AuctionView({
+                                              userID, isDashBoardView
+}: {
+    userID: string,
+    isDashBoardView: boolean
+}) {
     const emitter = new EventEmitter();
     EventEmitter.setMaxListeners(EventEmitter.getMaxListeners(emitter) + 2);
     const activeAuctions = await getActiveAuction(userID);
@@ -19,6 +24,7 @@ export default async function AuctionView({userID}: { userID: string }) {
 
 
     const markedAuctions: Page[] = await getMarkedAuctions(userID);
+
     const activeMarkedAuctions = markedAuctions.filter(a => {
         const end = Date.parse(a.endTime);
         const now = Date.now();
@@ -68,6 +74,8 @@ export default async function AuctionView({userID}: { userID: string }) {
 
         return money;
     }
+
+
 
 
     return (

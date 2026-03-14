@@ -12,5 +12,5 @@ export default async function DashboardAuctions() {
     const payload = verifyJWT(token);
     const uuid = payload.sub as string;
 
-    return <AuctionView userID={formatUUID(uuid)} />;
+    return <AuctionView userID={formatUUID(uuid)} isDashBoardView={true}/>;
 }
