@@ -160,6 +160,8 @@ app.get("/api/expired-auctions", async (req: any, res: any) => {
 
     const uid = getQueryString(req, "uid");
     const category = getQueryString(req, "category");
+    const sellerRaw = getQueryString(req, "seller");
+    const seller = sellerRaw?.trim() ? sellerRaw.trim() : null;
     const q = getQueryString(req, "q")?.trim().toLowerCase() ?? "";
     const searchQuery = q.length > 0 ? q : null;
     const limitRaw = getQueryString(req, "limit");
@@ -202,9 +204,10 @@ app.get("/api/expired-auctions", async (req: any, res: any) => {
                     OR LOWER(display_name) LIKE '%' || $3 || '%'
                     OR LOWER(material) LIKE '%' || $3 || '%'
                   )
+                  AND ($4::text IS NULL OR seller = $4)
                 ORDER BY expired_at DESC
               `,
-              [category, sinceExpiredAt, searchQuery],
+              [category, sinceExpiredAt, searchQuery, seller],
             )
           : await db.any<{ payload: unknown; cursor_time: string | Date }>(
               `
@@ -217,10 +220,11 @@ app.get("/api/expired-auctions", async (req: any, res: any) => {
                     OR LOWER(display_name) LIKE '%' || $3 || '%'
                     OR LOWER(material) LIKE '%' || $3 || '%'
                   )
+                  AND ($4::text IS NULL OR seller = $4)
                 ORDER BY expired_at DESC
-                LIMIT $4
+                LIMIT $5
               `,
-              [category, sinceExpiredAt, searchQuery, limit],
+              [category, sinceExpiredAt, searchQuery, seller, limit],
             )
         : limit === null
           ? await db.any<{ payload: unknown; cursor_time: string | Date }>(
@@ -233,9 +237,10 @@ app.get("/api/expired-auctions", async (req: any, res: any) => {
                     OR LOWER(display_name) LIKE '%' || $2 || '%'
                     OR LOWER(material) LIKE '%' || $2 || '%'
                   )
+                  AND ($3::text IS NULL OR seller = $3)
                 ORDER BY expired_at DESC
               `,
-              [sinceExpiredAt, searchQuery],
+              [sinceExpiredAt, searchQuery, seller],
             )
           : await db.any<{ payload: unknown; cursor_time: string | Date }>(
               `
@@ -247,10 +252,11 @@ app.get("/api/expired-auctions", async (req: any, res: any) => {
                     OR LOWER(display_name) LIKE '%' || $2 || '%'
                     OR LOWER(material) LIKE '%' || $2 || '%'
                   )
+                  AND ($3::text IS NULL OR seller = $3)
                 ORDER BY expired_at DESC
-                LIMIT $3
+                LIMIT $4
               `,
-              [sinceExpiredAt, searchQuery, limit],
+              [sinceExpiredAt, searchQuery, seller, limit],
             );
 
     const totalCountRow =
@@ -265,8 +271,9 @@ app.get("/api/expired-auctions", async (req: any, res: any) => {
                   OR LOWER(display_name) LIKE '%' || $2 || '%'
                   OR LOWER(material) LIKE '%' || $2 || '%'
                 )
+                AND ($3::text IS NULL OR seller = $3)
             `,
-            [category, searchQuery],
+            [category, searchQuery, seller],
           )
         : await db.one<{ count: string }>(
             `
@@ -277,8 +284,9 @@ app.get("/api/expired-auctions", async (req: any, res: any) => {
                 OR LOWER(display_name) LIKE '%' || $1 || '%'
                 OR LOWER(material) LIKE '%' || $1 || '%'
               )
+              AND ($2::text IS NULL OR seller = $2)
             `,
-            [searchQuery],
+            [searchQuery, seller],
           );
 
     const totalCount = Number(totalCountRow.count);
