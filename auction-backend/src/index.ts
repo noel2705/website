@@ -82,7 +82,7 @@ app.get("/api/save-auction", async (_req: any, res: any) => {
 
     const auctions = normalizeAuctions(await response.json());
     const now = Date.now();
-    const saveThresholdMs = 60_000;
+    const saveThresholdMs = 120_000;
 
     const toSave = auctions.filter((entry) => {
       if (!entry.uid || !entry.endTime) return false;
