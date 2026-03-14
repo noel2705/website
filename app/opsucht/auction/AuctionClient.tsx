@@ -133,6 +133,10 @@ export default function AuctionClient({initialAuction}: Props) {
             const apiCategory = toApiCategory(selectedCategory);
             if (apiCategory !== '*') query.set('category', apiCategory);
             query.set('limit', expiredLimit === 'all' ? 'all' : String(expiredLimit));
+            const trimmedQuery = queryValue.trim();
+            if (trimmedQuery.length > 0) {
+                query.set('q', trimmedQuery);
+            }
 
             const endpoint = EXPIRED_AUCTIONS_API_BASE
                 ? `${EXPIRED_AUCTIONS_API_BASE}/api/expired-auctions?${query.toString()}`
