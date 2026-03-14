@@ -70,7 +70,7 @@ export default class MinecraftNameResolver {
             if(isBedrock(uuid)) {
                 return this.fetchBedrockName(uuid);
             }
-            return "'Fehler beim Laden'";
+            return "Fehler beim Laden";
         }
     }
 

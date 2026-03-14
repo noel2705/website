@@ -32,7 +32,13 @@ const toApiCategory = (category: string) => (category === '*' || isParent(catego
 
 export default function AuctionClient({initialAuction}: Props) {
     const itemsPerLoad = 25;
-    const resolver = new MinecraftNameResolver({storageProvider: localStorage});
+    const resolver = useMemo(
+        () =>
+            new MinecraftNameResolver({
+                storageProvider: typeof window !== 'undefined' ? localStorage : undefined,
+            }),
+        []
+    );
     const { user } = useSessionUser();
 
     const [renderCount, setRenderCount] = useState(itemsPerLoad);
@@ -498,7 +504,7 @@ export default function AuctionClient({initialAuction}: Props) {
                         <AuctionCard
                             key={a.uid}
                             auction={a}
-                            auctionSellerName={sellerNames[a.seller]}
+                            auctionSellerName={sellerNames[a.seller] ?? 'Wird geladen...'}
                             mode={mode}
                         />
                     ))}

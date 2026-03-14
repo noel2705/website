@@ -1,5 +1,8 @@
 import {Item, Page} from "@/lib/utils/types";
-import { normalizeAuctions } from "@/lib/utils/auction/normalize";
+import {normalizeAuctions} from "@/lib/utils/auction/normalize";
+
+const backendURL = process.env.NEXT_PUBLIC_AUCTION_BACKEND_URL || ""
+
 export function formatMoney(money: number) {
     if (money < 1000) return money.toLocaleString('en-us', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + "$";
     if (money < 1000000) return (money / 1000).toLocaleString('en-us', {
@@ -21,7 +24,7 @@ export function formatMoney(money: number) {
 }
 
 export function formatShards(money: number) {
-    if (money < 1000) return money.toLocaleString('en-us', {minimumFractionDigits: 2, maximumFractionDigits: 2}) ;
+    if (money < 1000) return money.toLocaleString('en-us', {minimumFractionDigits: 2, maximumFractionDigits: 2});
     if (money < 1000000) return (money / 1000).toLocaleString('en-us', {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
@@ -93,6 +96,14 @@ export async function getActiveAuction(userUID: string) {
     return data.filter(value => userUID === value.seller || Object.keys(value.bids || {}).some(bid => bid === userUID));
 }
 
+
+export async function getExpiredAuctions(userID: string) {
+    const url = `${backendURL}/api/expired-auctions?seller=${encodeURIComponent(userID)}`;
+    const res = await fetch(url);
+    const json = await res.json();
+
+    return normalizeAuctions(Array.isArray(json) ? json : json.items);
+}
 
 export const getItemImage = (auction: Page) => {
     return getItemIcon(auction.item);
