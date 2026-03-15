@@ -34,4 +34,9 @@ export async function ensureExpiredAuctionsV2Table(db: DbExecutor) {
     CREATE INDEX IF NOT EXISTS idx_expired_auctions_v2_expired_at
     ON expired_auctions_v2 (expired_at DESC)
   `);
+
+  await db.none(`
+    CREATE INDEX IF NOT EXISTS idx_expired_auctions_v2_bids
+    ON expired_auctions_v2 USING GIN (bids)
+  `);
 }
