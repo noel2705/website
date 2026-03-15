@@ -33,6 +33,25 @@
     min-height: 2.3em;
 }
 
+.auction-title-block {
+    display: grid;
+    gap: 0.2rem;
+}
+
+.auction-subtitle {
+    margin: 0;
+    font-size: 0.82rem;
+    color: var(--muted);
+    letter-spacing: 0.02em;
+}
+
+.auction-amount,
+.auction-category {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--muted);
+}
+
 .item-image-container {
     position: relative;
     width: 100%;

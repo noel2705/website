@@ -8,6 +8,7 @@ import AuctionCard from '@/components/opsucht/auction/AuctionCard';
 import MinecraftNameResolver, {NameStorage} from '@/lib/utils/minecraftNameResolver';
 import {AuctionCategory, normalizeAuctions, normalizeCategoryDefinitions} from '@/lib/utils/auction/normalize';
 import { useSessionUser } from '@/hooks/useUser';
+import { DEFAULT_AUCTION_CARD_SETTINGS } from '@/lib/utils/userSettings';
 
 interface Props {
     initialAuction: Page[];
@@ -40,6 +41,7 @@ export default function AuctionClient({initialAuction}: Props) {
         []
     );
     const { user } = useSessionUser();
+    const auctionCardSettings = user?.settings?.auctionCard ?? DEFAULT_AUCTION_CARD_SETTINGS;
 
     const [renderCount, setRenderCount] = useState(itemsPerLoad);
     const [auction, setAuction] = useState<Page[]>(normalizeAuctions(initialAuction));
@@ -510,6 +512,7 @@ export default function AuctionClient({initialAuction}: Props) {
                             auction={a}
                             auctionSellerName={sellerNames[a.seller] ?? 'Wird geladen...'}
                             mode={mode}
+                            settings={auctionCardSettings}
                         />
                     ))}
             </div>

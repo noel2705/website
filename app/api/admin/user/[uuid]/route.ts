@@ -45,7 +45,7 @@ function buildPermissionDiff(oldPermissions: string[], newPermissions: string[])
         ...added.map((permission) => `+ ${permission}`),
     ];
 
-    if (!lines.length) return "Keine Änderung";
+    if (!lines.length) return "Keine Änderungen";
     return `\`\`\`diff\n${lines.join("\n")}\n\`\`\``;
 }
 

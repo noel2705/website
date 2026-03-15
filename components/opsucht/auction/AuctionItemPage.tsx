@@ -3,7 +3,7 @@
 import { Page } from "@/lib/utils/types";
 import BackButton from "@/components/buttons/BackButton";
 import "../../css/auction/auctionItem.css";
-import { formatMoney, getItemIcon } from "@/lib/utils/auction/auction";
+import {formatMoney, getItemImage} from "@/lib/utils/auction/auction";
 import EndTimeCard from "@/components/opsucht/auction/EndTimeCard";
 import PriceChart from "@/components/opsucht/auction/PriceChart";
 import ReloadButton from "@/components/buttons/ReloadButton";
@@ -47,9 +47,9 @@ export default function AuctionItemPage({
                         <ReloadButton />
 
                         <div className="info-name">
-                            <img src={getItemIcon(a.item)} alt="" className="item-icon" />
+                            <img src={getItemImage(a)} alt="" className="item-icon" />
                             <h2>{a.item.displayName ?? a.item.material}</h2>
-                            <img src={getItemIcon(a.item)} alt="" className="item-icon" />
+                            <img src={getItemImage(a)} alt="" className="item-icon" />
                         </div>
 
                         <div className="info-bar">

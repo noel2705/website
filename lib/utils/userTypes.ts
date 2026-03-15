@@ -1,5 +1,6 @@
 import { Permission } from "../permissions";
 import { permissionsList } from "../permissions";
+import { UserSettings, DEFAULT_USER_SETTINGS, mergeUserSettings } from "@/lib/utils/userSettings";
 
 export interface IUser {
     uuid: string;
@@ -9,6 +10,7 @@ export interface IUser {
     name: string;
     loginStreak: number;
     bestLoginStreak: number;
+    settings: UserSettings;
     hasPermission: (permission: Permission) => boolean;
 }
 
@@ -21,6 +23,7 @@ export function buildUser(data: {
     bestLoginStreak: number;
     password: string;
     permissions: string[];
+    settings?: Partial<UserSettings> | null;
 }): IUser {
     const validPermissions = new Set<string>(permissionsList);
     const normalizedPermissions = data.permissions.filter(
@@ -34,6 +37,7 @@ export function buildUser(data: {
         loginStreak: data.loginStreak,
         bestLoginStreak: data.bestLoginStreak,
         visitCount: data.visitCount,
+        settings: mergeUserSettings(data.settings ?? DEFAULT_USER_SETTINGS),
         permissions: normalizedPermissions,
         hasPermission(permission) {
             const hasPermission = this.permissions.includes(permission);

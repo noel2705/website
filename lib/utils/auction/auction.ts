@@ -105,6 +105,14 @@ export async function getExpiredAuctions(userID: string) {
     return normalizeAuctions(Array.isArray(json) ? json : json.items);
 }
 
+export async function getExpiredBidAuctions(userID: string) {
+    const url = `${backendURL}/api/expired-auctions?bidder=${encodeURIComponent(userID)}`;
+    const res = await fetch(url);
+    const json = await res.json();
+
+    return normalizeAuctions(Array.isArray(json) ? json : json.items);
+}
+
 export const getItemImage = (auction: Page) => {
     return getItemIcon(auction.item);
 }

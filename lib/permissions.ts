@@ -6,13 +6,14 @@ export const permissionsList = [
     "view.opdash.mod",
     "beta.access",
     "auctions.expired.limit.all",
-    "view.shard.calculator"
+    "view.shard.calculator",
+    "settings.auctions.edit"
 ] as const
 
 export type Permission = (typeof permissionsList)[number]
 
 export const ROLE_PRESETS: Record<string, Permission[]> = {
-    Admin: ["view.admin.panel", "dashboard.view.admin", "admin.role", "view.shards.panel", "beta.access"],
+    Admin: ["view.admin.panel", "dashboard.view.admin", "admin.role", "view.shards.panel", "beta.access", "settings.auctions.edit"],
     Moderator: ["view.admin.panel", "view.shards.panel"],
     User: ["view.shards.panel"],
     BetaTester: ["beta.access"]
@@ -21,5 +22,6 @@ export const ROLE_PRESETS: Record<string, Permission[]> = {
 export const defaultPermissions = `{${[
     "view.shards.panel",
     "view.shard.calculator",
-    "view.opdash.mod"
+    "view.opdash.mod",
+    "settings.auctions.edit"
 ].join(",")}}`

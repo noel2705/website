@@ -1,5 +1,5 @@
 import React from 'react';
-import {formatMoney, getActiveAuction, getExpiredAuctions} from "@/lib/utils/auction/auction";
+import {formatMoney, getActiveAuction, getExpiredAuctions, getExpiredBidAuctions} from "@/lib/utils/auction/auction";
 import UserName from "@/components/opsucht/auction/UserName";
 import "../../css/auction/userAuctions.css";
 import StarBorder from "@/components/icon/animated/StartBorder";
@@ -8,10 +8,11 @@ import {EventEmitter} from 'events';
 import {Page} from "@/lib/utils/types";
 import BackButton from "@/components/buttons/BackButton";
 import AuctionCard from "@/components/opsucht/auction/AuctionCard";
+import {getUserSettings} from "@/lib/utils/userSettings.server";
 
 export default async function AuctionView({
                                               userID, isDashBoardView
-}: {
+                                          }: {
     userID: string,
     isDashBoardView: boolean
 }) {
@@ -20,8 +21,15 @@ export default async function AuctionView({
     const activeAuctions = await getActiveAuction(userID);
     const eigeneAuktionen = activeAuctions.filter(a => a.seller === userID);
     const expiredAuctions = await getExpiredAuctions(userID);
+    let expiredBuyedAuctions = await getExpiredBidAuctions(userID);
     const gebote = activeAuctions.filter(a => a.bids && userID in a.bids);
+    const settings = await getUserSettings(userID);
+    const auctionCardSettings = settings.auctionCard;
 
+    expiredBuyedAuctions = expiredBuyedAuctions.filter(a => {
+        const highestBid = Math.max(...Object.values(a.bids));
+        return a.bids[userID] === highestBid;
+    });
 
     const markedAuctions: Page[] = await getMarkedAuctions(userID);
 
@@ -41,6 +49,28 @@ export default async function AuctionView({
         let money: number = 0;
 
         gebote.forEach(a => {
+            if (a.bids && a.bids[userID]) {
+                const allBidValues = Object.values(a.bids);
+                const highestBid = Math.max(...allBidValues);
+
+                if (a.bids[userID] === highestBid) {
+                    money += a.bids[userID];
+                }
+            }
+        });
+
+        expiredAuctions.forEach(a => {
+            if (a.bids && a.bids[userID]) {
+                const allBidValues = Object.values(a.bids);
+                const highestBid = Math.max(...allBidValues);
+
+                if (a.bids[userID] === highestBid) {
+                    money += a.bids[userID];
+                }
+            }
+        });
+
+        expiredBuyedAuctions.forEach(a => {
             if (a.bids && a.bids[userID]) {
                 const allBidValues = Object.values(a.bids);
                 const highestBid = Math.max(...allBidValues);
@@ -76,8 +106,6 @@ export default async function AuctionView({
     }
 
 
-
-
     return (
         <div className="user-auctions-container">
 
@@ -94,24 +122,45 @@ export default async function AuctionView({
                 </StarBorder>
             </div>
 
+            <div className="auction-profile-hero">
+                <div className="auction-profile-summary">
+                    <h2>Übersicht</h2>
+                    <p>Alle aktiven, abgelaufenen und markierten Auktionen im Blick.</p>
+                </div>
+                <div className="auction-stats-grid">
+                    <div className="auction-stat-card">
+                        <span className="stat-label">Eigene Auktionen</span>
+                        <span className="stat-value">{eigeneAuktionen.length}</span>
+                    </div>
+                    <div className="auction-stat-card">
+                        <span className="stat-label">Gebote</span>
+                        <span className="stat-value">{gebote.length}</span>
+                    </div>
+                    <div className="auction-stat-card">
+                        <span className="stat-label">Abgelaufen</span>
+                        <span className="stat-value">{expiredAuctions.length}</span>
+                    </div>
+                    <div className="auction-stat-card">
+                        <span className="stat-label">Merkliste</span>
+                        <span className="stat-value">{markedAuctions.length}</span>
+                    </div>
+                    <div className="auction-stat-card">
+                        <span className="stat-label">Ausgegeben</span>
+                        <span className="stat-value">{formatMoney(moneySpent())}</span>
+                    </div>
+                    <div className="auction-stat-card">
+                        <span className="stat-label">Verdient</span>
+                        <span className="stat-value">{formatMoney(earnedMoney())}</span>
+                    </div>
+                </div>
+            </div>
 
-            {eigeneAuktionen.length === 0 && gebote.length === 0 && markedAuctions.length == 0 && (
+
+            {eigeneAuktionen.length === 0 && expiredBuyedAuctions.length === 0 && expiredAuctions.length === 0&& gebote.length === 0 && markedAuctions.length == 0 && (
                 <p className="no-auctions">
                     Keine aktiven Auktionen oder Gebote gefunden.
                 </p>
             )}
-
-
-            <div className={"user-container"}>
-
-
-                <h3>Aktive Auktionen: {eigeneAuktionen.length} </h3>
-                <h3>Abgelaufene Auktionen: {expiredAuctions.length} </h3>
-                <h3>Ausgegebenes Geld {formatMoney(moneySpent())}</h3>
-                <h3>Verdientes Geld {formatMoney(earnedMoney())}</h3>
-
-
-            </div>
 
 
             {eigeneAuktionen.length > 0 && <section>
@@ -124,6 +173,7 @@ export default async function AuctionView({
                             mode={"active"}
                             auction={a}
                             auctionSellerName={<UserName uuid={a.seller}/>}
+                            settings={auctionCardSettings}
                         />
                     ))}
                 </div>
@@ -140,6 +190,23 @@ export default async function AuctionView({
                             mode={"active"}
                             auction={a}
                             auctionSellerName={<UserName uuid={a.seller}/>}
+                            settings={auctionCardSettings}
+                        />
+                    ))}
+                </div>
+            </section>}
+
+            {expiredBuyedAuctions.length > 0 && <section>
+                <h2 className="own-auction">Gekaufte Auktionen</h2>
+
+                <div className="auction-grid">
+                    {expiredBuyedAuctions.map(a => (
+                        <AuctionCard
+                            key={a.uid}
+                            mode={"expired"}
+                            auction={a}
+                            auctionSellerName={<UserName uuid={a.seller}/>}
+                            settings={auctionCardSettings}
                         />
                     ))}
                 </div>
@@ -156,6 +223,44 @@ export default async function AuctionView({
                             mode={"expired"}
                             auction={a}
                             auctionSellerName={<UserName uuid={a.seller}/>}
+                            settings={auctionCardSettings}
+                        />
+                    ))}
+                </div>
+            </section>
+
+            }
+
+
+            {markedExpiredAuctions.length > 0 && isDashBoardView && <section>
+                <h2 className="own-auction">Abgelaufene Makierte Auktionen</h2>
+
+                <div className="auction-grid">
+                    {markedExpiredAuctions.map(a => (
+                        <AuctionCard
+                            key={a.uid}
+                            mode={"expired"}
+                            auction={a}
+                            auctionSellerName={<UserName uuid={a.seller}/>}
+                            settings={auctionCardSettings}
+                        />
+                    ))}
+                </div>
+            </section>
+
+            }
+
+            {activeMarkedAuctions.length > 0 && isDashBoardView && <section>
+                <h2 className="own-auction">Makierte Auktionen</h2>
+
+                <div className="auction-grid">
+                    {activeMarkedAuctions.map(a => (
+                        <AuctionCard
+                            key={a.uid}
+                            mode={"expired"}
+                            auction={a}
+                            auctionSellerName={<UserName uuid={a.seller}/>}
+                            settings={auctionCardSettings}
                         />
                     ))}
                 </div>

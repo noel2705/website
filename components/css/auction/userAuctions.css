@@ -17,10 +17,55 @@
     margin-bottom: 1.5rem;
 }
 
+.auction-profile-hero {
+    margin-top: 1rem;
+    padding: 1rem 1.2rem;
+    border-radius: 16px;
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    background: linear-gradient(145deg, rgba(10, 22, 34, 0.8), rgba(15, 23, 42, 0.95));
+    box-shadow: 0 12px 24px rgba(3, 12, 26, 0.35);
+    display: grid;
+    gap: 1rem;
+}
 
-.user-container{
-    background-color: #5e5e5e;
-    width: 100%;
+.auction-profile-summary h2 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: #e2e8f0;
+}
+
+.auction-profile-summary p {
+    margin: 0.4rem 0 0;
+    color: #cbd5f5;
+    font-size: 0.95rem;
+}
+
+.auction-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 0.75rem;
+}
+
+.auction-stat-card {
+    padding: 0.75rem 0.85rem;
+    border-radius: 12px;
+    background: rgba(15, 23, 42, 0.85);
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    display: grid;
+    gap: 0.2rem;
+}
+
+.stat-label {
+    font-size: 0.78rem;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.stat-value {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #f8fafc;
 }
 
 .own-auction,
@@ -89,5 +134,9 @@
     .own-auction,
     .bid-auction {
         font-size: 1.03rem;
+    }
+
+    .auction-profile-hero {
+        padding: 0.85rem;
     }
 }

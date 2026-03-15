@@ -8,6 +8,7 @@ type MeData = {
     password: string
     loginStreak: number
     bestLoginStreak: number
+    settings?: unknown
 }
 
 function normalizePermissions(input: unknown): string[] {
@@ -75,7 +76,8 @@ export async function getMeCached(): Promise<MeData | null> {
                 password: data.password,
                 visitCount: data.visitCount,
                 loginStreak: data.loginStreak,
-                permissions: normalizePermissions(data?.permissions)
+                permissions: normalizePermissions(data?.permissions),
+                settings: data?.settings
             }
             return meCache
         } catch {

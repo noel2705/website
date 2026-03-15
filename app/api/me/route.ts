@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyJWT } from "@/lib/utils/jwt";
 import { db } from "@/lib/utils/db";
+import { getUserSettings } from "@/lib/utils/userSettings.server";
 
 function normalizePermissions(input: unknown): string[] {
     if (Array.isArray(input)) {
@@ -160,6 +161,7 @@ export async function GET(req: NextRequest) {
 
         await ensureUserDataSchema();
         const stats = await updateDailyUserStats(user.mc_uuid);
+        const settings = await getUserSettings(user.mc_uuid);
 
         return NextResponse.json({
             uuid: user.mc_uuid,
@@ -168,7 +170,8 @@ export async function GET(req: NextRequest) {
             password: user.password,
             visitCount: stats?.visitCount ?? null,
             loginStreak: stats?.loginStreak ?? null,
-            bestLoginStreak: stats?.bestLoginStreak ?? null
+            bestLoginStreak: stats?.bestLoginStreak ?? null,
+            settings
         });
     } catch {
         return NextResponse.json({ error: "Ungültiger Token" }, { status: 401 });
