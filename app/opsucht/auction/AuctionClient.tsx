@@ -62,6 +62,7 @@ const AuctionClient: React.FC<AuctionClientProps> = ({initialAuction, onSelectAu
 
     const prevExpiredLimitRef = useRef(expiredLimit);
     const prevExpiredSearchRef = useRef('');
+    const userSetModeRef = useRef(false);
 
     const parentCategories = useMemo(
         () => categories.filter((entry) => !entry.parentCategory),
@@ -238,7 +239,7 @@ const AuctionClient: React.FC<AuctionClientProps> = ({initialAuction, onSelectAu
         setDebouncedSearchBar(storedSearchBar);
         prevExpiredSearchRef.current = storedSearchBar.trim().toLowerCase();
         if (storedOrderBy !== orderBy) setOrderby(storedOrderBy);
-        if (storedMode !== mode) setMode(storedMode);
+        if (!userSetModeRef.current && storedMode !== mode) setMode(storedMode);
         if (normalizedExpiredLimit !== expiredLimit) setExpiredLimit(normalizedExpiredLimit);
         setInitialized(true);
     }, []);
@@ -379,13 +380,19 @@ const AuctionClient: React.FC<AuctionClientProps> = ({initialAuction, onSelectAu
             <div className="auction-toolbar">
                 <div className="categorySwitcher">
                     <button
-                        onClick={() => setMode('active')}
+                        onClick={() => {
+                            userSetModeRef.current = true;
+                            setMode('active');
+                        }}
                         className={mode === 'active' ? 'active' : ''}
                     >
                         Aktiv
                     </button>
                     <button
-                        onClick={() => setMode('expired')}
+                        onClick={() => {
+                            userSetModeRef.current = true;
+                            setMode('expired');
+                        }}
                         className={mode === 'expired' ? 'active' : ''}
                     >
                         Abgelaufen
