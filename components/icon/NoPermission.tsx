@@ -17,7 +17,7 @@ export default function NoPermission({
                 <h1>{title}</h1>
                 <p>{message}</p>
                 <div className="status-actions">
-                    <a href={backHref} className="status-link">Zurueck</a>
+                    <a href={backHref} className="status-link">Zurück</a>
                 </div>
             </div>
         </div>

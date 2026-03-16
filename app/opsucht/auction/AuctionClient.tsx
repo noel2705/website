@@ -1,7 +1,7 @@
 'use client';
 
 import React, {useEffect, useMemo, useRef, useState} from 'react';
-import {Page} from '../../../lib/utils/types';
+import type {Page} from '../../../lib/utils/types';
 import '../../../components/css/auction/auction.css';
 import {getAmountBids} from '@/lib/utils/auction/auction';
 import AuctionCard from '@/components/opsucht/auction/AuctionCard';
@@ -10,10 +10,10 @@ import {AuctionCategory, normalizeAuctions, normalizeCategoryDefinitions} from '
 import { useSessionUser } from '@/hooks/useUser';
 import { DEFAULT_AUCTION_CARD_SETTINGS } from '@/lib/utils/userSettings';
 
-interface Props {
-    initialAuction: Page[];
-}
-
+export type AuctionClientProps = {
+    initialAuction: any;
+    onSelectAuction: (auction: Page) => void;
+};
 type AuctionMode = 'active' | 'expired';
 const ACTIVE_REFRESH_INTERVAL_MS = 10000;
 const EXPIRED_REFRESH_INTERVAL_MS = 120000;
@@ -31,7 +31,7 @@ const maxIsoDate = (a: string | null, b: string | null): string | null => {
 const isParent = (name: string) => name.startsWith('parent_');
 const toApiCategory = (category: string) => (category === '*' || isParent(category) ? '*' : category);
 
-export default function AuctionClient({initialAuction}: Props) {
+const AuctionClient: React.FC<AuctionClientProps> = ({initialAuction, onSelectAuction}) => {
     const itemsPerLoad = 25;
     const resolver = useMemo(
         () =>
@@ -512,6 +512,7 @@ export default function AuctionClient({initialAuction}: Props) {
                             auction={a}
                             auctionSellerName={sellerNames[a.seller] ?? 'Wird geladen...'}
                             mode={mode}
+                            onSelectAuction={onSelectAuction}
                             settings={auctionCardSettings}
                         />
                     ))}
@@ -519,4 +520,6 @@ export default function AuctionClient({initialAuction}: Props) {
             <div id="scroll-sentinel" style={{height: 1}}/>
         </>
     );
-}
+};
+
+export default AuctionClient;

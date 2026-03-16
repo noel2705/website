@@ -1,6 +1,6 @@
 'use client';
 
-import { Page } from "@/lib/utils/types";
+import type { Page } from "@/lib/utils/types";
 import BackButton from "@/components/buttons/BackButton";
 import "../../css/auction/auctionItem.css";
 import {formatMoney, getItemImage} from "@/lib/utils/auction/auction";
@@ -17,9 +17,11 @@ import ColoredLore from "@/components/opsucht/auction/ColoredLore";
 export default function AuctionItemPage({
                                             data,
                                             auctionID,
+                                            onBack,
                                         }: {
     data: Page[];
     auctionID: string;
+    onBack?: () => void;
 }) {
     const { user, loading } = getSessionUser();
     const [isMarked, setIsMarked] = useState(false);
@@ -53,7 +55,13 @@ export default function AuctionItemPage({
                         </div>
 
                         <div className="info-bar">
-                            <BackButton />
+                            {onBack ? (
+                                <button className="backButton" onClick={onBack}>
+                                    Zurück
+                                </button>
+                            ) : (
+                                <BackButton />
+                            )}
                             <span>{bidsSorted.length} Gebote</span>
                             <span>Aktuell: {formatMoney(a.currentBid)}</span>
                             <button

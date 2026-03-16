@@ -2,7 +2,7 @@ export default function DatenschutzPage() {
   return (
         <section className="app-panel legal-panel">
           <h1 className="app-title">Datenschutzerklärung</h1>
-          <p className="app-muted">Stand: 09.03.2026</p>
+          <p className="app-muted">Stand: 16.03.2026</p>
 
           <h2>1. Verantwortlicher</h2>
           <p>

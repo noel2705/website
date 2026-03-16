@@ -1,25 +1,28 @@
 'use client'
-import {Page} from "@/lib/utils/types";
+import type {Page} from "@/lib/utils/types";
 import {formatMoney, getAmountBids, getItemImage, isDesired} from "@/lib/utils/auction/auction";
 import {ReactNode, useEffect, useMemo, useState} from "react";
-import {useRouter} from "next/navigation";
 import "@/components/css/auction/auction.css";
 import UserPageButton from "@/components/opsucht/auction/UserPageButton";
-import { AuctionCardSettings, DEFAULT_AUCTION_CARD_SETTINGS, mergeAuctionCardSettings } from "@/lib/utils/userSettings";
+import {AuctionCardSettings, DEFAULT_AUCTION_CARD_SETTINGS, mergeAuctionCardSettings} from "@/lib/utils/userSettings";
 
 type AuctionMode = "active" | "expired";
 
-function AuctionCard({
-                         auction,
-                         auctionSellerName,
-                         mode,
-                         settings
-                     }: {
+export type AuctionCardProps = {
     auction: Page;
     auctionSellerName: ReactNode;
     mode: AuctionMode;
     settings?: Partial<AuctionCardSettings> | null;
-}) {
+    onSelectAuction?: (auction: Page) => void;
+};
+
+const AuctionCard: React.FC<AuctionCardProps> = ({
+    auction,
+    auctionSellerName,
+    mode,
+    settings,
+    onSelectAuction,
+}) => {
     const itemName = auction.item.displayName ?? auction.item.material;
     const itemMaterial = auction.item.material;
     const itemAmount = auction.item.amount;
@@ -28,7 +31,6 @@ function AuctionCard({
     const endDate = auction.endTime;
     const amountBids = getAmountBids(auction.bids);
     const isdesired = isDesired(auction);
-    const router = useRouter();
     const [now, setNow] = useState(Date.now());
     const cardSettings = useMemo(
         () => mergeAuctionCardSettings(settings ?? DEFAULT_AUCTION_CARD_SETTINGS),
@@ -61,7 +63,7 @@ function AuctionCard({
                 endedAtText: formattedEndedAt,
             };
         }
-        
+
 
         const secToEnd = Math.floor(milliToEnd / 1000);
 
@@ -161,15 +163,26 @@ function AuctionCard({
 
             <button
                 className="auction-button"
-                onClick={() =>
-                    router.push(`/opsucht/auction/${auction.uid}/${auction.category}`)
-                }
+                onClick={() => {
+                    if (onSelectAuction) {
+                        onSelectAuction(auction);
+                        return;
+                    }
+                    if (typeof window !== "undefined") {
+                        const hash = `auction=${encodeURIComponent(auction.uid)}`;
+                        const target = `/opsucht/auction#${hash}`;
+                        if (window.location.pathname === "/opsucht/auction") {
+                            window.location.hash = hash;
+                        } else {
+                            window.location.href = target;
+                        }
+                    }
+                }}
             >
                 Informationen
             </button>
         </div>
-    )
-        ;
-}
+    );
+};
 
 export default AuctionCard

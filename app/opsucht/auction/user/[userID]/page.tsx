@@ -1,4 +1,4 @@
-import AuctionView from "@/components/opsucht/auction/AuctionView";
+import AuctionUserClientView from "@/components/opsucht/auction/AuctionUserClientView";
 
 export default async function AuctionPage({
                                               params,
@@ -8,7 +8,7 @@ export default async function AuctionPage({
     const { userID } = await params;
     return (
         <div className="app-shell">
-            <AuctionView userID={userID} isDashBoardView={false} />
+            <AuctionUserClientView userID={userID} isDashBoardView={false} />
         </div>
     );
 }

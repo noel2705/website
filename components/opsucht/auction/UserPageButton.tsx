@@ -1,12 +1,17 @@
 'use client'
-import { useRouter } from "next/navigation";
-
 export default function UserPageButton({ name, uuid }: { name: React.ReactNode, uuid: string }) {
-    const router = useRouter();
-
     return (
         <button
-            onClick={() => router.push(`/opsucht/auction/user/${uuid}`)}
+            onClick={() => {
+                if (typeof window === "undefined") return;
+                const hash = `user=${encodeURIComponent(uuid)}`;
+                const target = `/opsucht/auction#${hash}`;
+                if (window.location.pathname === "/opsucht/auction") {
+                    window.location.hash = hash;
+                } else {
+                    window.location.href = target;
+                }
+            }}
             style={{
                 backgroundColor: '#181818',
                 color: 'white',

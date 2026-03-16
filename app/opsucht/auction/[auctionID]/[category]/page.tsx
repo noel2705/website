@@ -1,4 +1,4 @@
-import { Page } from "@/lib/utils/types";
+import type { Page } from "@/lib/utils/types";
 import AuctionItemPage from "@/components/opsucht/auction/AuctionItemPage";
 import { db } from "@/lib/utils/db";
 import { normalizeAuction, normalizeAuctions } from "@/lib/utils/auction/normalize";
