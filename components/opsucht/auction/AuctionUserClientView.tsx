@@ -237,7 +237,7 @@ export default function AuctionUserClientView({
 
             <div className="auction-profile-hero">
                 <div className="auction-profile-summary">
-                    <h2>Ãœbersicht</h2>
+                    <h2>Übersicht</h2>
                     <p>Alle aktiven, abgelaufenen und markierten Auktionen im Blick.</p>
                 </div>
                 <div className="auction-stats-grid">
