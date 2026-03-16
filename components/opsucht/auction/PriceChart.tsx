@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -29,9 +29,15 @@ interface PriceChartProps {
     bids: Record<string, number>;
 }
 
-const resolver = new MinecraftNameResolver({storageProvider: localStorage});
 export default function PriceChart({ bids }: PriceChartProps) {
     const [names, setNames] = useState<Record<string, string>>({});
+    const resolver = useMemo(
+        () =>
+            new MinecraftNameResolver({
+                storageProvider: typeof window !== "undefined" ? localStorage : undefined,
+            }),
+        []
+    );
 
     useEffect(() => {
         const uuids = Object.keys(bids);

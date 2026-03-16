@@ -3,13 +3,14 @@
 import { useEffect, useState } from "react";
 import MinecraftNameResolver from "@/lib/utils/minecraftNameResolver";
 
-const resolver = new MinecraftNameResolver({storageProvider: localStorage});
-
 export default function UserName({ uuid }: { uuid: string }) {
     const [name, setName] = useState<string | null>(null);
 
     useEffect(() => {
         let mounted = true;
+        const resolver = new MinecraftNameResolver({
+            storageProvider: typeof window !== "undefined" ? localStorage : undefined,
+        });
 
         const load = async () => {
             const n = await resolver.getName(uuid);
