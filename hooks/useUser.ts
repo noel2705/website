@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { IUser, buildUser } from "@/lib/utils/userTypes";
+import type { UserSettings } from "@/lib/utils/userSettings";
 import { getMeCached } from "@/lib/utils/meClient";
 
 export function useSessionUser() {
@@ -16,7 +17,11 @@ export function useSessionUser() {
             if (!mounted) return;
 
             if (data) {
-                setUser(buildUser(data));
+                const normalized = {
+                    ...data,
+                    settings: (data.settings ?? null) as Partial<UserSettings> | null,
+                };
+                setUser(buildUser(normalized));
             } else {
                 setUser(null);
             }
