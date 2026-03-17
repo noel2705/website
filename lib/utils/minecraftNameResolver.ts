@@ -47,31 +47,47 @@ export default class MinecraftNameResolver {
 
     private async fetchJavaName(uuid: string, retry = 2): Promise<string> {
         const cleanUuid = uuid.replace(/-/g, '');
-        await new Promise(r => setTimeout(r, 150));
 
-        try {
-            const res = await fetch(`https://api.minetools.eu/uuid/${uuid}`);
-
-            if (res.status === 429 && retry > 0) {
-                await new Promise(r => setTimeout(r, 800));
-                return this.fetchJavaName(uuid, retry - 1);
+        for (let attempt = 0; attempt <= retry; attempt++) {
+            if (attempt === 0) {
+                await new Promise(r => setTimeout(r, 150));
+            } else {
+                await new Promise(r => setTimeout(r, 400 * attempt));
             }
 
-            if (!res.ok) throw new Error(`Java-API Fehler ${res.status}`);
+            try {
+                const res = await fetch(`https://api.ashcon.app/mojang/v2/user/${uuid}`);
 
-            const data = await res.json();
-            const name = data.name || 'Fehler';
+                if (!res.ok) {
+                    if (attempt < retry) {
+                        continue;
+                    }
+                    throw new Error(`Java-API Fehler ${res.status}`);
+                }
 
-            this.cache[uuid] = name;
-            this.storageProvider.setItem(`${localStorageKey}`, JSON.stringify(this.cache));
+                const data = await res.json();
+                const name = data.username || 'User nicht gefunden';
 
-            return name;
-        } catch {
-            if(isBedrock(uuid)) {
-                return this.fetchBedrockName(uuid);
+                this.cache[uuid] = name;
+                this.storageProvider.setItem(`${localStorageKey}`, JSON.stringify(this.cache));
+
+                return name;
+            } catch {
+                if (attempt < retry) {
+                    continue;
+                }
+
+                if (isBedrock(uuid)) {
+                    return this.fetchBedrockName(uuid);
+                }
+                return "Fehler beim Laden";
             }
-            return "Fehler beim Laden";
         }
+
+        if (isBedrock(uuid)) {
+            return this.fetchBedrockName(uuid);
+        }
+        return "Fehler beim Laden";
     }
 
     public async getName(uuid: string): Promise<string> {
