@@ -51,7 +51,20 @@ export async function setAuctionMarked(
         JSON.stringify([auctionID])
     ]);
 }
+export async function getAverageItemPrice(itemName: string): Promise<number | null> {
+    const sql = `
+        SELECT AVG(current_bid) as avg
+        FROM expired_auctions_v2
+        WHERE LOWER(TRIM(display_name)) = LOWER(TRIM($1))
+          AND bids <> '{}'::jsonb
+    `;
 
+    const result = await db?.oneOrNone(sql, [itemName]);
+
+    if (!result || result.avg === null) return null;
+
+    return Number(result.avg);
+}
 
 export async function unmarkAuction(
     user: IUser | null,
