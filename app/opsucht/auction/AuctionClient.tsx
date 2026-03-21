@@ -43,7 +43,17 @@ const AuctionClient: React.FC<AuctionClientProps> = ({initialAuction, onSelectAu
     const { user } = useSessionUser();
     const auctionCardSettings = user?.settings?.auctionCard ?? DEFAULT_AUCTION_CARD_SETTINGS;
 
-    const [renderCount, setRenderCount] = useState(itemsPerLoad);
+    const [renderCount, setRenderCount] = useState(() => {
+        if (typeof window === 'undefined') return itemsPerLoad;
+        const restore = sessionStorage.getItem('auctionScrollRestore') === '1';
+        if (!restore) return itemsPerLoad;
+        const raw = sessionStorage.getItem('auctionRenderCount');
+        const parsed = Number(raw);
+        if (Number.isFinite(parsed) && parsed > 0) {
+            return Math.max(itemsPerLoad, parsed);
+        }
+        return itemsPerLoad;
+    });
     const [auction, setAuction] = useState<Page[]>(normalizeAuctions(initialAuction));
     const [showAuction, setShowAuction] = useState<Page[]>([]);
     const [expiredLimit, setExpiredLimit] = useState<ExpiredLimitOption>(DEFAULT_EXPIRED_LIMIT);
@@ -63,6 +73,7 @@ const AuctionClient: React.FC<AuctionClientProps> = ({initialAuction, onSelectAu
     const prevExpiredLimitRef = useRef(expiredLimit);
     const prevExpiredSearchRef = useRef('');
     const userSetModeRef = useRef(false);
+    const pendingScrollRestoreRef = useRef(false);
 
     const parentCategories = useMemo(
         () => categories.filter((entry) => !entry.parentCategory),
@@ -94,14 +105,22 @@ const AuctionClient: React.FC<AuctionClientProps> = ({initialAuction, onSelectAu
     const getSellerName = async (uids: string[]) => resolver.getNames(uids);
 
     const hydrateSellerNames = async (data: Page[]) => {
-        const rawNames = [...new Set(data.map((e) => e.seller).filter(Boolean))];
-        if (rawNames.length === 0) {
-            setSellerNames({});
-            return;
+        const visible = data.slice(0, renderCount);
+        const rest = data.slice(renderCount);
+
+        const visibleIds = [...new Set(visible.map(e => e.seller).filter(Boolean))];
+        const restIds = [...new Set(rest.map(e => e.seller).filter(Boolean))];
+
+        if (visibleIds.length > 0) {
+            const resNames = await getSellerName(visibleIds);
+            setSellerNames(prev => ({ ...prev, ...resNames }));
         }
 
-        const resNames = await getSellerName(rawNames);
-        setSellerNames(resNames);
+        if (restIds.length > 0) {
+            getSellerName(restIds).then(resNames => {
+                setSellerNames(prev => ({ ...prev, ...resNames }));
+            });
+        }
     };
 
     const fetchCategoryDefs = async () => {
@@ -181,7 +200,19 @@ const AuctionClient: React.FC<AuctionClientProps> = ({initialAuction, onSelectAu
             );
         }
 
-        const sorted = [...filtered].sort((a, b) => {
+        let expiredFiltered: Page[] = filtered;
+
+        if (mode === 'expired') {
+            expiredFiltered = filtered.filter(page =>
+                new Date(page.endTime).getTime() < Date.now()
+            );
+        }
+
+        expiredFiltered = expiredFiltered.sort((a, b) =>
+            new Date(a.endTime).getTime() - new Date(b.endTime).getTime()
+        );
+
+        const sorted = [...expiredFiltered].sort((a, b) => {
             switch (orderBy) {
                 case 'timeDesc':
                     return new Date(a.endTime).getTime() - new Date(b.endTime).getTime();
@@ -242,6 +273,11 @@ const AuctionClient: React.FC<AuctionClientProps> = ({initialAuction, onSelectAu
         if (!userSetModeRef.current && storedMode !== mode) setMode(storedMode);
         if (normalizedExpiredLimit !== expiredLimit) setExpiredLimit(normalizedExpiredLimit);
         setInitialized(true);
+    }, []);
+
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+        pendingScrollRestoreRef.current = sessionStorage.getItem('auctionScrollRestore') === '1';
     }, []);
 
     useEffect(() => {
@@ -317,8 +353,36 @@ const AuctionClient: React.FC<AuctionClientProps> = ({initialAuction, onSelectAu
     }, [auction, orderBy, searchBar, mode, activeCategorySet]);
 
     useEffect(() => {
+        if (pendingScrollRestoreRef.current) return;
         setRenderCount(itemsPerLoad);
     }, [showAuction?.length]);
+
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+        sessionStorage.setItem('auctionRenderCount', String(renderCount));
+    }, [renderCount]);
+
+    useEffect(() => {
+        if (!pendingScrollRestoreRef.current) return;
+        if (!initialized) return;
+        if (!showAuction || showAuction.length === 0) return;
+
+        const raw = sessionStorage.getItem('auctionScrollY');
+        const scrollY = raw ? Number(raw) : 0;
+        if (!Number.isFinite(scrollY)) {
+            pendingScrollRestoreRef.current = false;
+            sessionStorage.removeItem('auctionScrollRestore');
+            sessionStorage.removeItem('auctionScrollY');
+            return;
+        }
+
+        requestAnimationFrame(() => {
+            window.scrollTo(0, scrollY);
+            pendingScrollRestoreRef.current = false;
+            sessionStorage.removeItem('auctionScrollRestore');
+            sessionStorage.removeItem('auctionScrollY');
+        });
+    }, [initialized, renderCount, showAuction]);
 
     useEffect(() => {
         if (!initialized) return;

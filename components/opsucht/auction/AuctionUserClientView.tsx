@@ -14,6 +14,8 @@ import {
     mergeAuctionCardSettings,
 } from "@/lib/utils/userSettings";
 import type { Page } from "@/lib/utils/types";
+import Loading from "@/app/loading";
+
 
 type Props = {
     userID: string;
@@ -213,7 +215,7 @@ export default function AuctionUserClientView({
     }, [eigeneAuktionen, expiredAuctions]);
 
     if (loading) {
-        return <p>Lade Auktionsprofil...</p>;
+        return <Loading text={"Auktionsprofil wird geladen..."}/>;
     }
 
     if (error) {
@@ -259,11 +261,18 @@ export default function AuctionUserClientView({
                     </div>
                     <div className="auction-stat-card">
                         <span className="stat-label">Ausgegeben</span>
-                        <span className="stat-value">{formatMoney(moneySpent)}</span>
+                        <span className="stat-value stat-value-money">
+                            {formatMoney(moneySpent)}
+                            <img src="/custom-items/money.svg" alt="Icon" width="24" height="24"/>
+                        </span>
+
                     </div>
                     <div className="auction-stat-card">
                         <span className="stat-label">Verdient</span>
-                        <span className="stat-value">{formatMoney(earnedMoney)}</span>
+                        <span className="stat-value stat-value-money">
+                            {formatMoney(earnedMoney)}
+                            <img src="/custom-items/money.svg" alt="Icon" width="24" height="24"/>
+                        </span>
                     </div>
                 </div>
             </div>

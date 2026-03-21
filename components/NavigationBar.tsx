@@ -34,6 +34,12 @@ function NavLink({ href, pathname, children }: { href: string; pathname: string;
         <Link
             href={href}
             prefetch={false}
+            onClick={() => {
+                if (href !== "/opsucht/auction") return;
+                if (typeof window === "undefined") return;
+                window.history.replaceState(null, "", href);
+                window.dispatchEvent(new HashChangeEvent("hashchange"));
+            }}
             className={`link ${pathname.startsWith(href) ? "active" : ""}`}
         >
             {children}

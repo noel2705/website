@@ -104,6 +104,10 @@ export default  function Page() {
                 <AuctionClient
                     initialAuction={data}
                     onSelectAuction={(auction) => {
+                        if (typeof window !== "undefined") {
+                            sessionStorage.setItem("auctionScrollRestore", "1");
+                            sessionStorage.setItem("auctionScrollY", String(window.scrollY));
+                        }
                         setSelectedAuction(auction);
                         setSelectedUserId(null);
                         setShowMode(Modes.AuctionItemPage);

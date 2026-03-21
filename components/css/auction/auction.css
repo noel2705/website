@@ -1,20 +1,39 @@
 .auction-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 0.95rem;
-    padding: 0.8rem;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 0.8rem;
+    padding: 0.7rem;
+}
+
+.app-shell {
+    width: min(1600px, 100%);
+}
+
+
+@keyframes fadeInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .auction-card {
+    opacity: 0;
+    animation: fadeInUp 0.5s ease-out forwards;
+
     background: var(--panel-soft-bg);
-    padding: 0.9rem;
+    padding: 0.75rem;
     border-radius: 14px;
-    min-height: 390px;
+    min-height: 330px;
     box-shadow: var(--shadow-strong);
     color: var(--foreground);
     display: flex;
     flex-direction: column;
-    gap: 0.66rem;
+    gap: 0.55rem;
     border: 1px solid var(--border);
     transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
@@ -27,10 +46,10 @@
 
 .auction-card h2 {
     margin: 0;
-    font-size: 1rem;
+    font-size: 0.95rem;
     font-weight: 700;
     color: var(--title-color);
-    min-height: 2.3em;
+    min-height: 2.1em;
 }
 
 .auction-title-block {
@@ -40,7 +59,7 @@
 
 .auction-subtitle {
     margin: 0;
-    font-size: 0.82rem;
+    font-size: 0.78rem;
     color: var(--muted);
     letter-spacing: 0.02em;
 }
@@ -48,7 +67,7 @@
 .auction-amount,
 .auction-category {
     margin: 0;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     color: var(--muted);
 }
 
@@ -93,9 +112,9 @@
 .auction-details {
     display: flex;
     flex-direction: column;
-    gap: 0.4rem;
+    gap: 0.35rem;
     color: var(--muted);
-    font-size: 0.9rem;
+    font-size: 0.85rem;
 }
 
 .auction-seller {
@@ -113,9 +132,9 @@
 }
 
 .price-row img {
-    width: 24px;
-    height: 24px;
-    flex: 0 0 24px;
+    width: 22px;
+    height: 22px;
+    flex: 0 0 22px;
 }
 
 .auction-button {
@@ -125,7 +144,7 @@
     background: linear-gradient(135deg, var(--primary), color-mix(in srgb, var(--primary) 76%, #000 24%));
     color: var(--primary-foreground);
     font-weight: 700;
-    padding: 0.5rem 0.68rem;
+    padding: 0.45rem 0.6rem;
     cursor: pointer;
 }
 
@@ -136,12 +155,14 @@
 .categorySwitcher button,
 .raritySwitcher button {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
     justify-content: center;
-    width: 120px;
-    height: 100px;
-    padding: 8px;
+    gap: 0.45rem;
+    width: 140px;
+    height: 56px;
+    padding: 6px 10px;
+    font-size: 0.85rem;
     border: 1px solid var(--border);
     background: var(--panel-soft-bg);
     color: var(--foreground);
@@ -152,9 +173,9 @@
 
 .categorySwitcher button img,
 .raritySwitcher button img {
-    width: 40px;
-    height: 40px;
-    margin-bottom: 5px;
+    width: 26px;
+    height: 26px;
+    margin-bottom: 0;
 }
 
 .categorySwitcher button:hover,
@@ -187,8 +208,8 @@
 .auction-toolbar {
     display: flex;
     flex-direction: column;
-    gap: 0.6rem;
-    padding: 0.85rem;
+    gap: 0.5rem;
+    padding: 0.6rem;
     border-radius: 14px;
     border: 1px solid var(--panel-soft-border);
     background: var(--panel-soft-bg);
@@ -197,14 +218,14 @@
 .auction-toolbar-rarity {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.6rem;
+    gap: 0.45rem;
 }
 
 .categorySwitcher,
 .raritySwitcher {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.6rem;
+    gap: 0.45rem;
 }
 
 .sort select {
@@ -219,8 +240,8 @@
 }
 
 .search-row {
-    padding: 0.8rem;
-    margin-bottom: 0.7rem;
+    padding: 0.5rem;
+    margin-bottom: 0.45rem;
     border-radius: 14px;
     border: 1px solid var(--panel-soft-border);
     background: var(--panel-soft-bg);
@@ -228,9 +249,9 @@
 
 .search-row input {
     width: 100%;
-    height: 46px;
-    padding: 0 14px;
-    font-size: 0.95rem;
+    height: 36px;
+    padding: 0 10px;
+    font-size: 0.85rem;
     background: var(--input-bg);
     color: var(--input-text);
     border: 1px solid var(--border);
@@ -263,17 +284,17 @@
 
 .category-tree {
     display: grid;
-    gap: 0.55rem;
+    gap: 0.4rem;
 }
 
 .category-root-btn,
 .category-parent-btn {
     display: flex;
     align-items: center;
-    gap: 0.65rem;
+    gap: 0.5rem;
     width: 100%;
-    min-height: 52px;
-    padding: 0.6rem 0.8rem;
+    min-height: 40px;
+    padding: 0.42rem 0.6rem;
     border: 1px solid var(--border);
     border-radius: 10px;
     background: var(--panel-soft-bg);
@@ -286,10 +307,10 @@
 .category-root-btn img,
 .category-parent-btn img,
 .category-child-btn img {
-    width: 26px;
-    height: 26px;
+    width: 20px;
+    height: 20px;
     object-fit: contain;
-    flex: 0 0 26px;
+    flex: 0 0 20px;
 }
 
 .category-root-btn:hover,
@@ -311,7 +332,7 @@
 
 .category-group {
     display: grid;
-    gap: 0.35rem;
+    gap: 0.3rem;
 }
 
 .category-chevron {
@@ -325,17 +346,17 @@
 
 .category-children {
     display: grid;
-    gap: 0.35rem;
-    padding-left: 0.95rem;
+    gap: 0.3rem;
+    padding-left: 0.8rem;
 }
 
 .category-child-btn {
     display: flex;
     align-items: center;
-    gap: 0.6rem;
+    gap: 0.45rem;
     width: 100%;
-    min-height: 46px;
-    padding: 0.48rem 0.62rem;
+    min-height: 36px;
+    padding: 0.35rem 0.5rem;
     border: 1px solid var(--border);
     border-radius: 9px;
     background: color-mix(in srgb, var(--panel-soft-bg) 86%, transparent);
@@ -346,20 +367,20 @@
 
 @media (max-width: 740px) {
     .auction-grid {
-        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-        padding: 0.2rem;
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        padding: 0.15rem;
     }
 
     .categorySwitcher button,
     .raritySwitcher button {
-        width: 106px;
-        height: 92px;
-        font-size: 0.82rem;
+        width: 120px;
+        height: 48px;
+        font-size: 0.8rem;
     }
 
     .category-root-btn,
     .category-parent-btn,
     .category-child-btn {
-        min-height: 44px;
+        min-height: 34px;
     }
 }

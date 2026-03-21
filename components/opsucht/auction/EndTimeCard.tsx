@@ -9,6 +9,8 @@ interface EndTimeCardProps {
 
 export default function EndTimeCard({ endTime }: EndTimeCardProps) {
     const [, setTick] = useState(0);
+    const endText = formatEndTime(endTime);
+    const isEnded = endText === "Beendet";
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -20,7 +22,7 @@ export default function EndTimeCard({ endTime }: EndTimeCardProps) {
 
     return (
         <div className="end-time-card" style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-            <h2 style={{ margin: 0 }}>{formatEndTime(endTime)}</h2>
+            <h2 style={{ margin: 0, color: isEnded ? "#ef4444" : undefined }}>{endText}</h2>
             <TimerIcon />
         </div>
     );

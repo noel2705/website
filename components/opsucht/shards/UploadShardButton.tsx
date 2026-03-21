@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from "react"
+import { useEffect, useState, useRef } from "react"
 import Folder from "@/components/icon/animated/FolderIcon"
 import "../../css/shard/UploadShardButton.css"
 import { getMeCached } from "@/lib/utils/meClient"
@@ -13,6 +13,24 @@ export default function UploadShardButton({ onUploadSuccess }: { onUploadSuccess
 
     const fileInputRef = useRef<HTMLInputElement>(null)
     const fileDialogOpen = useRef(false)
+    const cachedUuidRef = useRef<string | null | undefined>(undefined)
+
+    useEffect(() => {
+        let mounted = true
+        getMeCached()
+            .then(me => {
+                if (!mounted) return
+                cachedUuidRef.current = me?.uuid ?? null
+            })
+            .catch(() => {
+                if (!mounted) return
+                cachedUuidRef.current = null
+            })
+
+        return () => {
+            mounted = false
+        }
+    }, [])
 
     const resetFolder = (delay: number = 0) => {
         setTimeout(() => {
@@ -33,9 +51,8 @@ export default function UploadShardButton({ onUploadSuccess }: { onUploadSuccess
         }
     }
 
-    const handleClickFolder = async () => {
-        const me = await getMeCached()
-        if (!me?.uuid) {
+    const handleClickFolder = () => {
+        if (cachedUuidRef.current === null) {
             setMessage("Bitte zuerst einloggen ❌")
             return
         }
