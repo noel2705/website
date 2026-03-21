@@ -63,6 +63,7 @@ export async function getAverageItemPrice(itemName: string): Promise<number | nu
 
     if (!result || result.avg === null) return null;
 
+
     return Number(result.avg);
 }
 
