@@ -69,9 +69,17 @@ export default function AuctionItemPage({
                         <ReloadButton/>
 
                         <div className="info-name">
-                            <img src={getItemImage(a)} alt="" className="item-icon"/>
+                            <img
+                                onError={(e) => {
+                                    e.currentTarget.src = `https://img.mc-api.io/${a.item.material.toLowerCase()}.png`;
+                                }}
+                                src={getItemImage(a)} alt="" className="item-icon"/>
                             <h2>{a.item.displayName ?? a.item.material}</h2>
-                            <img src={getItemImage(a)} alt="" className="item-icon"/>
+                            <img
+                                onError={(e) => {
+                                    e.currentTarget.src = `https://img.mc-api.io/${a.item.material.toLowerCase()}.png`;
+                                }}
+                                src={getItemImage(a)} alt="" className="item-icon"/>
                         </div>
 
                         <div className="info-bar">
@@ -96,6 +104,7 @@ export default function AuctionItemPage({
                                 ´ {isMarked && !user ? "Gemerkt" : "Merken"}
                             </button>
                             <span>Start: {formatMoney(a.startBid)}</span>
+
                             <span>
   Durchschnitts Preis: {averageItemPrice === undefined
                                 ? "Wird geladen..."

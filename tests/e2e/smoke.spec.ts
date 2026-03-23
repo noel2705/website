@@ -55,6 +55,17 @@ test("auction list loads, sort changes, and info button updates hash", async ({ 
     await page.goto("/opsucht/auction");
     await expect(page.locator(".auction-card").first()).toBeVisible({ timeout: 20_000 });
 
+    const firstCategory = page.locator(".category-parent-btn").first();
+    await expect(firstCategory).toBeVisible();
+    await firstCategory.click();
+    await expect(page.locator(".auction-card").first()).toBeVisible({ timeout: 20_000 });
+
+    const firstChildCategory = page.locator(".category-child-btn").first();
+    if (await firstChildCategory.isVisible()) {
+        await firstChildCategory.click();
+        await expect(page.locator(".auction-card").first()).toBeVisible({ timeout: 20_000 });
+    }
+
     const orderSelect = page.locator(".auction-toolbar-rarity select").first();
     await orderSelect.selectOption("moneyAsc");
 

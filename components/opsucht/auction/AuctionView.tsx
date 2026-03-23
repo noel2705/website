@@ -1,5 +1,10 @@
 import React from 'react';
-import {formatMoney, getActiveAuction, getExpiredAuctions, getExpiredBidAuctions} from "@/lib/utils/auction/auction";
+import {
+    formatMoney,
+    getActiveAuction,
+    getExpiredAuctions,
+    getExpiredBidAuctions,
+} from "@/lib/utils/auction/auction";
 import UserName from "@/components/opsucht/auction/UserName";
 import "../../css/auction/userAuctions.css";
 import StarBorder from "@/components/icon/animated/StartBorder";
@@ -109,7 +114,6 @@ export default async function AuctionView({
     return (
         <div className="user-auctions-container">
 
-
             <div className="header-container" style={{position: "relative"}}>
                 <BackButton/>
                 <StarBorder
@@ -120,8 +124,8 @@ export default async function AuctionView({
                 >
                     Auktionsprofil: <UserName uuid={userID}/>
                 </StarBorder>
-            </div>
 
+            </div>
             <div className="auction-profile-hero">
                 <div className="auction-profile-summary">
                     <h2>Übersicht</h2>

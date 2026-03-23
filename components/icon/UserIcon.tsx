@@ -18,7 +18,15 @@ export default function UserIcon({ pathname }: { pathname: string }) {
             prefetch={false}
             className={`link ${isActive ? "active" : ""}`}
         >
-            {user ? "Dein Profil" : "👤"}
+            {user ? (
+                <img
+                    src={`https://minotar.net/helm/${user?.name ?? "steve"}/100.png`}
+                    alt="User Avatar"
+                    className="w-6 h-6 rounded-full"
+                />
+            ) : (
+                "👤"
+            )}
         </Link>
     );
 }
