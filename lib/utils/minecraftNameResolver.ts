@@ -1,18 +1,19 @@
 const localStorageKey = "mcnames";
+
 export function isBedrock(uuid: string): boolean {
     return uuid.startsWith("00000000-0000-0000-0009");
 }
 
 export async function getPlayerProfile(uuid: string): Promise<{ name: string; uuid: string }> {
-    if (!isBedrock(uuid)) return { name: "Unbekannt", uuid };
+    if (!isBedrock(uuid)) return {name: "Unbekannt", uuid};
     try {
         const res = await fetch(`https://mc-api.io/name/${uuid}`);
         if (!res.ok) throw new Error(`Fehler beim Abrufen von Bedrock-Profil: ${res.status}`);
         const data = await res.json();
-        return { name: "." + data.name, uuid: data.uuid };
+        return {name: "." + data.name, uuid: data.uuid};
     } catch (err) {
         console.error("Fehler beim Laden des Bedrock-Profils", err);
-        return { name: "Unbekannt", uuid };
+        return {name: "Unbekannt", uuid};
     }
 }
 
@@ -24,11 +25,14 @@ export default class MinecraftNameResolver {
     private cache: Record<string, string> = {};
     private storageProvider: NameStorage;
 
-    constructor({initialNames, storageProvider} : {
+    constructor({initialNames, storageProvider}: {
         initialNames?: Record<string, string>,
         storageProvider?: NameStorage
-        }) {
-        this.storageProvider = storageProvider ?? {getItem: (_) => '{}', setItem: () => {}};
+    }) {
+        this.storageProvider = storageProvider ?? {
+            getItem: (_) => '{}', setItem: () => {
+            }
+        };
         this.cache = JSON.parse(this.storageProvider.getItem(`${localStorageKey}`) ?? "{}")
 
         if (initialNames) {
@@ -40,9 +44,9 @@ export default class MinecraftNameResolver {
 
     private async fetchBedrockName(uuid: string): Promise<string> {
         const profile = await getPlayerProfile(uuid);
-        this.cache[uuid] =  profile.name;
+        this.cache[uuid] = profile.name;
         this.storageProvider.setItem(`${localStorageKey}`, JSON.stringify(this.cache));
-        return  profile.name;
+        return profile.name;
     }
 
     private async fetchJavaName(uuid: string, retry = 2): Promise<string> {
@@ -93,10 +97,32 @@ export default class MinecraftNameResolver {
     public async getName(uuid: string): Promise<string> {
         if (this.cache[uuid]) return this.cache[uuid];
 
-        if (isBedrock(uuid)) {
-            return this.fetchBedrockName(uuid);
-        } else {
-            return this.fetchJavaName(uuid);
+        const serverName = await this.fetchServerName(uuid);
+        if (serverName) return serverName;
+
+        const resolvedName = isBedrock(uuid)
+            ? await this.fetchBedrockName(uuid)
+            : await this.fetchJavaName(uuid);
+
+        return resolvedName;
+    }
+
+    private async fetchServerName(uuid: string): Promise<string | null> {
+        if (typeof window === 'undefined') return null;
+
+        try {
+            const res = await fetch(`/api/minecraft-name?uuid=${encodeURIComponent(uuid)}`, {
+                cache: 'no-store',
+            });
+            if (!res.ok) return null;
+            const data = await res.json();
+            const name = typeof data?.name === "string" ? data.name : null;
+            if (!name) return null;
+            this.cache[uuid] = name;
+            this.storageProvider.setItem(`${localStorageKey}`, JSON.stringify(this.cache));
+            return name;
+        } catch {
+            return null;
         }
     }
 
@@ -118,7 +144,7 @@ export default class MinecraftNameResolver {
         return result;
     }
 
-        public async getUUID(mcName: string): Promise<string | null> {
+    public async getUUID(mcName: string): Promise<string | null> {
         try {
             const res = await fetch(
                 `https://api.ashcon.app/mojang/v2/user/${mcName}`
@@ -153,4 +179,3 @@ export default class MinecraftNameResolver {
         }
     }
 }
-
