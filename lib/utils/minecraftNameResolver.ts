@@ -97,8 +97,7 @@ export default class MinecraftNameResolver {
     public async getName(uuid: string): Promise<string> {
         if (this.cache[uuid]) return this.cache[uuid];
 
-        const serverName = await this.fetchServerName(uuid);
-        if (serverName) return serverName;
+
 
         const resolvedName = isBedrock(uuid)
             ? await this.fetchBedrockName(uuid)
@@ -107,24 +106,6 @@ export default class MinecraftNameResolver {
         return resolvedName;
     }
 
-    private async fetchServerName(uuid: string): Promise<string | null> {
-        if (typeof window === 'undefined') return null;
-
-        try {
-            const res = await fetch(`/api/minecraft-name?uuid=${encodeURIComponent(uuid)}`, {
-                cache: 'no-store',
-            });
-            if (!res.ok) return null;
-            const data = await res.json();
-            const name = typeof data?.name === "string" ? data.name : null;
-            if (!name) return null;
-            this.cache[uuid] = name;
-            this.storageProvider.setItem(`${localStorageKey}`, JSON.stringify(this.cache));
-            return name;
-        } catch {
-            return null;
-        }
-    }
 
     public async getNames(uuids: string[]): Promise<Record<string, string>> {
         const result: Record<string, string> = {};
