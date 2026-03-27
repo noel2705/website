@@ -82,7 +82,7 @@ export async function loginUser(mc_name: string, password: string) {
                 secure: process.env.NODE_ENV === "production",
                 sameSite: "strict",
                 path: "/",
-                maxAge: 60 * 60 * 24 * 14,
+                maxAge: 60 * 60 * 24 * 32,
             });
         } catch {
             return {error: "Session konnte nicht erstellt werden"};
@@ -200,11 +200,6 @@ export async function verifyMinecraftAccount(mc_name: string, code: string) {
             return {error: "Fehlende Daten"}
         }
 
-
-
-
-
-
         const stripMinecraftFormatting = (value: string) =>
             value.replace(/\u00a7[0-9A-FK-ORa-fk-or]/g, "");
 
@@ -212,16 +207,12 @@ export async function verifyMinecraftAccount(mc_name: string, code: string) {
             `https://api.mojang.com/users/profiles/minecraft/${mc_name}`
         )
 
-
         if (!resUuid.ok) {
             return {error: "Spieler nicht gefunden"}
         }
 
         const {id: uuid} = await resUuid.json()
 
-        if(uuid === "9a3e562acc3b4101b289bf4375baadf0"){
-            return {verified: Boolean(true)}
-        }
 
         const resAH = await fetch("https://api.opsucht.net/auctions/active")
 
