@@ -1,0 +1,54 @@
+.chart-legend-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    justify-content: center;
+    margin: 0.5rem 0 0.9rem;
+}
+
+.chart-legend-buttons button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.75rem;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: color-mix(in srgb, var(--surface-highlight) 72%, transparent);
+    color: var(--foreground);
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.chart-legend-buttons button:hover {
+    border-color: color-mix(in srgb, var(--primary) 60%, transparent);
+    background: color-mix(in srgb, var(--surface-highlight) 92%, transparent);
+}
+
+.chart-legend-buttons button.inactive {
+    opacity: 0.5;
+    background: color-mix(in srgb, var(--surface-highlight) 40%, transparent);
+}
+
+.legend-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    border: 1px solid var(--panel-soft-border);
+    background: var(--surface-strong);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    flex: 0 0 auto;
+    padding: 2px;
+    box-sizing: border-box;
+}
+
+.legend-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
