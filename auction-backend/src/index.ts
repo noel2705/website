@@ -47,6 +47,8 @@ const toIsoOrNull = (value: string | null): string | null => {
   return parsed.toISOString();
 };
 
+
+
 app.get("/health", (_req: any, res: any) => {
   res.json({ ok: true });
 });
@@ -150,6 +152,34 @@ app.get("/api/save-auction", async (_req: any, res: any) => {
     res.json(result);
   } catch (err) {
     console.error("Fehler beim Speichern:", err);
+    res.status(500).json({ error: (err as Error).message });
+  }
+});
+
+app.get("/api/save-shardrates", async (_req: any, res: any) => {
+  try {
+    const response = await fetch("https://api.opsucht.net/merchant/rates", {
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      res.status(502).json({ error: `API Fehler: ${response.status}` });
+      return;
+    }
+
+    const rates = await response.json();
+
+    await db.none(
+      `INSERT INTO public."shardRateHistory" (rate) VALUES ($1::jsonb)`,
+      [JSON.stringify(rates)],
+    );
+
+    res.json({
+      ok: true,
+      count: Array.isArray(rates) ? rates.length : null,
+    });
+  } catch (err) {
+    console.error("Fehler beim Speichern der Shard-Rates:", err);
     res.status(500).json({ error: (err as Error).message });
   }
 });
