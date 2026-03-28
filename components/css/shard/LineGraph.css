@@ -52,3 +52,14 @@
     object-fit: contain;
     display: block;
 }
+
+.linegraph-body {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.linegraph-chart {
+    flex: 1;
+    min-height: 320px;
+}

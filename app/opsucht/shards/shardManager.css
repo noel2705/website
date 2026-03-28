@@ -1,7 +1,7 @@
 .dashboard-shards-page {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 1.25rem;
 }
 
 .shards-loading {
@@ -31,13 +31,55 @@
     font-weight: 700;
 }
 
-.shards-grid {
+.shards-hero {
     display: grid;
     gap: 1rem;
     grid-template-columns: minmax(0, 1.7fr) minmax(260px, 0.85fr);
-    grid-template-areas:
-        "chart upload"
-        "chart rates";
+    align-items: start;
+    padding: 1rem;
+    border-radius: 18px;
+    background:
+        radial-gradient(circle at 15% 20%, color-mix(in srgb, var(--primary) 18%, transparent), transparent 55%),
+        radial-gradient(circle at 85% 10%, color-mix(in srgb, var(--surface-highlight) 55%, transparent), transparent 60%),
+        color-mix(in srgb, var(--surface-strong) 82%, transparent);
+    border: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+}
+
+.shards-hero-main {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+    align-items: stretch;
+}
+
+.shards-hero-side {
+    display: flex;
+    align-items: center;
+}
+
+.shards-mod {
+    padding: 1rem;
+    border-radius: 18px;
+    background:
+        linear-gradient(160deg, color-mix(in srgb, var(--surface-highlight) 55%, transparent), transparent 55%),
+        color-mix(in srgb, var(--panel-soft-bg) 85%, transparent);
+    border: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+    display: grid;
+    gap: 1rem;
+}
+
+.shards-mod-header {
+    padding: 0.6rem;
+    border-radius: 14px;
+    background: color-mix(in srgb, var(--surface-highlight) 70%, transparent);
+    border: 1px solid var(--panel-soft-border);
+}
+
+.shards-mod-grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+    align-items: stretch;
 }
 
 .shards-card {
@@ -48,15 +90,22 @@
     box-shadow: var(--shadow-strong);
 }
 
-.shards-card-chart {
-    grid-area: chart;
+.shards-card-linegraph,
+.shards-card-rates,
+.shards-card-chart,
+.shards-card-upload {
+    height: 100%;
+}
+
+.shards-card-linegraph {
+    min-height: 520px;
 }
 
 .shards-card-upload {
-    grid-area: upload;
     display: flex;
     align-items: stretch;
     justify-content: center;
+    min-height: 380px;
 }
 
 .shards-filepath-help {
@@ -92,20 +141,29 @@
 }
 
 .shards-card-rates {
-    grid-area: rates;
+    min-height: 520px;
+}
+
+.shards-card-chart {
+    min-height: 380px;
 }
 
 .shards-card-calculator {
-    margin-top: 0.15rem;
+    min-height: 520px;
+    align-self: stretch;
 }
 
 @media (max-width: 1080px) {
-    .shards-grid {
+    .shards-hero {
         grid-template-columns: 1fr;
-        grid-template-areas:
-            "chart"
-            "upload"
-            "rates";
+    }
+
+    .shards-hero-main {
+        grid-template-columns: 1fr;
+    }
+
+    .shards-mod-grid {
+        grid-template-columns: 1fr;
     }
 }
 

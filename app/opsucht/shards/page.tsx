@@ -32,49 +32,52 @@ export default function Shards() {
 
     return (
         <div className="dashboard-shards-page">
-
-            <LockedSection locked={!user}>
-                <ShardTopBar refreshKey={refreshKey} user={user}/>
-            </LockedSection>
-
-            <div className="shards-grid">
-
-                <LockedSection locked={!hasShardAccess}>
-                    <section className="shards-card shards-card-chart">
-                        <ShardHistoryChart refreshKey={refreshKey}/>
+            <section className="shards-hero">
+                <div className="shards-hero-main">
+                    <section className="shards-card shards-card-linegraph">
+                        <LineGraph/>
                     </section>
-                </LockedSection>
 
-                <LockedSection locked={!hasShardAccess}>
-                    <section className="shards-card shards-card-upload">
-                        <div className="shards-filepath-help">
-                            <UploadShardButton onUploadSuccess={() => setRefreshKey(v => v + 1)}/>
-                            <p className="shards-filepath-title">Datei-Pfad Hilfe</p>
-                            <p className="shards-filepath-text">
-                                Du findest die Exportdatei in diesem Ordner:
-                            </p>
-                            <code className="shards-filepath-code">{filePath}</code>
-                        </div>
+                    <section className="shards-card shards-card-rates">
+                        <CurrentShardCourse/>
                     </section>
-                </LockedSection>
+                </div>
 
-                <section className="shards-card shards-card-rates">
-                    <CurrentShardCourse/>
-                </section>
-
-                <section className="shards-card shards-card-calculator">
-                    <ShardCalculator/>
-                </section>
-
-            </div>
-
-
-
-            <section className="shards-card shards-card-calculator">
-                <LineGraph/>
+                <aside className="shards-hero-side">
+                    <section className="shards-card shards-card-calculator">
+                        <ShardCalculator/>
+                    </section>
+                </aside>
             </section>
 
+            <section className="shards-mod">
+                <LockedSection locked={!user}>
+                    <div className="shards-mod-header">
+                        <ShardTopBar refreshKey={refreshKey} user={user}/>
+                    </div>
+                </LockedSection>
 
+                <div className="shards-mod-grid">
+                    <LockedSection locked={!hasShardAccess}>
+                        <section className="shards-card shards-card-chart">
+                            <ShardHistoryChart refreshKey={refreshKey}/>
+                        </section>
+                    </LockedSection>
+
+                    <LockedSection locked={!hasShardAccess}>
+                        <section className="shards-card shards-card-upload">
+                            <div className="shards-filepath-help">
+                                <UploadShardButton onUploadSuccess={() => setRefreshKey(v => v + 1)}/>
+                                <p className="shards-filepath-title">Datei-Pfad Hilfe</p>
+                                <p className="shards-filepath-text">
+                                    Du findest die Exportdatei in diesem Ordner:
+                                </p>
+                                <code className="shards-filepath-code">{filePath}</code>
+                            </div>
+                        </section>
+                    </LockedSection>
+                </div>
+            </section>
         </div>
     )
 }

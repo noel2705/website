@@ -126,8 +126,9 @@ export const LineGraph = () => {
 
     const options = {
         responsive: true,
+        maintainAspectRatio: false,
         interaction: {
-            mode: 'index',
+            mode: 'dataset',
             intersect: false,
         },
         plugins: {
@@ -173,7 +174,7 @@ export const LineGraph = () => {
 
     return <>
         {error ? <p>{error}</p> : (
-            <>
+            <div className="linegraph-body">
                 <div className="chart-legend-buttons">
                     {datasets.map((dataset: any) => (
                         <button
@@ -195,8 +196,10 @@ export const LineGraph = () => {
                         </button>
                     ))}
                 </div>
-                <Line options={options} data={{ datasets }} />
-            </>
+                <div className="linegraph-chart">
+                    <Line options={options} data={{ datasets }} style={{ height: "100%" }} />
+                </div>
+            </div>
         )}
     </>
 }
