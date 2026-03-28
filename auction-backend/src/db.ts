@@ -1,3 +1,4 @@
+import "dotenv/config";
 import pgPromise from "pg-promise";
 
 const pgp = pgPromise({ capSQL: true });
