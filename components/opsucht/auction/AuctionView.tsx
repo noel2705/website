@@ -145,10 +145,6 @@ export default async function AuctionView({
                         <span className="stat-value">{expiredAuctions.length}</span>
                     </div>
                     <div className="auction-stat-card">
-                        <span className="stat-label">Merkliste</span>
-                        <span className="stat-value">{markedAuctions.length}</span>
-                    </div>
-                    <div className="auction-stat-card">
                         <span className="stat-label">Ausgegeben</span>
                         <span className="stat-value">{formatMoney(moneySpent())}</span>
                     </div>

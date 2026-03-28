@@ -4,7 +4,6 @@ import './css/login.css'
 
 import { loginUser, verifyMinecraftAccount, registerUser, checkUserPassword } from '@/lib/login/auth'
 import { generateCode } from "@/lib/login/utils";
-import DatenschutzPage from "@/app/datenschutz/page";
 import Link from "next/link";
 
 export default function LoginModul() {
@@ -231,6 +230,7 @@ export default function LoginModul() {
                     <Link
                         prefetch={false}
                         href={"/datenschutz"} >Datenschutzvereinbarungen</Link>
+                    <br />
 
                 </div>
             ) : (
@@ -253,6 +253,10 @@ export default function LoginModul() {
                     <Link
                         prefetch={false}
                         href={"/datenschutz"} >Datenschutzvereinbarungen</Link>
+                    <br />
+                    <Link
+                        prefetch={false}
+                        href={"/nutzungsbedingungen"} >Nutzungsbedingungen</Link>
 
 
                     <h2 className={"status"}>{status}</h2>

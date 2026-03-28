@@ -9,6 +9,7 @@ import CurrentShardCourse from "@/components/opsucht/shards/CurrentShardCourse"
 import {getSessionUser} from "@/hooks/useUser"
 import ShardCalculator from "@/components/opsucht/shards/ShardCalculator"
 import LockedSection from "@/components/icon/LockedSection"
+import {LineGraph} from "@/components/opsucht/shards/LineGraph";
 
 export default function Shards() {
 
@@ -69,6 +70,9 @@ export default function Shards() {
 
 
 
+            <section className="shards-card shards-card-calculator">
+                <LineGraph/>
+            </section>
 
 
         </div>

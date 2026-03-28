@@ -60,6 +60,7 @@ export default function RootLayout({
                     <div className="footer-links">
                         <a href="/impressum">Impressum</a>
                         <a href="/datenschutz">Datenschutz</a>
+                        <a href="/nutzungsbedingungen">Nutzungsbedingungen</a>
                     </div>
                 </div>
             </footer>
