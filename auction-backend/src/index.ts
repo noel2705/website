@@ -47,6 +47,15 @@ const toIsoOrNull = (value: string | null): string | null => {
   return parsed.toISOString();
 };
 
+const ensureShardRateHistoryTable = async (conn: any) => {
+  await conn.none(`
+    CREATE TABLE IF NOT EXISTS public."shardRateHistory" (
+      rate jsonb NOT NULL,
+      saved_at timestamptz NOT NULL DEFAULT now(),
+      PRIMARY KEY (saved_at)
+    )
+  `);
+};
 
 
 app.get("/health", (_req: any, res: any) => {
@@ -168,15 +177,40 @@ app.get("/api/save-shardrates", async (_req: any, res: any) => {
     }
 
     const rates = await response.json();
+    const bySource =
+      Array.isArray(rates)
+        ? Object.fromEntries(
+            rates
+              .filter((entry: any) => entry && typeof entry.source === "string")
+              .map((entry: any) => [entry.source, entry.exchangeRate]),
+          )
+        : null;
 
-    await db.none(
-      `INSERT INTO public."shardRateHistory" (rate) VALUES ($1::jsonb)`,
-      [JSON.stringify(rates)],
-    );
+    await ensureShardRateHistoryTable(db);
+
+    const latest = await db.oneOrNone<{ rate: unknown }>(`
+      SELECT rate
+      FROM public."shardRateHistory"
+      ORDER BY saved_at DESC
+      LIMIT 1
+    `);
+
+    const nextRateJson = JSON.stringify(rates);
+    const latestRateJson = latest ? JSON.stringify(latest.rate) : null;
+    const shouldInsert = nextRateJson !== latestRateJson;
+
+    if (shouldInsert) {
+      await db.none(
+        `INSERT INTO public."shardRateHistory" (rate) VALUES ($1::jsonb)`,
+        [nextRateJson],
+      );
+    }
 
     res.json({
       ok: true,
+      saved: shouldInsert,
       count: Array.isArray(rates) ? rates.length : null,
+      bySource,
     });
   } catch (err) {
     console.error("Fehler beim Speichern der Shard-Rates:", err);
