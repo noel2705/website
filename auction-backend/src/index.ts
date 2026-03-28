@@ -218,6 +218,27 @@ app.get("/api/save-shardrates", async (_req: any, res: any) => {
   }
 });
 
+app.get("/api/shardrates", async (_req: any, res: any) => {
+  try {
+    await ensureShardRateHistoryTable(db);
+    const rows = await db.any<{ rate: unknown; saved_at: string | Date }>(`
+      SELECT rate, saved_at
+      FROM public."shardRateHistory"
+      ORDER BY saved_at DESC
+    `);
+
+    res.json(
+      rows.map((row) => ({
+        savedAt: row.saved_at instanceof Date ? row.saved_at.toISOString() : new Date(row.saved_at).toISOString(),
+        rate: row.rate,
+      })),
+    );
+  } catch (err) {
+    console.error("Fehler beim Laden der Shard-Rates:", err);
+    res.status(500).json({ error: (err as Error).message });
+  }
+});
+
 app.get("/api/expired-auctions", async (req: any, res: any) => {
   try {
     await ensureExpiredAuctionsV2Table(db);
