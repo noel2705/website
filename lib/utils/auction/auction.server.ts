@@ -4,6 +4,7 @@ import { IUser } from "@/lib/utils/userTypes";
 import { db } from "@/lib/utils/db";
 import {Page} from "@/lib/utils/types";
 import { normalizeAuction, normalizeAuctions } from "@/lib/utils/auction/normalize";
+import { ensureExpiredAuctionsV2Table } from "@/lib/utils/auction/db";
 
 
 export async function isAuctionMarked(
@@ -65,6 +66,53 @@ export async function getAverageItemPrice(itemName: string): Promise<number | nu
 
 
     return Number(result.avg);
+}
+
+export type LastItemTrade = {
+    uid: string;
+    seller: string;
+    buyer: string;
+    price: number;
+    endTime: string;
+};
+
+export async function getLastItemTrades(
+    itemName: string,
+    limit = 10
+): Promise<LastItemTrade[]> {
+    await ensureExpiredAuctionsV2Table(db);
+
+    const sql = `
+        SELECT uid,
+               seller,
+               highest_bidder,
+               current_bid,
+               end_time
+        FROM expired_auctions_v2
+        WHERE (
+            LOWER(TRIM(display_name)) = LOWER(TRIM($1))
+            OR LOWER(TRIM(material)) = LOWER(TRIM($1))
+        )
+          AND bids <> '{}'::jsonb
+        ORDER BY end_time DESC
+        LIMIT $2
+    `;
+
+    const rows = await db?.any(sql, [itemName, Math.max(1, Math.min(25, limit))]);
+
+    return (rows ?? []).map((row: {
+        uid: string;
+        seller: string;
+        highest_bidder: string;
+        current_bid: number | string;
+        end_time: string | Date;
+    }) => ({
+        uid: row.uid,
+        seller: row.seller,
+        buyer: row.highest_bidder,
+        price: Number(row.current_bid),
+        endTime: row.end_time instanceof Date ? row.end_time.toISOString() : String(row.end_time),
+    }));
 }
 
 export async function unmarkAuction(

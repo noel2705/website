@@ -1,5 +1,7 @@
 import {Item, Page} from "@/lib/utils/types";
 import {normalizeAuctions} from "@/lib/utils/auction/normalize";
+import {getAverageItemPrice} from "@/lib/utils/auction/auction.server";
+import {isNumber} from "node:util";
 
 const backendURL = process.env.NEXT_PUBLIC_AUCTION_BACKEND_URL || ""
 
@@ -60,7 +62,6 @@ export function isDesired(auction: Page) {
 
     return totalBids > 5 && uniqueBidders >= 5;
 }
-
 
 export function getAmountUniqueBidders(bids: Record<string, number>) {
     return Object.keys(bids || {}).length;

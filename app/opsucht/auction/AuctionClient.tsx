@@ -33,6 +33,12 @@ const toApiCategory = (category: string) => (category === '*' || isParent(catego
 
 const AuctionClient: React.FC<AuctionClientProps> = ({initialAuction, onSelectAuction}) => {
     const itemsPerLoad = 25;
+    const isBaseAuctionLocation = () => {
+        if (typeof window === 'undefined') return false;
+        if (window.location.hash) return false;
+        const params = new URLSearchParams(window.location.search);
+        return !params.has('auction') && !params.has('user');
+    };
     const resolver = useMemo(
         () =>
             new MinecraftNameResolver({
@@ -45,6 +51,7 @@ const AuctionClient: React.FC<AuctionClientProps> = ({initialAuction, onSelectAu
 
     const [renderCount, setRenderCount] = useState(() => {
         if (typeof window === 'undefined') return itemsPerLoad;
+        if (!isBaseAuctionLocation()) return itemsPerLoad;
         const restore = sessionStorage.getItem('auctionScrollRestore') === '1';
         if (!restore) return itemsPerLoad;
         const raw = sessionStorage.getItem('auctionRenderCount');
@@ -277,6 +284,12 @@ const AuctionClient: React.FC<AuctionClientProps> = ({initialAuction, onSelectAu
 
     useEffect(() => {
         if (typeof window === 'undefined') return;
+        if (!isBaseAuctionLocation()) {
+            pendingScrollRestoreRef.current = false;
+            sessionStorage.removeItem('auctionScrollRestore');
+            sessionStorage.removeItem('auctionScrollY');
+            return;
+        }
         pendingScrollRestoreRef.current = sessionStorage.getItem('auctionScrollRestore') === '1';
     }, []);
 
@@ -364,6 +377,12 @@ const AuctionClient: React.FC<AuctionClientProps> = ({initialAuction, onSelectAu
 
     useEffect(() => {
         if (!pendingScrollRestoreRef.current) return;
+        if (!isBaseAuctionLocation()) {
+            pendingScrollRestoreRef.current = false;
+            sessionStorage.removeItem('auctionScrollRestore');
+            sessionStorage.removeItem('auctionScrollY');
+            return;
+        }
         if (!initialized) return;
         if (!showAuction || showAuction.length === 0) return;
 

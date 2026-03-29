@@ -18,6 +18,7 @@ import {
     unmarkAuction
 } from "@/lib/utils/auction/auction.server";
 import ColoredLore from "@/components/opsucht/auction/ColoredLore";
+import LastAuctionTrades from "@/components/opsucht/auction/LastAuctionTrades";
 
 export default function AuctionItemPage({
                                             data,
@@ -90,9 +91,13 @@ export default function AuctionItemPage({
                             ) : (
                                 <BackButton/>
                             )}
+
+
+
                             <span>{bidsSorted.length} Gebote</span>
-                            <span>Aktuell: {formatMoney(a.currentBid)}</span>
-                            <button
+
+
+                            {user && <button
                                 onClick={() => {
                                     if (isMarked) {
                                         unmarkAuction(user, auctionID).then(() => setIsMarked(false));
@@ -101,19 +106,33 @@ export default function AuctionItemPage({
                                     }
                                 }}
                             >
-                                ´ {isMarked && !user ? "Gemerkt" : "Merken"}
-                            </button>
-                            <span>Start: {formatMoney(a.startBid)}</span>
+                                {isMarked ? "Gemerkt" : "Merken"}
+                            </button>}
+
+
+                            { Object.keys(a.bids).length > 0 && <span>
+                                Aktuell: {formatMoney(a.currentBid)}
+                                <img src="/custom-items/money.svg" alt="Icon" width="24" height="24"/>
+                            </span> }
+
+
+                            {Object.keys(a.bids).length < 1 &&
+                                <span>
+                                Start: {formatMoney(a.startBid)}
+                                    <img src="/custom-items/money.svg" alt="Icon" width="24" height="24"/>
+                            </span>
+                            }
 
                             <span>
-  Durchschnitts Preis: {averageItemPrice === undefined
+                            Durchschnitts Preis: {averageItemPrice === undefined
                                 ? "Wird geladen..."
                                 : averageItemPrice === null
                                     ? "Keine Bekannt"
                                     : formatMoney(averageItemPrice)}
+                                <img src="/custom-items/money.svg" alt="Icon" width="24" height="24"/>
 </span>
                             <div className="time">
-                                <EndTimeCard endTime={a.endTime}/>
+                                <EndTimeCard endTime={a.endTime} showEndDate={true} />
                             </div>
                         </div>
 
@@ -169,6 +188,8 @@ export default function AuctionItemPage({
                                 </ul>
                             </div>
                         )}
+
+                        <LastAuctionTrades auction={a}/>
                     </div>
                 );
             })}

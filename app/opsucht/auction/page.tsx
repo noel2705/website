@@ -98,6 +98,12 @@ export default  function Page() {
         return () => window.removeEventListener("hashchange", syncFromHash);
     }, [data]);
 
+    useEffect(() => {
+        if (typeof window === "undefined") return;
+        if (showMode === Modes.Auctions) return;
+        window.scrollTo(0, 0);
+    }, [showMode]);
+
     return (
         <div className="app-shell">
             {showMode === Modes.Auctions && (

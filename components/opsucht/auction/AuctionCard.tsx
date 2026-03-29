@@ -1,6 +1,11 @@
 'use client'
 import type {Page} from "@/lib/utils/types";
-import {formatMoney, getAmountBids, getItemImage, isDesired} from "@/lib/utils/auction/auction";
+import {
+    formatMoney,
+    getAmountBids,
+    getItemImage,
+    isDesired,
+} from "@/lib/utils/auction/auction";
 import {ReactNode, useEffect, useMemo, useState} from "react";
 import "@/components/css/auction/auction.css";
 import UserPageButton from "@/components/opsucht/auction/UserPageButton";
@@ -44,6 +49,8 @@ const AuctionCard: React.FC<AuctionCardProps> = ({
 
         return () => clearInterval(interval);
     }, []);
+
+
 
     const {endText, isExpired, endedAtText} = useMemo(() => {
         const milliToEnd = new Date(endDate).getTime() - now;
@@ -110,6 +117,8 @@ const AuctionCard: React.FC<AuctionCardProps> = ({
                             className="desired-icon"
                         />
                     )}
+
+
                 </div>
             )}
 
