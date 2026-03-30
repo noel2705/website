@@ -177,38 +177,33 @@ app.get("/api/save-shardrates", async (_req: any, res: any) => {
     }
 
     const rates = await response.json();
+
     const bySource =
-      Array.isArray(rates)
-        ? Object.fromEntries(
-            rates
-              .filter((entry: any) => entry && typeof entry.source === "string")
-              .map((entry: any) => [entry.source, entry.exchangeRate]),
-          )
-        : null;
+        Array.isArray(rates)
+            ? Object.fromEntries(
+                rates
+                    .filter((entry: any) => entry && typeof entry.source === "string")
+                    .map((entry: any) => [entry.source, entry.exchangeRate]),
+            )
+            : null;
 
     await ensureShardRateHistoryTable(db);
 
-    const latest = await db.oneOrNone<{ rate: unknown }>(`
-      SELECT rate
-      FROM public."shardRateHistory"
-      ORDER BY saved_at DESC
-      LIMIT 1
-    `);
-
-    const nextRateJson = JSON.stringify(rates);
-    const latestRateJson = latest ? JSON.stringify(latest.rate) : null;
-    const shouldInsert = nextRateJson !== latestRateJson;
-
-    if (shouldInsert) {
-      await db.none(
-        `INSERT INTO public."shardRateHistory" (rate) VALUES ($1::jsonb)`,
-        [nextRateJson],
-      );
-    }
+    await db.none(
+        `
+      INSERT INTO public."shardRateHistory" (rate, saved_date)
+      VALUES ($1::jsonb, CURRENT_DATE)
+      ON CONFLICT (saved_date)
+      DO UPDATE SET 
+        rate = EXCLUDED.rate,
+        saved_at = NOW()
+      `,
+        [rates],
+    );
 
     res.json({
       ok: true,
-      saved: shouldInsert,
+      saved: true,
       count: Array.isArray(rates) ? rates.length : null,
       bySource,
     });
