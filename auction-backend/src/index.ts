@@ -191,13 +191,13 @@ app.get("/api/save-shardrates", async (_req: any, res: any) => {
 
     await db.none(
         `
-      INSERT INTO public."shardRateHistory" (rate, saved_date)
-      VALUES ($1::jsonb, CURRENT_DATE)
-      ON CONFLICT (saved_date)
-      DO UPDATE SET 
-        rate = EXCLUDED.rate,
-        saved_at = NOW()
-      `,
+          INSERT INTO public."shardRateHistory" (rate)
+          VALUES ($1::jsonb)
+            ON CONFLICT ON CONSTRAINT shard_rate_unique_day
+            DO UPDATE SET
+            rate = EXCLUDED.rate,
+                 saved_at = NOW()
+        `,
         [rates],
     );
 
