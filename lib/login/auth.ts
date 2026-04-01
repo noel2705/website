@@ -200,6 +200,18 @@ export async function verifyMinecraftAccount(mc_name: string, code: string) {
             return {error: "Fehlende Daten"}
         }
 
+        const isE2EBypassEnabled = process.env.E2E_SKIP_VERIFY === "true";
+        const e2eRegisterName = process.env.E2E_REGISTER_NAME?.trim();
+        const e2eLoginName = process.env.E2E_MC_NAME?.trim();
+        const normalizedName = mc_name.trim();
+        if (
+            isE2EBypassEnabled &&
+            normalizedName.length > 0 &&
+            (normalizedName === e2eRegisterName || normalizedName === e2eLoginName)
+        ) {
+            return {verified: true, bypassed: true};
+        }
+
         const stripMinecraftFormatting = (value: string) =>
             value.replace(/\u00a7[0-9A-FK-ORa-fk-or]/g, "");
 

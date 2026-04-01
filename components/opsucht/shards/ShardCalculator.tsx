@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useMemo, useState } from "react"
 import "../../css/shard/ShardCalculator.css"
-import {formatShards} from "@/lib/utils/auction/auction";
+import { formatShards } from "@/lib/utils/auction/auction"
 
 type Mode = "itemsToShards" | "shardsToItems"
 
@@ -18,21 +18,24 @@ export default function ShardCalculator() {
 
     useEffect(() => {
         fetch("https://api.opsucht.net/merchant/rates")
-            .then(res => res.json())
-            .then(data => setRates(data))
+            .then((res) => res.json())
+            .then((data) => setRates(data))
             .catch(console.error)
     }, [])
+
     const ITEM_MAP: Record<string, string> = {
         "diamond_block": "Diamond Block",
         "netherite_ingot": "Netherite Ingot",
-        "minecraft:paper[item_name='{\"extra\":[{\"bold\":true,\"color\":\"#926428\",\"italic\":false,\"obfuscated\":false,\"strikethrough\":false,\"text\":\"Holzbündel\",\"underlined\":false}],\"text\":\"\"}',custom_model_data=625,custom_name='{\"extra\":[{\"bold\":true,\"color\":\"#926428\",\"italic\":false,\"obfuscated\":false,\"strikethrough\":false,\"text\":\"Holzbündel\",\"underlined\":false}],\"text\":\"\"}']":
+        "minecraft:paper[custom_name={extra: [{bold: 1b, color: \"gray\", italic: 0b, obfuscated: 0b, strikethrough: 0b, text: \"Gräbergemisch\", underlined: 0b}], text: \"\"},custom_model_data={floats: [626.0f]},item_name={extra: [{bold: 1b, color: \"gray\", italic: 0b, obfuscated: 0b, strikethrough: 0b, text: \"Gräbergemisch\", underlined: 0b}], text: \"\"}]":
+            "Gräbergemisch",
+        "minecraft:paper[custom_name={extra: [{bold: 1b, color: \"#926428\", italic: 0b, obfuscated: 0b, strikethrough: 0b, text: \"Holzbündel\", underlined: 0b}], text: \"\"},custom_model_data={floats: [625.0f]},item_name={extra: [{bold: 1b, color: \"#926428\", italic: 0b, obfuscated: 0b, strikethrough: 0b, text: \"Holzbündel\", underlined: 0b}], text: \"\"}]":
             "Holzbündel",
-        "minecraft:paper[item_name='{\"extra\":[{\"bold\":true,\"color\":\"gray\",\"italic\":false,\"obfuscated\":false,\"strikethrough\":false,\"text\":\"Gräbergemisch\",\"underlined\":false}],\"text\":\"\"}',custom_model_data=626,custom_name='{\"extra\":[{\"bold\":true,\"color\":\"gray\",\"italic\":false,\"obfuscated\":false,\"strikethrough\":false,\"text\":\"Gräbergemisch\",\"underlined\":false}],\"text\":\"\"}']":
-            "Gräbergemisch"
-    };
+        "minecraft:paper[custom_name={extra: [{bold: 1b, color: \"white\", italic: 0b, obfuscated: 0b, strikethrough: 0b, text: \"Steinplatten\", underlined: 0b}], text: \"\"},custom_model_data={floats: [635.0f]},item_name={extra: [{bold: 1b, color: \"white\", italic: 0b, obfuscated: 0b, strikethrough: 0b, text: \"Steinplatten\", underlined: 0b}], text: \"\"}]":
+            "Steinplatten",
+    }
 
     const calculatedValue = useMemo(() => {
-        const rate = rates.find(r => r.source === item)
+        const rate = rates.find((r) => r.source === item)
         if (!rate || value <= 0) return 0
 
         if (mode === "itemsToShards") {
@@ -69,7 +72,7 @@ export default function ShardCalculator() {
 
                 <label>Item</label>
 
-                <select className={"item-change"} value={item} onChange={e => setItem(e.target.value)}>
+                <select className={"item-change"} value={item} onChange={(e) => setItem(e.target.value)}>
                     {Object.entries(ITEM_MAP).map(([key, label]) => (
                         <option key={key} value={key}>
                             {label}
@@ -85,7 +88,7 @@ export default function ShardCalculator() {
                     type="number"
                     min={0}
                     value={value}
-                    onChange={e => setValue(Number(e.target.value))}
+                    onChange={(e) => setValue(Number(e.target.value))}
                     placeholder={mode === "itemsToShards" ? "z.B. 64" : "z.B. 500"}
                 />
 

@@ -255,10 +255,12 @@ export default function AuctionUserClientView({
                         <span className="stat-label">Abgelaufen</span>
                         <span className="stat-value">{expiredAuctions.length}</span>
                     </div>
-                    <div className="auction-stat-card">
-                        <span className="stat-label">Merkliste</span>
-                        <span className="stat-value">{markedAuctions.length}</span>
-                    </div>
+                    {isDashBoardView && (
+                        <div className="auction-stat-card">
+                            <span className="stat-label">Merkliste</span>
+                            <span className="stat-value">{markedAuctions.length}</span>
+                        </div>
+                    )}
                     <div className="auction-stat-card">
                         <span className="stat-label">Ausgegeben</span>
                         <span className="stat-value stat-value-money">
@@ -281,7 +283,7 @@ export default function AuctionUserClientView({
                 expiredBuyedAuctions.length === 0 &&
                 expiredAuctions.length === 0 &&
                 gebote.length === 0 &&
-                markedAuctions.length === 0 && (
+                (!isDashBoardView || markedAuctions.length === 0) && (
                     <p className="no-auctions">
                         Keine aktiven Auktionen oder Gebote gefunden.
                     </p>

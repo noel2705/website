@@ -10,8 +10,6 @@ import {usePathname} from "next/navigation";
 export default function NavigationBar() {
     const pathname = usePathname()
 
-
-
     return (
         <nav className="navbar">
             <ul className="list">

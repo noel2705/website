@@ -1,4 +1,4 @@
-import { Line } from 'react-chartjs-2'
+import { Line } from "react-chartjs-2"
 import "../../css/shard/LineGraph.css"
 import {
     Chart as ChartJS,
@@ -8,18 +8,18 @@ import {
     LineElement,
     Title,
     Tooltip,
-    Legend
-} from 'chart.js'
-import { useEffect, useState } from "react";
+    Legend,
+} from "chart.js"
+import { useEffect, useState } from "react"
 
-
-ChartJS.register(CategoryScale,
+ChartJS.register(
+    CategoryScale,
     LinearScale,
     PointElement,
     LineElement,
     Title,
     Tooltip,
-    Legend
+    Legend,
 )
 
 export const LineGraph = () => {
@@ -28,6 +28,14 @@ export const LineGraph = () => {
     const [hiddenLabels, setHiddenLabels] = useState<Set<string>>(new Set())
 
     const toLabel = (source: string) => {
+        if (source.startsWith("minecraft:paper")) {
+            const nbtMatches = Array.from(source.matchAll(/text:\s*\"(.*?)\"/g))
+            for (const match of nbtMatches) {
+                const value = match[1]
+                if (value && value.trim().length > 0) return value
+            }
+        }
+
         const match = source.match(/item_name='([^']+)'/)
         if (match) {
             try {
@@ -53,14 +61,16 @@ export const LineGraph = () => {
         "Holzbündel": "/custom-items/holzbndel.png",
         "Gräbergemisch": "https://i.postimg.cc/x8Jt4M99/grabergemisch.png",
         "Steinplatten": "/custom-items/steinplatten.png",
+        "HolzbÃ¼ndel": "/custom-items/holzbndel.png",
+        "GrÃ¤bergemisch": "https://i.postimg.cc/x8Jt4M99/grabergemisch.png",
         "diamond_block": "https://img.mc-api.io/diamond_block.png",
         "netherite_ingot": "https://img.mc-api.io/netherite_ingot.png",
     }
 
-    const toIcon = (source: string, label: string) => ICON_MAP[source] ?? ICON_MAP[label] ?? "/custom-items/default.png"
+    const toIcon = (source: string, label: string) =>
+        ICON_MAP[source] ?? ICON_MAP[label] ?? "/custom-items/default.png"
 
     useEffect(() => {
-
         const getHistory = async () => {
             try {
                 const base = process.env.NEXT_PUBLIC_AUCTION_BACKEND_URL ?? ""
@@ -122,27 +132,27 @@ export const LineGraph = () => {
         }
 
         getHistory()
-    }, []);
+    }, [])
 
     const options = {
         responsive: true,
         maintainAspectRatio: false,
         interaction: {
-            mode: 'dataset',
+            mode: "dataset",
             intersect: false,
         },
         plugins: {
             legend: {
-                position: 'top',
-                display: false
+                position: "top",
+                display: false,
             },
             title: {
                 display: true,
                 text: "Shard Kursverlauf",
-                position: 'top',
-                color: '#ffffff'
-            }
-        }
+                position: "top",
+                color: "#ffffff",
+            },
+        },
     } as const
 
     const toggleLabel = (label: string) => {
@@ -159,9 +169,9 @@ export const LineGraph = () => {
 
     const datasets = Array.isArray(data?.datasets)
         ? data.datasets.map((dataset: any) => ({
-            ...dataset,
-            hidden: hiddenLabels.has(dataset.label),
-        }))
+              ...dataset,
+              hidden: hiddenLabels.has(dataset.label),
+          }))
         : []
 
     const handleIconError = (event: React.SyntheticEvent<HTMLImageElement>) => {
@@ -171,35 +181,38 @@ export const LineGraph = () => {
         target.src = "/custom-items/default.png"
     }
 
-
-    return <>
-        {error ? <p>{error}</p> : (
-            <div className="linegraph-body">
-                <div className="chart-legend-buttons">
-                    {datasets.map((dataset: any) => (
-                        <button
-                            key={dataset.label}
-                            type="button"
-                            onClick={() => toggleLabel(dataset.label)}
-                            className={hiddenLabels.has(dataset.label) ? "inactive" : "active"}
-                            style={{ borderColor: dataset.borderColor }}
-                        >
-                            <span className="legend-icon">
-                                <img
-                                    src={dataset.icon ?? "/custom-items/default.png"}
-                                    alt=""
-                                    onError={handleIconError}
-                                    decoding="async"
-                                />
-                            </span>
-                            {dataset.label}
-                        </button>
-                    ))}
+    return (
+        <>
+            {error ? (
+                <p>{error}</p>
+            ) : (
+                <div className="linegraph-body">
+                    <div className="chart-legend-buttons">
+                        {datasets.map((dataset: any) => (
+                            <button
+                                key={dataset.label}
+                                type="button"
+                                onClick={() => toggleLabel(dataset.label)}
+                                className={hiddenLabels.has(dataset.label) ? "inactive" : "active"}
+                                style={{ borderColor: dataset.borderColor }}
+                            >
+                                <span className="legend-icon">
+                                    <img
+                                        src={dataset.icon ?? "/custom-items/default.png"}
+                                        alt=""
+                                        onError={handleIconError}
+                                        decoding="async"
+                                    />
+                                </span>
+                                {dataset.label}
+                            </button>
+                        ))}
+                    </div>
+                    <div className="linegraph-chart">
+                        <Line options={options} data={{ datasets }} style={{ height: "100%" }} />
+                    </div>
                 </div>
-                <div className="linegraph-chart">
-                    <Line options={options} data={{ datasets }} style={{ height: "100%" }} />
-                </div>
-            </div>
-        )}
-    </>
+            )}
+        </>
+    )
 }
