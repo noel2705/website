@@ -1,12 +1,20 @@
 'use client'
 
-import { useEffect, useState } from "react"
+import {useEffect, useState} from "react"
 import "../../css/shard/CurrentShardCourse.css"
 
 interface Rate {
     source: string
     target: string
     exchangeRate: number
+}
+
+enum defaultvalues {
+    diamond = 8,
+    netherite = 60,
+    stoneSlabs = 15,
+    graveyardMix = 20,
+    woodBundle = 20,
 }
 
 const extractCustomItemName = (source: string) => {
@@ -38,6 +46,7 @@ export default function CurrentShardCourse() {
                 console.error("Fehler beim Laden der Kurse:", err)
             }
         }
+
         fetchRates()
     }, [])
 
@@ -55,13 +64,27 @@ export default function CurrentShardCourse() {
     }
 
     function getRateColor(source: string, rate: number) {
-        if (source.includes("diamond")) return rate < 10 ? "rate-red" : "rate-green"
-        if (source.includes("netherite")) return rate < 50 ? "rate-red" : "rate-green"
-        if (source.includes("Steinplatten")) return rate < 15 ? "rate-red" : "rate-green"
-        if (source.includes("Gräbergemisch") || source.includes("Holzbündel")) {
-            return rate < 20 ? "rate-red" : "rate-green"
-        }
+        if (source.includes("diamond")) return rate < defaultvalues.diamond ? "rate-red" : "rate-green"
+        if (source.includes("netherite")) return rate < defaultvalues.netherite ? "rate-red" : "rate-green"
+        if (source.includes("Steinplatten")) return rate < defaultvalues.stoneSlabs ? "rate-red" : "rate-green"
+        if (source.includes("Holzbündel")) return rate < defaultvalues.woodBundle ? "rate-red" : "rate-green"
+        if (source.includes("Gräbergemisch")) return rate < defaultvalues.graveyardMix ? "rate-red" : "rate-green"
+
         return "rate-green"
+    }
+
+    function getPercent(source: string, rate: number) {
+        let defaultValue = 1
+
+        if (source.includes("diamond")) defaultValue = defaultvalues.diamond
+        else if (source.includes("netherite")) defaultValue = defaultvalues.netherite
+        else if (source.includes("Steinplatten")) defaultValue = defaultvalues.stoneSlabs
+        else if (source.includes("Holzbündel")) defaultValue = defaultvalues.woodBundle
+        else if (source.includes("Gräbergemisch")) defaultValue = defaultvalues.graveyardMix
+
+        const percent = ((rate - defaultValue) / defaultValue) * 100
+
+        return percent.toFixed(2)
     }
 
     return (
@@ -78,7 +101,14 @@ export default function CurrentShardCourse() {
                                 <span className={`rate-value ${rateClass}`}>
                                     {rate.exchangeRate.toFixed(2)}
                                 </span>{" "}
-                                OPSHARDS
+                                OPShards     &rarr;
+                            </span>
+
+                            <span>
+                                <span className={`rate-value ${rateClass}`}>
+                                    {getPercent(rate.source, rate.exchangeRate)}
+                                </span>{" "}
+                             %
                             </span>
                         </div>
                     )

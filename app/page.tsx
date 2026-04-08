@@ -10,6 +10,9 @@ export default function Home() {
             <p className="app-muted">
                 Auktionsmarkt, Shard-Tools und Dashboard-Funktionen in einem einheitlichen Theme.
             </p>
+            <h1 className="app-title" style={{ marginTop: "1.5rem", color: "var(--geist-red)" }}>
+               Ist nur für den Privat gebrauch!
+            </h1>
             <div className="status-actions" style={{ marginTop: "0.9rem", justifyContent: "flex-start" }}>
                 <Link href="/opsucht/auction" prefetch={false} className="status-link">Zu den Auktionen</Link>
                 <Link href="/opsucht/market" prefetch={false} className="status-link">Zum Market</Link>

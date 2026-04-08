@@ -32,51 +32,55 @@ export default function Shards() {
 
     return (
         <div className="dashboard-shards-page">
-            <section className="shards-hero">
-                <div className="shards-hero-main">
-                    <section className="shards-card shards-card-linegraph">
-                        <LineGraph/>
+            <section className="shards-layout">
+                <div className="shards-main">
+                    <section className="shards-hero">
+                        <div className="shards-hero-main">
+                            <section className="shards-card shards-card-linegraph">
+                                <LineGraph/>
+                            </section>
+
+                            <section className="shards-card shards-card-rates">
+                                <CurrentShardCourse/>
+                            </section>
+                        </div>
                     </section>
 
-                    <section className="shards-card shards-card-rates">
-                        <CurrentShardCourse/>
+                    <section className="shards-mod">
+                        <LockedSection locked={!user}>
+                            <div className="shards-mod-header">
+                                <ShardTopBar refreshKey={refreshKey} user={user}/>
+                            </div>
+                        </LockedSection>
+
+                        <div className="shards-mod-grid">
+                            <LockedSection locked={!hasShardAccess}>
+                                <section className="shards-card shards-card-chart">
+                                    <ShardHistoryChart refreshKey={refreshKey}/>
+                                </section>
+                            </LockedSection>
+
+                            <LockedSection locked={!hasShardAccess}>
+                                <section className="shards-card shards-card-upload">
+                                    <div className="shards-filepath-help">
+                                        <UploadShardButton onUploadSuccess={() => setRefreshKey(v => v + 1)}/>
+                                        <p className="shards-filepath-title">Datei-Pfad Hilfe</p>
+                                        <p className="shards-filepath-text">
+                                            Du findest die Exportdatei in diesem Ordner:
+                                        </p>
+                                        <code className="shards-filepath-code">{filePath}</code>
+                                    </div>
+                                </section>
+                            </LockedSection>
+                        </div>
                     </section>
                 </div>
 
-                <aside className="shards-hero-side">
+                <aside className="shards-side">
                     <section className="shards-card shards-card-calculator">
                         <ShardCalculator/>
                     </section>
                 </aside>
-            </section>
-
-            <section className="shards-mod">
-                <LockedSection locked={!user}>
-                    <div className="shards-mod-header">
-                        <ShardTopBar refreshKey={refreshKey} user={user}/>
-                    </div>
-                </LockedSection>
-
-                <div className="shards-mod-grid">
-                    <LockedSection locked={!hasShardAccess}>
-                        <section className="shards-card shards-card-chart">
-                            <ShardHistoryChart refreshKey={refreshKey}/>
-                        </section>
-                    </LockedSection>
-
-                    <LockedSection locked={!hasShardAccess}>
-                        <section className="shards-card shards-card-upload">
-                            <div className="shards-filepath-help">
-                                <UploadShardButton onUploadSuccess={() => setRefreshKey(v => v + 1)}/>
-                                <p className="shards-filepath-title">Datei-Pfad Hilfe</p>
-                                <p className="shards-filepath-text">
-                                    Du findest die Exportdatei in diesem Ordner:
-                                </p>
-                                <code className="shards-filepath-code">{filePath}</code>
-                            </div>
-                        </section>
-                    </LockedSection>
-                </div>
             </section>
         </div>
     )

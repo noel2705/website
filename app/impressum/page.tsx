@@ -1,4 +1,9 @@
+'use client'
+
 import "./impressum.css"
+import { getSessionUser } from "@/hooks/useUser"
+
+
 export default function Page() {
     return (
         <div className="legal-container">
@@ -6,25 +11,23 @@ export default function Page() {
                 <h1>Impressum</h1>
 
 
-                <section>
-                    <h2>Kontakt</h2>
-                    <p>
-                        E-Mail: nospighost@gmail.com<br />
-                        Discord: nospighost
-                    </p>
-                </section>
+                    <section>
+                        <h2>Kontakt</h2>
 
-                <section>
-                    <h2>Verantwortlich für den Inhalt</h2>
-                    <p>
-                        nospighost<br />
-                    </p>
-                </section>
+                        <p>
+                            <br />
+                            E-Mail: nospighost@gmail.com<br />
+                            Discord: nospighost
+                        </p>
+                    </section>
+
+
+
 
                 <section>
                     <h2>Hosting</h2>
                     <p>
-                        Diese Website wird gehostet bei Vercel Inc.
+                        Diese Website wird gehostet bei Vercel
                     </p>
                 </section>
 
